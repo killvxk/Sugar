@@ -1,0 +1,21 @@
+HKCR
+{
+	NoRemove CLSID
+	{
+		ForceRemove {741CBD6F-D3D7-4529-A273-BF741DA329B8} = s 'MyShellFolderDemo'
+		{
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+
+			TypeLib = s '{59744751-5352-4B3C-93CA-8B405BE543A7}'
+			Version = s '1.0'
+            ShellFolder
+            { 
+                val Attributes = d '2684354560'
+            }
+		}
+	}
+}

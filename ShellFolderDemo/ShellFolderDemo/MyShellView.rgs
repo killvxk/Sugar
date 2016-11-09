@@ -1,0 +1,16 @@
+HKCR
+{
+	NoRemove CLSID
+	{
+		ForceRemove {75655E98-5C2D-4A7C-AE5F-055297802A68} = s 'MyShellView Class'
+		{
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{59744751-5352-4B3C-93CA-8B405BE543A7}'
+			Version = s '1.0'
+		}
+	}
+}
