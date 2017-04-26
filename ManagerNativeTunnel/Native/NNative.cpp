@@ -9,7 +9,8 @@ NNative::~NNative() {
 
 }
 
-bool NNative::helloWorld() {
+bool NNative::helloWorld(Parameter *parameter) {
 	std::cout << "hello world" << std::endl;
+    parameter->callback(L"OK");
 	return true;
 }

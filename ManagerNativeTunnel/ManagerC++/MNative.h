@@ -9,7 +9,7 @@ public:
 	MNative();
 	~MNative();
 
-	virtual bool helloWorld();
+	virtual bool helloWorld(System::IntPtr parameter);
 
 private:
 	INNative *fObject;

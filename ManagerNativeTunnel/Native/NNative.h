@@ -7,6 +7,6 @@ public:
 	NNative();
 	~NNative();
 
-	bool helloWorld() override;
+	bool helloWorld(Parameter *parameter) override;
 };
 

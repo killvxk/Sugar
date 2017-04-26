@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Interface\Interface.csproj">
+      <Project>{6e0067ad-65ce-4b77-98e3-00212425acc4}</Project>
+      <Name>Interface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ManagerC++\ManagerC++.vcxproj">
       <Project>{e5681aa8-c2a3-4299-9e79-bbc71d4fd95b}</Project>
       <Name>ManagerC++</Name>

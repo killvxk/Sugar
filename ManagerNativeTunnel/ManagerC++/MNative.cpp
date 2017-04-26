@@ -11,7 +11,7 @@ MNative::~MNative()
 	delete fObject;
 }
 
-bool MNative::helloWorld()
+bool MNative::helloWorld(System::IntPtr parameter)
 {
-	return fObject->helloWorld();
+	return fObject->helloWorld((Parameter *)parameter.ToPointer());
 }
