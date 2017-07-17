@@ -79,6 +79,82 @@ namespace MIDEncryption
         }
     }
 
+    void RSAEncryption::Signature(const std::vector<uint8_t> &dataBuffer, std::vector<uint8_t> &signatureData, const std::string privateKey) {
+        HCRYPTPROV hCryptProv = NULL;
+        HCRYPTKEY hKey = 0;
+        HCRYPTKEY hHash = 0;
+
+        DWORD dwBufferLen = 0, cbKeyBlob = 0, cbSignature = 0;
+        std::vector<uint8_t> buffer, keyBlob;
+
+        if (!CryptStringToBinaryA(privateKey.c_str(), 0, CRYPT_STRING_BASE64HEADER, NULL, &dwBufferLen, NULL, NULL)) {
+            throw std::exception("CryptStringToBinary Failed");
+        }
+
+        buffer.resize(dwBufferLen);
+        if (!CryptStringToBinaryA(privateKey.c_str(), 0, CRYPT_STRING_BASE64HEADER, &buffer[0], &dwBufferLen, NULL, NULL)) {
+            throw std::exception("CryptStringToBinary Failed");
+        }
+
+        if (!CryptDecodeObjectEx(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, PKCS_RSA_PRIVATE_KEY, &buffer[0], dwBufferLen, 0, NULL, NULL, &cbKeyBlob)) {
+            throw std::exception("CryptDecodeObjectEx Failed");
+        }
+
+        keyBlob.resize(cbKeyBlob);
+        if (!CryptDecodeObjectEx(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, PKCS_RSA_PRIVATE_KEY, &buffer[0], dwBufferLen, 0, NULL, &keyBlob[0], &cbKeyBlob)) {
+            throw std::exception("CryptDecodeObjectEx Failed");
+        }
+
+        if (!CryptAcquireContext(&hCryptProv,
+            NULL,
+            NULL,
+            PROV_RSA_AES,
+            CRYPT_VERIFYCONTEXT))
+        {
+            DWORD dwLastErr = GetLastError();
+
+            if (NTE_BAD_KEYSET == dwLastErr)
+            {
+                throw std::exception("CryptAcquireContext Failed");
+            }
+            else {
+                if (!CryptAcquireContext(&hCryptProv,
+                    NULL,
+                    NULL,
+                    PROV_RSA_AES,
+                    CRYPT_NEWKEYSET))
+                {
+                    throw std::exception("CryptAcquireContext Failed");
+                }
+            }
+        }
+
+        if (!CryptImportKey(hCryptProv, &keyBlob[0], cbKeyBlob, NULL, 0, &hKey)) {
+            throw std::exception("CryptImportKey Failed");
+        }
+
+        if (!CryptCreateHash(hCryptProv, CALG_SHA_256, 0, 0, &hHash)) {
+            throw std::exception("CryptCreateHash Failed");
+        }
+
+        if (!CryptHashData(
+            hHash,
+            (BYTE *)&dataBuffer[0],
+            dataBuffer.size(),
+            0)) {
+            throw std::exception("CryptHashData Failed");
+        }
+
+        if (!CryptSignHash(hHash, AT_KEYEXCHANGE, NULL, 0, NULL, &cbSignature)) {
+            throw std::exception("CryptSignHash Failed");
+        }
+
+        signatureData.resize(cbSignature);
+        if (!CryptSignHash(hHash, AT_KEYEXCHANGE, NULL, 0, &signatureData[0], &cbSignature)) {
+            throw std::exception("CryptSignHash Failed");
+        }
+    }
+
     bool RSAEncryption::VerifySignature(const std::vector<uint8_t> &dataBuffer, const std::vector<uint8_t> &signatureData, const std::string &publicKey) {
         HCRYPTPROV hCryptProv = NULL;
         HCRYPTKEY hKey = 0;
@@ -109,28 +185,29 @@ namespace MIDEncryption
         }
 
         DWORD dwBufferLen = 0, cbKeyBlob = 0;
-        LPBYTE pbBuffer = NULL, pbKeyBlob = NULL;
+        std::vector<uint8_t> buffer, keyBlob;
+
         if (!CryptStringToBinaryA(publicKey.c_str(), 0, CRYPT_STRING_BASE64HEADER, NULL, &dwBufferLen, NULL, NULL)) {
             throw std::exception("CryptStringToBinary Failed");
         }
 
-        pbBuffer = (LPBYTE)LocalAlloc(0, dwBufferLen);
-        if (!CryptStringToBinaryA(publicKey.c_str(), 0, CRYPT_STRING_BASE64HEADER, pbBuffer, &dwBufferLen, NULL, NULL)) {
+        buffer.resize(dwBufferLen);
+        if (!CryptStringToBinaryA(publicKey.c_str(), 0, CRYPT_STRING_BASE64HEADER, &buffer[0], &dwBufferLen, NULL, NULL)) {
             throw std::exception("CryptStringToBinary Failed");
         }
 
-        if (!CryptDecodeObjectEx(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, X509_PUBLIC_KEY_INFO, pbBuffer, dwBufferLen, 0, NULL, NULL, &cbKeyBlob)) {
+        if (!CryptDecodeObjectEx(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, X509_PUBLIC_KEY_INFO, &buffer[0], dwBufferLen, 0, NULL, NULL, &cbKeyBlob)) {
             throw std::exception("CryptDecodeObjectEx Failed");
         }
 
-        pbKeyBlob = (LPBYTE)LocalAlloc(0, cbKeyBlob);
-        if (!CryptDecodeObjectEx(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, X509_PUBLIC_KEY_INFO, pbBuffer, dwBufferLen, 0, NULL, pbKeyBlob, &cbKeyBlob)) {
+        keyBlob.resize(cbKeyBlob);
+        if (!CryptDecodeObjectEx(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, X509_PUBLIC_KEY_INFO, &buffer[0], dwBufferLen, 0, NULL, &keyBlob[0], &cbKeyBlob)) {
             throw std::exception("CryptDecodeObjectEx Failed");
         }
 
         if (!CryptImportPublicKeyInfo(hCryptProv,
             X509_ASN_ENCODING,
-            (PCERT_PUBLIC_KEY_INFO)pbKeyBlob, &hKey)) {
+            (PCERT_PUBLIC_KEY_INFO)&keyBlob[0], &hKey)) {
             throw std::exception("CryptImportPublicKeyInfo Failed");
         }
 
