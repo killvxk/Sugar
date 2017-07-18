@@ -27,6 +27,7 @@ namespace MIDEncryption
             MD5_Final(&keyBuffer[0], &md5_ctx);
         }
 
+        //参见 http://msdn.microsoft.com/en-us/library/aa379916(v=vs.85).aspx remarks步骤  
         {
             std::vector<uint8_t> buffer1(64, 0x36);
             for (int index = 0; index < keyBuffer.size(); ++index) {
