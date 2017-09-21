@@ -11,6 +11,7 @@
 #include <openssl/err.h>
 #include <openssl\md5.h>
 #include "AESEncryption.h"
+#include "Hash.h"
 
 namespace MIDEncryption
 {
@@ -42,10 +43,6 @@ namespace MIDEncryption
                     MD5_Init(&md5_ctx);
                     MD5_Update(&md5_ctx, &buffer1[0], buffer1.size());
                     MD5_Final(&buffer1Md5[0], &md5_ctx);
-                }
-
-                for (int index = 0; index < keyBuffer.size(); ++index) {
-                    keyBuffer[index] = buffer1[index];
                 }
 
                 AES_set_encrypt_key(&buffer1Md5[0], 128, &aesKey);
@@ -127,7 +124,7 @@ namespace MIDEncryption
             int count = destinationBuffer.size() / AES128_BLOCK_SIZE;
             for (int index = 0; index < count; ++index) {
                 DWORD dwNumberOfBytesRead = AES128_BLOCK_SIZE;
-                CryptEncrypt(hKey, NULL, (index == (count - 1)), 0, &destinationBuffer[index * AES128_BLOCK_SIZE], &dwNumberOfBytesRead, 2 * AES128_BLOCK_SIZE);
+                CryptEncrypt(hKey, NULL, (index == (count - 1)), 0, &destinationBuffer[index * AES128_BLOCK_SIZE], &dwNumberOfBytesRead, AES128_BLOCK_SIZE);
             }
 
             CryptDestroyKey(hKey);
@@ -184,12 +181,15 @@ namespace MIDEncryption
             CryptDestroyHash(hHash);
             CryptSetKeyParam(hKey, KP_IV, &iv[0], 0);
 
+            int res_size = 0;
             int count = destinationBuffer.size() / AES128_BLOCK_SIZE;
             for (int index = 0; index < count; ++index) {
                 DWORD dwNumberOfBytesRead = AES128_BLOCK_SIZE;
                 DWORD length = 0;
                 CryptDecrypt(hKey, NULL, (index == (count - 1)), 0, &destinationBuffer[index * AES128_BLOCK_SIZE], &dwNumberOfBytesRead);
+                res_size += dwNumberOfBytesRead;
             }
+            destinationBuffer.resize(res_size);
 
             CryptDestroyKey(hKey);
             CryptReleaseContext(hCryptProv, 0);
@@ -199,59 +199,80 @@ namespace MIDEncryption
     namespace NextCryptoAPI
     {
         void AESEncryption::CBCEncrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            NTSTATUS                status = STATUS_UNSUCCESSFUL;
             BCRYPT_ALG_HANDLE       hAesAlg = NULL;
+
+            destinationBuffer = sourceBuffer;
+            destinationBuffer.resize(((destinationBuffer.size() + AES128_BLOCK_SIZE - 1) / AES128_BLOCK_SIZE) * AES128_BLOCK_SIZE);
+
             // Open an algorithm handle.
-            if (!BCryptOpenAlgorithmProvider(
+            if (!NT_SUCCESS(status = BCryptOpenAlgorithmProvider(
                 &hAesAlg,
                 BCRYPT_AES_ALGORITHM,
                 NULL,
-                0))
+                0)))
             {
                 throw std::exception("BCryptOpenAlgorithmProvider Failed");
             }
 
-            DWORD cbBlockLen = 0, cbData = 0;
-            // Calculate the size of the buffer to hold the KeyObject.
-            if (!BCryptGetProperty(
-                hAesAlg,
-                BCRYPT_OBJECT_LENGTH,
-                (PBYTE)&cbBlockLen,
-                sizeof(DWORD),
-                &cbData,
-                0));
+            std::vector<uint8_t> keyBuffer;
+            Hash::MD5(key, keyBuffer);
+            //参见 http://msdn.microsoft.com/en-us/library/aa379916(v=vs.85).aspx remarks步骤  
             {
-                throw std::exception("BCryptGetProperty Failed");
+                std::vector<uint8_t> buffer1(64, 0x36);
+                for (int index = 0; index < keyBuffer.size(); ++index) {
+                    buffer1[index] ^= keyBuffer[index];
+                }
+
+                std::vector<uint8_t> buffer1Md5;
+                Hash::MD5(buffer1, buffer1Md5);
+
+                for (int index = 0; index < keyBuffer.size(); ++index) {
+                    keyBuffer[index] = buffer1Md5[index];
+                }
             }
 
-            if (cbBlockLen != iv.size()) {
-                throw std::exception("block length is longer than the provided IV length");
+            BCRYPT_KEY_HANDLE       hKey = NULL;
+            // Generate the key from supplied input key bytes.
+            if (!NT_SUCCESS(status = BCryptGenerateSymmetricKey(
+                hAesAlg,
+                &hKey,
+                NULL,
+                0,
+                (PBYTE)&keyBuffer[0],
+                keyBuffer.size(),
+                0)))
+            {
+                throw std::exception("BCryptGenerateSymmetricKey Failed");
             }
 
-            std::vector<uint8_t> ivBuffer = iv;
-            if (!BCryptSetProperty(
+            if (!NT_SUCCESS(status = BCryptSetProperty(
                 hAesAlg,
                 BCRYPT_CHAINING_MODE,
                 (PBYTE)BCRYPT_CHAIN_MODE_CBC,
                 sizeof(BCRYPT_CHAIN_MODE_CBC),
-                0))
+                0)))
             {
                 throw std::exception("BCryptSetProperty Failed");
             }
 
-            BCRYPT_KEY_HANDLE       hKey = NULL;
-            PBYTE pbKeyObject = NULL;
-            DWORD cbKeyObject = 0;
-            // Generate the key from supplied input key bytes.
-            if (! BCryptGenerateSymmetricKey(
-                hAesAlg,
-                &hKey,
-                pbKeyObject,
-                cbKeyObject,
-                (PBYTE)&key[0],
-                key.size(),
-                0))
+            std::vector<uint8_t> dstBuffer;
+            dstBuffer.resize(32);
+            std::vector<uint8_t> ivBuffer = iv;
+            int count = destinationBuffer.size() / AES128_BLOCK_SIZE;
+            for (int index = 0; index < count; ++index) {
+                DWORD dwNumberOfBytesRead = AES128_BLOCK_SIZE;
+                BCryptEncrypt(hKey, &destinationBuffer[index * AES128_BLOCK_SIZE], AES128_BLOCK_SIZE, NULL, &ivBuffer[0], ivBuffer.size(), &destinationBuffer[index * AES128_BLOCK_SIZE], AES128_BLOCK_SIZE, &dwNumberOfBytesRead, 0);
+            }
+
+            if (hKey)
             {
-                throw std::exception("BCryptGenerateSymmetricKey Failed");
+                BCryptDestroyKey(hKey);
+            }
+
+            if (hAesAlg)
+            {
+                BCryptCloseAlgorithmProvider(hAesAlg, 0);
             }
         }
     }

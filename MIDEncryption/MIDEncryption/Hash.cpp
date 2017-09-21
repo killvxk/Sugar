@@ -9,7 +9,7 @@ namespace MIDEncryption
             doHash(CALG_SHA_256, sourceBuffer, destinationBuffer);
         }
 
-        void Hash::MD5(std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
+        void Hash::MD5(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
             doHash(CALG_MD5, sourceBuffer, destinationBuffer);
         }
 
@@ -75,7 +75,7 @@ namespace MIDEncryption
             doHash(BCRYPT_SHA256_ALGORITHM, sourceBuffer, destinationBuffer);
         }
 
-        void Hash::MD5(std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
+        void Hash::MD5(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
             doHash(BCRYPT_MD5_ALGORITHM, sourceBuffer, destinationBuffer);
         }
 
