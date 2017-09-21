@@ -124,7 +124,7 @@ namespace MIDEncryption
             int count = destinationBuffer.size() / AES128_BLOCK_SIZE;
             for (int index = 0; index < count; ++index) {
                 DWORD dwNumberOfBytesRead = AES128_BLOCK_SIZE;
-                CryptEncrypt(hKey, NULL, (index == (count - 1)), 0, &destinationBuffer[index * AES128_BLOCK_SIZE], &dwNumberOfBytesRead, AES128_BLOCK_SIZE);
+                CryptEncrypt(hKey, NULL, (index == (count - 1)), 0, &destinationBuffer[index * AES128_BLOCK_SIZE], &dwNumberOfBytesRead, 2 * AES128_BLOCK_SIZE);
             }
 
             CryptDestroyKey(hKey);
@@ -256,14 +256,91 @@ namespace MIDEncryption
                 throw std::exception("BCryptSetProperty Failed");
             }
 
-            std::vector<uint8_t> dstBuffer;
-            dstBuffer.resize(32);
             std::vector<uint8_t> ivBuffer = iv;
             int count = destinationBuffer.size() / AES128_BLOCK_SIZE;
             for (int index = 0; index < count; ++index) {
                 DWORD dwNumberOfBytesRead = AES128_BLOCK_SIZE;
                 BCryptEncrypt(hKey, &destinationBuffer[index * AES128_BLOCK_SIZE], AES128_BLOCK_SIZE, NULL, &ivBuffer[0], ivBuffer.size(), &destinationBuffer[index * AES128_BLOCK_SIZE], AES128_BLOCK_SIZE, &dwNumberOfBytesRead, 0);
             }
+
+            if (hKey)
+            {
+                BCryptDestroyKey(hKey);
+            }
+
+            if (hAesAlg)
+            {
+                BCryptCloseAlgorithmProvider(hAesAlg, 0);
+            }
+        }
+
+        void AESEncryption::CBCDecrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            NTSTATUS                status = STATUS_UNSUCCESSFUL;
+            BCRYPT_ALG_HANDLE       hAesAlg = NULL;
+
+            destinationBuffer = sourceBuffer;
+
+            // Open an algorithm handle.
+            if (!NT_SUCCESS(status = BCryptOpenAlgorithmProvider(
+                &hAesAlg,
+                BCRYPT_AES_ALGORITHM,
+                NULL,
+                0)))
+            {
+                throw std::exception("BCryptOpenAlgorithmProvider Failed");
+            }
+
+            std::vector<uint8_t> keyBuffer;
+            Hash::MD5(key, keyBuffer);
+            //参见 http://msdn.microsoft.com/en-us/library/aa379916(v=vs.85).aspx remarks步骤  
+            {
+                std::vector<uint8_t> buffer1(64, 0x36);
+                for (int index = 0; index < keyBuffer.size(); ++index) {
+                    buffer1[index] ^= keyBuffer[index];
+                }
+
+                std::vector<uint8_t> buffer1Md5;
+                Hash::MD5(buffer1, buffer1Md5);
+
+                for (int index = 0; index < keyBuffer.size(); ++index) {
+                    keyBuffer[index] = buffer1Md5[index];
+                }
+            }
+
+            BCRYPT_KEY_HANDLE       hKey = NULL;
+            // Generate the key from supplied input key bytes.
+            if (!NT_SUCCESS(status = BCryptGenerateSymmetricKey(
+                hAesAlg,
+                &hKey,
+                NULL,
+                0,
+                (PBYTE)&keyBuffer[0],
+                keyBuffer.size(),
+                0)))
+            {
+                throw std::exception("BCryptGenerateSymmetricKey Failed");
+            }
+
+            if (!NT_SUCCESS(status = BCryptSetProperty(
+                hAesAlg,
+                BCRYPT_CHAINING_MODE,
+                (PBYTE)BCRYPT_CHAIN_MODE_CBC,
+                sizeof(BCRYPT_CHAIN_MODE_CBC),
+                0)))
+            {
+                throw std::exception("BCryptSetProperty Failed");
+            }
+
+            std::vector<uint8_t> ivBuffer = iv;
+            int res_size = 0;
+            int count = destinationBuffer.size() / AES128_BLOCK_SIZE;
+            for (int index = 0; index < count; ++index) {
+                DWORD dwNumberOfBytesRead = AES128_BLOCK_SIZE;
+                DWORD length = 0;
+                BCryptDecrypt(hKey, &destinationBuffer[index * AES128_BLOCK_SIZE], AES128_BLOCK_SIZE, NULL, &ivBuffer[0], ivBuffer.size(), &destinationBuffer[index * AES128_BLOCK_SIZE], AES128_BLOCK_SIZE, &dwNumberOfBytesRead, 0);
+                res_size += dwNumberOfBytesRead;
+            }
+            destinationBuffer.resize(res_size);
 
             if (hKey)
             {

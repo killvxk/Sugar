@@ -317,6 +317,7 @@ void __cdecl wmain(
     MIDEncryption::CryptoAPI::AESEncryption::CBCEncrypt(sourceBuffer, cryptoAPICBCEncrypt, mid, iv);
     MIDEncryption::NextCryptoAPI::AESEncryption::CBCEncrypt(sourceBuffer, nextCryptoAPICBCEncrypt, mid, iv);
     MIDEncryption::CryptoAPI::AESEncryption::CBCDecrypt(cryptoAPICBCEncrypt, sourceBuffer, mid, iv);
+    MIDEncryption::NextCryptoAPI::AESEncryption::CBCDecrypt(nextCryptoAPICBCEncrypt, sourceBuffer, mid, iv);
 }
 //void main(void)
 //{
