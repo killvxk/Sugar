@@ -10,3 +10,9 @@
 
 
 // TODO: reference additional headers your program requires here
+#include <Windows.h>
+#include <wincrypt.h>
+
+#define NT_SUCCESS(Status)          (((NTSTATUS)(Status)) >= 0)
+
+#define STATUS_UNSUCCESSFUL         ((NTSTATUS)0xC0000001L)

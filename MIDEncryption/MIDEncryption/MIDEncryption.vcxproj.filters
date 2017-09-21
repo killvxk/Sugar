@@ -5,13 +5,13 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="AESEncryption.h" />
     <ClInclude Include="MIDEncryption.h" />
-    <ClInclude Include="ShaHash.h" />
+    <ClInclude Include="Hash.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="RSAEncryption.cpp" />
     <ClCompile Include="AESEncryption.cpp" />
     <ClCompile Include="MIDEncryption.cpp" />
-    <ClCompile Include="ShaHash.cpp" />
+    <ClCompile Include="Hash.cpp" />
   </ItemGroup>
 </Project>

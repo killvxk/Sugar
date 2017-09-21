@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MIDEncryption.h"
 #include "AESEncryption.h"
-#include "ShaHash.h"
+#include "Hash.h"
 #include "RSAEncryption.h"
 
 namespace MIDEncryption
@@ -54,11 +54,11 @@ namespace MIDEncryption
         std::vector<uint8_t> signatureBuffer;
         StringToMemory(signature, signatureBuffer);
 
-        if (!RSAEncryption::VerifySignature(encryptionDataBuffer, signatureBuffer, PUBLICKEY)) {
+        if (!CryptoAPI::RSAEncryption::VerifySignature(encryptionDataBuffer, signatureBuffer, PUBLICKEY)) {
             return false;
         }
 
-        AESEncryption::CBCDecrypt(encryptionDataBuffer, decryptionData, mid_, iv);
+        CryptoAPI::AESEncryption::CBCDecrypt(encryptionDataBuffer, decryptionData, mid_, iv);
         return true;
     }
 }

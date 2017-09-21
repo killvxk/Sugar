@@ -5,7 +5,7 @@
 #include "../MIDEncryption/RSAEncryption.h"
 #include "../MIDEncryption/AESEncryption.h"
 #include "../MIDEncryption/MIDEncryption.h"
-#include "../MIDEncryption/ShaHash.h"
+#include "../MIDEncryption/Hash.h"
 #include <Windows.h>
 #include <wincrypt.h>
 
@@ -51,16 +51,20 @@ std::string PRIVATEKEY = "-----BEGIN RSA PRIVATE KEY-----"
 
 void main(void)
 {
+    std::vector<uint8_t> mid = { '1', '1','1', '1', '1', '1' };
+    std::vector<uint8_t> cryptoAPIHashSha256, nextCryptoAPIHashSha256, cryptoAPIHashMD5, nextCryptoAPIHashMD5;
+    MIDEncryption::CryptoAPI::Hash::Sha256(mid, cryptoAPIHashSha256);
+    MIDEncryption::NextCryptoAPI::Hash::Sha256(mid, nextCryptoAPIHashSha256);
+    MIDEncryption::CryptoAPI::Hash::MD5(mid, cryptoAPIHashMD5);
+    MIDEncryption::NextCryptoAPI::Hash::MD5(mid, nextCryptoAPIHashMD5);
     //std::vector<uint8_t> publicKeyBuffer(PUBLICKEY.size());
     //memcpy(&publicKeyBuffer[0], &PUBLICKEY[0], PUBLICKEY.size());
     //std::vector<uint8_t> privateKeyBuffer(PRIVATEKEY.size());
     //memcpy(&privateKeyBuffer[0], &PRIVATEKEY[0], PRIVATEKEY.size());
-    std::vector<uint8_t> mid = { '1', '1','1', '1', '1', '1'};
     {
         //std::string source = "\"11111111111111\"";
         //std::vector<uint8_t> sourceBuffer(source.size());
         //memcpy(&sourceBuffer[0], &source[0], source.size());
-        //std::vector<uint8_t> destinationBuffer;
 
         //MIDEncryption::RSAEncryption::PrivateEncrypt(sourceBuffer, destinationBuffer, privateKeyBuffer);
         //MIDEncryption::RSAEncryption::PublicDecrypt(destinationBuffer, sourceBuffer, publicKeyBuffer);
