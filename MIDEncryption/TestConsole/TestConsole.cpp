@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "../MIDEncryption/RSAEncryption.h"
-#include "../MIDEncryption/AESEncryption.h"
+#include "../MIDEncryption/SymmetricEncryption.h"
 #include "../MIDEncryption/MIDEncryption.h"
 #include "../MIDEncryption/Hash.h"
 #include <Windows.h>

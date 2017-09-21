@@ -10,7 +10,7 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl\md5.h>
-#include "AESEncryption.h"
+#include "SymmetricEncryption.h"
 #include "Hash.h"
 
 namespace MIDEncryption
@@ -70,7 +70,8 @@ namespace MIDEncryption
     #define AES128_BLOCK_SIZE 16
     namespace CryptoAPI
     {
-        void AESEncryption::CBCEncrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+        template <ALG_ID Algid = CALG_AES_128>
+        void Encrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
             HCRYPTPROV hCryptProv = NULL;
             HCRYPTKEY hKey = 0;
             HCRYPTHASH hHash = 0;
@@ -114,7 +115,7 @@ namespace MIDEncryption
                 throw std::exception("CryptHashData Failed");
             }
 
-            if (!CryptDeriveKey(hCryptProv, CALG_AES_128, hHash, CRYPT_EXPORTABLE, &hKey)) {
+            if (!CryptDeriveKey(hCryptProv, Algid, hHash, CRYPT_EXPORTABLE, &hKey)) {
                 throw std::exception("CryptDeriveKey Failed");
             }
 
@@ -131,7 +132,8 @@ namespace MIDEncryption
             CryptReleaseContext(hCryptProv, 0);
         }
 
-        void AESEncryption::CBCDecrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+        template <ALG_ID Algid = CALG_AES_128>
+        void Decrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
             HCRYPTPROV hCryptProv = NULL;
             HCRYPTKEY hKey = 0;
             HCRYPTHASH hHash = 0;
@@ -194,11 +196,27 @@ namespace MIDEncryption
             CryptDestroyKey(hKey);
             CryptReleaseContext(hCryptProv, 0);
         }
+
+        void AESEncryption::CBCEncrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            Encrypt<CALG_AES_128>(sourceBuffer, destinationBuffer, key, iv);
+        }
+
+        void AESEncryption::CBCDecrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            Decrypt<CALG_AES_128>(sourceBuffer, destinationBuffer, key, iv);
+        }
+
+        void RC4Encryption::CBCEncrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            Encrypt<CALG_RC4>(sourceBuffer, destinationBuffer, key, iv);
+        }
+
+        void RC4Encryption::CBCDecrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            Decrypt<CALG_RC4>(sourceBuffer, destinationBuffer, key, iv);
+        }
     }
 
     namespace NextCryptoAPI
     {
-        void AESEncryption::CBCEncrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+        void Encrypt(LPCWSTR Algid, const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
             NTSTATUS                status = STATUS_UNSUCCESSFUL;
             BCRYPT_ALG_HANDLE       hAesAlg = NULL;
 
@@ -208,7 +226,7 @@ namespace MIDEncryption
             // Open an algorithm handle.
             if (!NT_SUCCESS(status = BCryptOpenAlgorithmProvider(
                 &hAesAlg,
-                BCRYPT_AES_ALGORITHM,
+                Algid,
                 NULL,
                 0)))
             {
@@ -274,7 +292,7 @@ namespace MIDEncryption
             }
         }
 
-        void AESEncryption::CBCDecrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+        void Decrypt(LPCWSTR Algid, const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
             NTSTATUS                status = STATUS_UNSUCCESSFUL;
             BCRYPT_ALG_HANDLE       hAesAlg = NULL;
 
@@ -283,7 +301,7 @@ namespace MIDEncryption
             // Open an algorithm handle.
             if (!NT_SUCCESS(status = BCryptOpenAlgorithmProvider(
                 &hAesAlg,
-                BCRYPT_AES_ALGORITHM,
+                Algid,
                 NULL,
                 0)))
             {
@@ -351,6 +369,22 @@ namespace MIDEncryption
             {
                 BCryptCloseAlgorithmProvider(hAesAlg, 0);
             }
+        }
+
+        void AESEncryption::CBCEncrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            Encrypt(BCRYPT_AES_ALGORITHM, sourceBuffer, destinationBuffer, key, iv);
+        }
+
+        void AESEncryption::CBCDecrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            Decrypt(BCRYPT_AES_ALGORITHM, sourceBuffer, destinationBuffer, key, iv);
+        }
+
+        void RC4Encryption::CBCEncrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            Encrypt(BCRYPT_RC4_ALGORITHM, sourceBuffer, destinationBuffer, key, iv);
+        }
+
+        void RC4Encryption::CBCDecrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            Decrypt(BCRYPT_RC4_ALGORITHM, sourceBuffer, destinationBuffer, key, iv);
         }
     }
 }

@@ -168,14 +168,14 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AESEncryption.h" />
+    <ClInclude Include="SymmetricEncryption.h" />
     <ClInclude Include="MIDEncryption.h" />
     <ClInclude Include="RSAEncryption.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AESEncryption.cpp" />
+    <ClCompile Include="SymmetricEncryption.cpp" />
     <ClCompile Include="MIDEncryption.cpp" />
     <ClCompile Include="RSAEncryption.cpp" />
     <ClCompile Include="Hash.cpp" />

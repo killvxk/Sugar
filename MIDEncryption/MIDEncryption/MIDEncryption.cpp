@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MIDEncryption.h"
-#include "AESEncryption.h"
+#include "SymmetricEncryption.h"
 #include "Hash.h"
 #include "RSAEncryption.h"
 

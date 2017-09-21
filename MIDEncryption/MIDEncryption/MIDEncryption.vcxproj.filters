@@ -3,15 +3,15 @@
   <ItemGroup>
     <ClInclude Include="RSAEncryption.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="AESEncryption.h" />
     <ClInclude Include="MIDEncryption.h" />
     <ClInclude Include="Hash.h" />
+    <ClInclude Include="SymmetricEncryption.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="RSAEncryption.cpp" />
-    <ClCompile Include="AESEncryption.cpp" />
     <ClCompile Include="MIDEncryption.cpp" />
     <ClCompile Include="Hash.cpp" />
+    <ClCompile Include="SymmetricEncryption.cpp" />
   </ItemGroup>
 </Project>
