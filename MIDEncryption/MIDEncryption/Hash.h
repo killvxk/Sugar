@@ -10,11 +10,13 @@ namespace MIDEncryption
         class Hash
         {
         public:
+            static void Sha1(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
             static void Sha256(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
+            static void Sha512(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
             static void MD5(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
 
         private:
-            static void doHash(ALG_ID Algid, const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
+            static void hash(ALG_ID Algid, const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
         };
     }
 
@@ -23,11 +25,13 @@ namespace MIDEncryption
         class Hash
         {
         public:
+            static void Sha1(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
             static void Sha256(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
+            static void Sha512(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
             static void MD5(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
 
         private:
-            static void doHash(LPCWSTR pszAlgId, const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
+            static void hash(LPCWSTR pszAlgId, const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer);
         };
     }
 }

@@ -5,15 +5,23 @@ namespace MIDEncryption
 {
     namespace CryptoAPI
     {
+        void Hash::Sha1(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
+            hash(CALG_SHA1, sourceBuffer, destinationBuffer);
+        }
+
         void Hash::Sha256(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
-            doHash(CALG_SHA_256, sourceBuffer, destinationBuffer);
+            hash(CALG_SHA_256, sourceBuffer, destinationBuffer);
+        }
+
+        void Hash::Sha512(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
+            hash(CALG_SHA_512, sourceBuffer, destinationBuffer);
         }
 
         void Hash::MD5(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
-            doHash(CALG_MD5, sourceBuffer, destinationBuffer);
+            hash(CALG_MD5, sourceBuffer, destinationBuffer);
         }
 
-        void Hash::doHash(ALG_ID Algid, const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
+        void Hash::hash(ALG_ID Algid, const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
             HCRYPTPROV hCryptProv = NULL;
             HCRYPTHASH hHash = 0;
 
@@ -71,15 +79,23 @@ namespace MIDEncryption
 
     namespace NextCryptoAPI
     {
+        void Hash::Sha1(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
+            hash(BCRYPT_SHA1_ALGORITHM, sourceBuffer, destinationBuffer);
+        }
+
         void Hash::Sha256(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
-            doHash(BCRYPT_SHA256_ALGORITHM, sourceBuffer, destinationBuffer);
+            hash(BCRYPT_SHA256_ALGORITHM, sourceBuffer, destinationBuffer);
+        }
+
+        void Hash::Sha512(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
+            hash(BCRYPT_SHA512_ALGORITHM, sourceBuffer, destinationBuffer);
         }
 
         void Hash::MD5(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
-            doHash(BCRYPT_MD5_ALGORITHM, sourceBuffer, destinationBuffer);
+            hash(BCRYPT_MD5_ALGORITHM, sourceBuffer, destinationBuffer);
         }
 
-        void Hash::doHash(LPCWSTR pszAlgId, const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
+        void Hash::hash(LPCWSTR pszAlgId, const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer) {
             NTSTATUS                status = STATUS_UNSUCCESSFUL;
 
             BCRYPT_ALG_HANDLE       hAlg = NULL;

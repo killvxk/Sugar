@@ -58,7 +58,7 @@ namespace MIDEncryption
             return false;
         }
 
-        CryptoAPI::AESEncryption::CBCDecrypt(encryptionDataBuffer, decryptionData, mid_, iv);
+        CryptoAPI::AESEncryption::CBC128Decrypt(encryptionDataBuffer, decryptionData, mid_, iv);
         return true;
     }
 }

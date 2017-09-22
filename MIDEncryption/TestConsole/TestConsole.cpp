@@ -56,9 +56,13 @@ std::string PRIVATEKEY = "-----BEGIN RSA PRIVATE KEY-----"
 void main(void)
 {
     std::vector<uint8_t> mid = { '1', '1','1', '1', '1', '1' };
-    std::vector<uint8_t> cryptoAPIHashSha256, nextCryptoAPIHashSha256, cryptoAPIHashMD5, nextCryptoAPIHashMD5;
+    std::vector<uint8_t> cryptoAPIHashSha1, nextCryptoAPIHashSha1, cryptoAPIHashSha256, nextCryptoAPIHashSha256, cryptoAPIHashSha512, nextCryptoAPIHashSha512, cryptoAPIHashMD5, nextCryptoAPIHashMD5;
+    MIDEncryption::CryptoAPI::Hash::Sha1(mid, cryptoAPIHashSha1);
+    MIDEncryption::NextCryptoAPI::Hash::Sha1(mid, nextCryptoAPIHashSha1);
     MIDEncryption::CryptoAPI::Hash::Sha256(mid, cryptoAPIHashSha256);
     MIDEncryption::NextCryptoAPI::Hash::Sha256(mid, nextCryptoAPIHashSha256);
+    MIDEncryption::CryptoAPI::Hash::Sha512(mid, cryptoAPIHashSha512);
+    MIDEncryption::NextCryptoAPI::Hash::Sha512(mid, nextCryptoAPIHashSha512);
     MIDEncryption::CryptoAPI::Hash::MD5(mid, cryptoAPIHashMD5);
     MIDEncryption::NextCryptoAPI::Hash::MD5(mid, nextCryptoAPIHashMD5);
     //std::vector<uint8_t> publicKeyBuffer(PUBLICKEY.size());

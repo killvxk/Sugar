@@ -197,12 +197,20 @@ namespace MIDEncryption
             CryptReleaseContext(hCryptProv, 0);
         }
 
-        void AESEncryption::CBCEncrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+        void AESEncryption::CBC128Encrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
             CryptoAPI::Encrypt<CALG_AES_128>(sourceBuffer, destinationBuffer, key, iv);
         }
 
-        void AESEncryption::CBCDecrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+        void AESEncryption::CBC128Decrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
             CryptoAPI::Decrypt<CALG_AES_128>(sourceBuffer, destinationBuffer, key, iv);
+        }
+
+        void AESEncryption::CBC256Encrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            CryptoAPI::Encrypt<CALG_AES_256>(sourceBuffer, destinationBuffer, key, iv);
+        }
+
+        void AESEncryption::CBC256Decrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            CryptoAPI::Decrypt<CALG_AES_256>(sourceBuffer, destinationBuffer, key, iv);
         }
 
         void RC4Encryption::Encrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
@@ -216,7 +224,7 @@ namespace MIDEncryption
 
     namespace NextCryptoAPI
     {
-        void AESEncryption::CBCEncrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+        void AESEncryption::CBC128Encrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
             NTSTATUS                status = STATUS_UNSUCCESSFUL;
             BCRYPT_ALG_HANDLE       hAesAlg = NULL;
 
@@ -275,7 +283,7 @@ namespace MIDEncryption
             BCryptCloseAlgorithmProvider(hAesAlg, 0);
         }
 
-        void AESEncryption::CBCDecrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+        void AESEncryption::CBC128Decrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
             NTSTATUS                status = STATUS_UNSUCCESSFUL;
             BCRYPT_ALG_HANDLE       hAesAlg = NULL;
 
