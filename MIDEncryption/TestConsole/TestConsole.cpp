@@ -65,31 +65,22 @@ void main(void)
     MIDEncryption::NextCryptoAPI::Hash::Sha512(mid, nextCryptoAPIHashSha512);
     MIDEncryption::CryptoAPI::Hash::MD5(mid, cryptoAPIHashMD5);
     MIDEncryption::NextCryptoAPI::Hash::MD5(mid, nextCryptoAPIHashMD5);
-    //std::vector<uint8_t> publicKeyBuffer(PUBLICKEY.size());
-    //memcpy(&publicKeyBuffer[0], &PUBLICKEY[0], PUBLICKEY.size());
-    //std::vector<uint8_t> privateKeyBuffer(PRIVATEKEY.size());
-    //memcpy(&privateKeyBuffer[0], &PRIVATEKEY[0], PRIVATEKEY.size());
     {
         std::string source = "\"11111111111111\"";
         std::vector<uint8_t> sourceBuffer(source.size());
         memcpy(&sourceBuffer[0], &source[0], source.size());
         std::vector<uint8_t> cryptoAPICBCEncrypt, cryptoAPICBCDescrypt, nextCryptoAPICBCEncrypt, nextCryptoAPICBCDescrypt;
-        //MIDEncryption::RSAEncryption::PrivateEncrypt(sourceBuffer, destinationBuffer, privateKeyBuffer);
-        //MIDEncryption::RSAEncryption::PublicDecrypt(destinationBuffer, sourceBuffer, publicKeyBuffer);
-        //std::vector<uint8_t> content = { 0x95, 0x14, 0x24, 0x29, 0x83, 0x19, 0x35, 0xda, 0xbb, 0x3a, 0x17, 0x2a, 0xa9, 0xbc, 0xa6, 0x2a, 0x80, 0x5e, 0x4d, 0x60, 0x48, 0x32, 0xbd, 0x70, 0xef, 0xec, 0x7c, 0x91, 0xc9, 0x5b, 0x38, 0x22 };
-        //std::vector<uint8_t> signature;
-        //MIDEncryption::RSAEncryption::Signature(content, signature, PRIVATEKEY);
 
-        std::vector<uint8_t> iv = { 0x29, 0x43, 0x00, 0x4d, 0x3b, 0xb1, 0xc5, 0x7c, 0xff, 0xd8, 0x83, 0xc1, 0xe8, 0xd0, 0x75, 0xf3 };
-        //MIDEncryption::CryptoAPI::AESEncryption::CBCEncrypt(sourceBuffer, cryptoAPICBCEncrypt, mid, iv);
-        //MIDEncryption::NextCryptoAPI::AESEncryption::CBCEncrypt(sourceBuffer, nextCryptoAPICBCEncrypt, mid, iv);
-        //MIDEncryption::CryptoAPI::AESEncryption::CBCDecrypt(cryptoAPICBCEncrypt, sourceBuffer, mid, iv);
+        std::vector<uint8_t> iv = { 0x29, 0x43, 0x00, 0x4d, 0x3b, 0xb1, 0xc5, 0x7c, 0xff, 0xd8, 0x83, 0xc1, 0xe8, 0xd0, 0x75, 0xf3, 0x29, 0x43, 0x00, 0x4d, 0x3b, 0xb1, 0xc5, 0x7c, 0xff, 0xd8, 0x83, 0xc1, 0xe8, 0xd0, 0x75, 0xf3 };
+        MIDEncryption::CryptoAPI::AESEncryption::CBC256Encrypt(sourceBuffer, cryptoAPICBCEncrypt, mid, iv);
+        MIDEncryption::NextCryptoAPI::AESEncryption::CBC256Encrypt(sourceBuffer, nextCryptoAPICBCEncrypt, mid, iv);
+        MIDEncryption::CryptoAPI::AESEncryption::CBC128Decrypt(cryptoAPICBCEncrypt, sourceBuffer, mid, iv);
         //MIDEncryption::NextCryptoAPI::AESEncryption::CBCDecrypt(nextCryptoAPICBCEncrypt, sourceBuffer, mid, iv);
 
-        MIDEncryption::CryptoAPI::RC4Encryption::Encrypt(sourceBuffer, cryptoAPICBCEncrypt, mid, iv);
-        MIDEncryption::NextCryptoAPI::RC4Encryption::Encrypt(sourceBuffer, nextCryptoAPICBCEncrypt, mid);
-        MIDEncryption::CryptoAPI::RC4Encryption::Decrypt(cryptoAPICBCEncrypt, sourceBuffer, mid, iv);
-        MIDEncryption::NextCryptoAPI::RC4Encryption::Decrypt(nextCryptoAPICBCEncrypt, sourceBuffer, mid);
+        //MIDEncryption::CryptoAPI::RC4Encryption::Encrypt(sourceBuffer, cryptoAPICBCEncrypt, mid, iv);
+        //MIDEncryption::NextCryptoAPI::RC4Encryption::Encrypt(sourceBuffer, nextCryptoAPICBCEncrypt, mid);
+        //MIDEncryption::CryptoAPI::RC4Encryption::Decrypt(cryptoAPICBCEncrypt, sourceBuffer, mid, iv);
+        //MIDEncryption::NextCryptoAPI::RC4Encryption::Decrypt(nextCryptoAPICBCEncrypt, sourceBuffer, mid);
     }
 
     std::string source = "823ce34c65b99abbf371f6593336693f0d89bd9047fe34da34103aef11e24dcfd5937514df7db92aa9a85e967d34e5d834707eca475d6a8e0406f5bbdbf8b1eb58291ac6932966a8ca73a19f5c8e1487b9d974aa44de86b9add01ebf023e28c7c6ccfd140456e633d8c3386465ae6acf1d285a9459c071a5b167e8c6b9342227370a149a97c5f43bbef3413102ad97ed6500251a24cb02724f171151ad4b980640dde3a28d00ddb13b1a8880e22e32e0b12fde8f4393580734a79165d138e4332a7464991f0da8971015ebeba384a5e45b3927947b53968b0bc265f02fa2670dccc56d1f613cf84cbc9a5350ceea5b2e9094449e0937fa905bd01c9096eba512f0bc82bed24cb8113297260d2b6d0efa15e303f10acd18f2fdfdfe3785a076b2a7085a9bbd21d9de80f64804810bdb9a97e3b3f4b3ed942a5e859c616a5d0fe279b6d1952a2ac1c4e08d290c7e0f9ea26eb1a17e07d80b52979c3aab0cc1efa8ab37fd80a261b2852b6db610e0a7c3e7";

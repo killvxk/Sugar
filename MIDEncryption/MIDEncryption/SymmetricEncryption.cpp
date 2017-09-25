@@ -67,17 +67,18 @@ namespace MIDEncryption
         }
     }
 
-    #define BLOCK_SIZE 16
+    #define BLOCK_SIZE_128 16
+    #define BLOCK_SIZE_256 32
     namespace CryptoAPI
     {
-        template <ALG_ID Algid = CALG_AES_128>
+        template <ALG_ID Algid = CALG_AES_128, int BlockSize = BLOCK_SIZE_128>
         void Encrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
             HCRYPTPROV hCryptProv = NULL;
             HCRYPTKEY hKey = 0;
             HCRYPTHASH hHash = 0;
 
             destinationBuffer = sourceBuffer;
-            destinationBuffer.resize(((destinationBuffer.size() + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE);
+            destinationBuffer.resize(((destinationBuffer.size() + BlockSize - 1) / BlockSize) * BlockSize);
 
             if (!CryptAcquireContext(&hCryptProv,
                 NULL,
@@ -103,7 +104,7 @@ namespace MIDEncryption
                 }
             }
 
-            if (!CryptCreateHash(hCryptProv, CALG_MD5, 0, 0, &hHash)) {
+            if (!CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash)) {
                 throw std::exception("CryptCreateHash Failed");
             }
 
@@ -122,17 +123,17 @@ namespace MIDEncryption
             CryptDestroyHash(hHash);
             CryptSetKeyParam(hKey, KP_IV, &iv[0], 0);
 
-            int count = destinationBuffer.size() / BLOCK_SIZE;
+            int count = destinationBuffer.size() / BlockSize;
             for (int index = 0; index < count; ++index) {
-                DWORD dwNumberOfBytesRead = BLOCK_SIZE;
-                CryptEncrypt(hKey, NULL, (index == (count - 1)), 0, &destinationBuffer[index * BLOCK_SIZE], &dwNumberOfBytesRead, 2 * BLOCK_SIZE);
+                DWORD dwNumberOfBytesRead = BlockSize;
+                CryptEncrypt(hKey, NULL, (index == (count - 1)), 0, &destinationBuffer[index * BlockSize], &dwNumberOfBytesRead, 2 * BlockSize);
             }
 
             CryptDestroyKey(hKey);
             CryptReleaseContext(hCryptProv, 0);
         }
 
-        template <ALG_ID Algid = CALG_AES_128>
+        template <ALG_ID Algid = CALG_AES_128, int BlockSize = BLOCK_SIZE_128>
         void Decrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
             HCRYPTPROV hCryptProv = NULL;
             HCRYPTKEY hKey = 0;
@@ -184,11 +185,11 @@ namespace MIDEncryption
             CryptSetKeyParam(hKey, KP_IV, &iv[0], 0);
 
             int res_size = 0;
-            int count = destinationBuffer.size() / BLOCK_SIZE;
+            int count = destinationBuffer.size() / BlockSize;
             for (int index = 0; index < count; ++index) {
-                DWORD dwNumberOfBytesRead = BLOCK_SIZE;
+                DWORD dwNumberOfBytesRead = BlockSize;
                 DWORD length = 0;
-                CryptDecrypt(hKey, NULL, (index == (count - 1)), 0, &destinationBuffer[index * BLOCK_SIZE], &dwNumberOfBytesRead);
+                CryptDecrypt(hKey, NULL, (index == (count - 1)), 0, &destinationBuffer[index * BlockSize], &dwNumberOfBytesRead);
                 res_size += dwNumberOfBytesRead;
             }
             destinationBuffer.resize(res_size);
@@ -206,11 +207,11 @@ namespace MIDEncryption
         }
 
         void AESEncryption::CBC256Encrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
-            CryptoAPI::Encrypt<CALG_AES_256>(sourceBuffer, destinationBuffer, key, iv);
+            CryptoAPI::Encrypt<CALG_AES_256, BLOCK_SIZE_256>(sourceBuffer, destinationBuffer, key, iv);
         }
 
         void AESEncryption::CBC256Decrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
-            CryptoAPI::Decrypt<CALG_AES_256>(sourceBuffer, destinationBuffer, key, iv);
+            CryptoAPI::Decrypt<CALG_AES_256, BLOCK_SIZE_256>(sourceBuffer, destinationBuffer, key, iv);
         }
 
         void RC4Encryption::Encrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
@@ -229,7 +230,7 @@ namespace MIDEncryption
             BCRYPT_ALG_HANDLE       hAesAlg = NULL;
 
             destinationBuffer = sourceBuffer;
-            destinationBuffer.resize(((destinationBuffer.size() + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE);
+            destinationBuffer.resize(((destinationBuffer.size() + BLOCK_SIZE_128 - 1) / BLOCK_SIZE_128) * BLOCK_SIZE_128);
 
             // Open an algorithm handle.
             if (!NT_SUCCESS(status = BCryptOpenAlgorithmProvider(
@@ -253,7 +254,7 @@ namespace MIDEncryption
                 std::vector<uint8_t> buffer1Md5;
                 Hash::MD5(buffer1, buffer1Md5);
 
-                for (int index = 0; index < keyBuffer.size(); ++index) {
+                for (int index = 0; index < BLOCK_SIZE_128; ++index) {
                     keyBuffer[index] = buffer1Md5[index];
                 }
             }
@@ -273,10 +274,10 @@ namespace MIDEncryption
             }
 
             std::vector<uint8_t> ivBuffer = iv;
-            int count = destinationBuffer.size() / BLOCK_SIZE;
+            int count = destinationBuffer.size() / BLOCK_SIZE_128;
             for (int index = 0; index < count; ++index) {
-                DWORD dwNumberOfBytesRead = BLOCK_SIZE;
-                BCryptEncrypt(hKey, &destinationBuffer[index * BLOCK_SIZE], BLOCK_SIZE, NULL, &ivBuffer[0], ivBuffer.size(), &destinationBuffer[index * BLOCK_SIZE], BLOCK_SIZE, &dwNumberOfBytesRead, 0);
+                DWORD dwNumberOfBytesRead = BLOCK_SIZE_128;
+                BCryptEncrypt(hKey, &destinationBuffer[index * BLOCK_SIZE_128], BLOCK_SIZE_128, NULL, &ivBuffer[0], ivBuffer.size(), &destinationBuffer[index * BLOCK_SIZE_128], BLOCK_SIZE_128, &dwNumberOfBytesRead, 0);
             }
 
             BCryptDestroyKey(hKey);
@@ -311,7 +312,7 @@ namespace MIDEncryption
                 std::vector<uint8_t> buffer1Md5;
                 Hash::MD5(buffer1, buffer1Md5);
 
-                for (int index = 0; index < keyBuffer.size(); ++index) {
+                for (int index = 0; index < BLOCK_SIZE_128; ++index) {
                     keyBuffer[index] = buffer1Md5[index];
                 }
             }
@@ -332,14 +333,85 @@ namespace MIDEncryption
 
             std::vector<uint8_t> ivBuffer = iv;
             int res_size = 0;
-            int count = destinationBuffer.size() / BLOCK_SIZE;
+            int count = destinationBuffer.size() / BLOCK_SIZE_128;
             for (int index = 0; index < count; ++index) {
-                DWORD dwNumberOfBytesRead = BLOCK_SIZE;
+                DWORD dwNumberOfBytesRead = BLOCK_SIZE_128;
                 DWORD length = 0;
-                BCryptDecrypt(hKey, &destinationBuffer[index * BLOCK_SIZE], BLOCK_SIZE, NULL, &ivBuffer[0], ivBuffer.size(), &destinationBuffer[index * BLOCK_SIZE], BLOCK_SIZE, &dwNumberOfBytesRead, 0);
+                BCryptDecrypt(hKey, &destinationBuffer[index * BLOCK_SIZE_128], BLOCK_SIZE_128, NULL, &ivBuffer[0], ivBuffer.size(), &destinationBuffer[index * BLOCK_SIZE_128], BLOCK_SIZE_128, &dwNumberOfBytesRead, 0);
                 res_size += dwNumberOfBytesRead;
             }
             destinationBuffer.resize(res_size);
+
+            BCryptDestroyKey(hKey);
+            BCryptCloseAlgorithmProvider(hAesAlg, 0);
+        }
+
+        void AESEncryption::CBC256Encrypt(const std::vector<uint8_t> &sourceBuffer, std::vector<uint8_t> &destinationBuffer, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv) {
+            NTSTATUS                status = STATUS_UNSUCCESSFUL;
+            BCRYPT_ALG_HANDLE       hAesAlg = NULL;
+
+            destinationBuffer = sourceBuffer;
+            destinationBuffer.resize(((destinationBuffer.size() + BLOCK_SIZE_256 - 1) / BLOCK_SIZE_256) * BLOCK_SIZE_256);
+
+            // Open an algorithm handle.
+            if (!NT_SUCCESS(status = BCryptOpenAlgorithmProvider(
+                &hAesAlg,
+                BCRYPT_AES_ALGORITHM,
+                NULL,
+                0)))
+            {
+                throw std::exception("BCryptOpenAlgorithmProvider Failed");
+            }
+
+            std::vector<uint8_t> keyBuffer;
+            Hash::Sha1(key, keyBuffer);
+            //参见 http://msdn.microsoft.com/en-us/library/aa379916(v=vs.85).aspx remarks步骤  
+            {
+                std::vector<uint8_t> buffer1(64, 0x36);
+                for (int index = 0; index < keyBuffer.size(); ++index) {
+                    buffer1[index] ^= keyBuffer[index];
+                }
+
+                std::vector<uint8_t> buffer2(64, 0x5C);
+                for (int index = 0; index < keyBuffer.size(); ++index) {
+                    buffer2[index] ^= keyBuffer[index];
+                }
+
+                std::vector<uint8_t> buffer1Sha1;
+                Hash::Sha1(buffer1, buffer1Sha1);
+                std::vector<uint8_t> buffer2Sha1;
+                Hash::Sha1(buffer2, buffer2Sha1);
+
+                keyBuffer.resize(BLOCK_SIZE_256);
+                int index = 0;
+                for (; index < 20; ++index) {
+                    keyBuffer[index] = buffer1Sha1[index];
+                }
+                for (; index < BLOCK_SIZE_256; ++index) {
+                    keyBuffer[index] = buffer2Sha1[index - buffer1Sha1.size()];
+                }
+            }
+
+            BCRYPT_KEY_HANDLE       hKey = NULL;
+            // Generate the key from supplied input key bytes.
+            if (!NT_SUCCESS(status = BCryptGenerateSymmetricKey(
+                hAesAlg,
+                &hKey,
+                NULL,
+                0,
+                (PBYTE)&keyBuffer[0],
+                BLOCK_SIZE_256,
+                0)))
+            {
+                throw std::exception("BCryptGenerateSymmetricKey Failed");
+            }
+
+            std::vector<uint8_t> ivBuffer = iv;
+            int count = destinationBuffer.size() / BLOCK_SIZE_256;
+            for (int index = 0; index < count; ++index) {
+                DWORD dwNumberOfBytesRead = BLOCK_SIZE_256;
+                BCryptEncrypt(hKey, &destinationBuffer[index * BLOCK_SIZE_256], BLOCK_SIZE_256, NULL, &ivBuffer[0], ivBuffer.size(), &destinationBuffer[index * BLOCK_SIZE_256], BLOCK_SIZE_256, &dwNumberOfBytesRead, 0);
+            }
 
             BCryptDestroyKey(hKey);
             BCryptCloseAlgorithmProvider(hAesAlg, 0);
@@ -378,10 +450,10 @@ namespace MIDEncryption
                 throw std::exception("BCryptGenerateSymmetricKey Failed");
             }
 
-            int count = destinationBuffer.size() / BLOCK_SIZE;
+            int count = destinationBuffer.size() / BLOCK_SIZE_128;
             for (int index = 0; index < count; ++index) {
-                DWORD dwNumberOfBytesRead = BLOCK_SIZE;
-                BCryptEncrypt(hKey, &destinationBuffer[index * BLOCK_SIZE], BLOCK_SIZE, NULL, NULL, 0, &destinationBuffer[index * BLOCK_SIZE], BLOCK_SIZE, &dwNumberOfBytesRead, 0);
+                DWORD dwNumberOfBytesRead = BLOCK_SIZE_128;
+                BCryptEncrypt(hKey, &destinationBuffer[index * BLOCK_SIZE_128], BLOCK_SIZE_128, NULL, NULL, 0, &destinationBuffer[index * BLOCK_SIZE_128], BLOCK_SIZE_128, &dwNumberOfBytesRead, 0);
             }
 
             BCryptDestroyKey(hKey);
@@ -422,11 +494,11 @@ namespace MIDEncryption
             }
 
             int res_size = 0;
-            int count = destinationBuffer.size() / BLOCK_SIZE;
+            int count = destinationBuffer.size() / BLOCK_SIZE_128;
             for (int index = 0; index < count; ++index) {
-                DWORD dwNumberOfBytesRead = BLOCK_SIZE;
+                DWORD dwNumberOfBytesRead = BLOCK_SIZE_128;
                 DWORD length = 0;
-                BCryptDecrypt(hKey, &destinationBuffer[index * BLOCK_SIZE], BLOCK_SIZE, NULL, NULL, 0, &destinationBuffer[index * BLOCK_SIZE], BLOCK_SIZE, &dwNumberOfBytesRead, 0);
+                BCryptDecrypt(hKey, &destinationBuffer[index * BLOCK_SIZE_128], BLOCK_SIZE_128, NULL, NULL, 0, &destinationBuffer[index * BLOCK_SIZE_128], BLOCK_SIZE_128, &dwNumberOfBytesRead, 0);
                 res_size += dwNumberOfBytesRead;
             }
             destinationBuffer.resize(res_size);
