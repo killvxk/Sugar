@@ -73,6 +73,7 @@ void main(void)
 
         std::vector<uint8_t> iv = { 0x29, 0x43, 0x00, 0x4d, 0x3b, 0xb1, 0xc5, 0x7c, 0xff, 0xd8, 0x83, 0xc1, 0xe8, 0xd0, 0x75, 0xf3, 0x29, 0x43, 0x00, 0x4d, 0x3b, 0xb1, 0xc5, 0x7c, 0xff, 0xd8, 0x83, 0xc1, 0xe8, 0xd0, 0x75, 0xf3 };
         MIDEncryption::CryptoAPI::AESEncryption::CBC256Encrypt(sourceBuffer, cryptoAPICBCEncrypt, mid, iv);
+        MIDEncryption::NextCryptoAPI::AESEncryption::CBC128Encrypt(sourceBuffer, nextCryptoAPICBCEncrypt, mid, iv);
         MIDEncryption::NextCryptoAPI::AESEncryption::CBC256Encrypt(sourceBuffer, nextCryptoAPICBCEncrypt, mid, iv);
         MIDEncryption::CryptoAPI::AESEncryption::CBC128Decrypt(cryptoAPICBCEncrypt, sourceBuffer, mid, iv);
         //MIDEncryption::NextCryptoAPI::AESEncryption::CBCDecrypt(nextCryptoAPICBCEncrypt, sourceBuffer, mid, iv);

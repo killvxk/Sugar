@@ -120,6 +120,10 @@ namespace MIDEncryption
                 throw std::exception("CryptDeriveKey Failed");
             }
 
+            DWORD keyBlobLength = 45;
+            std::vector<uint8_t> keyBlob(keyBlobLength);
+            CryptExportKey(hKey, NULL, PLAINTEXTKEYBLOB, 0, &keyBlob[0], &keyBlobLength);
+
             CryptDestroyHash(hHash);
             CryptSetKeyParam(hKey, KP_IV, &iv[0], 0);
 
@@ -243,21 +247,8 @@ namespace MIDEncryption
             }
 
             std::vector<uint8_t> keyBuffer;
-            Hash::MD5(key, keyBuffer);
-            //参见 http://msdn.microsoft.com/en-us/library/aa379916(v=vs.85).aspx remarks步骤  
-            {
-                std::vector<uint8_t> buffer1(64, 0x36);
-                for (int index = 0; index < keyBuffer.size(); ++index) {
-                    buffer1[index] ^= keyBuffer[index];
-                }
-
-                std::vector<uint8_t> buffer1Md5;
-                Hash::MD5(buffer1, buffer1Md5);
-
-                for (int index = 0; index < BLOCK_SIZE_128; ++index) {
-                    keyBuffer[index] = buffer1Md5[index];
-                }
-            }
+            keyBuffer.resize(BLOCK_SIZE_128);
+            Key::CreateKey<Hash::MD5, 16>(key, keyBuffer);
 
             BCRYPT_KEY_HANDLE       hKey = NULL;
             // Generate the key from supplied input key bytes.
@@ -301,21 +292,8 @@ namespace MIDEncryption
             }
 
             std::vector<uint8_t> keyBuffer;
-            Hash::MD5(key, keyBuffer);
-            //参见 http://msdn.microsoft.com/en-us/library/aa379916(v=vs.85).aspx remarks步骤  
-            {
-                std::vector<uint8_t> buffer1(64, 0x36);
-                for (int index = 0; index < keyBuffer.size(); ++index) {
-                    buffer1[index] ^= keyBuffer[index];
-                }
-
-                std::vector<uint8_t> buffer1Md5;
-                Hash::MD5(buffer1, buffer1Md5);
-
-                for (int index = 0; index < BLOCK_SIZE_128; ++index) {
-                    keyBuffer[index] = buffer1Md5[index];
-                }
-            }
+            keyBuffer.resize(BLOCK_SIZE_128);
+            Key::CreateKey<Hash::MD5, 16>(key, keyBuffer);
 
             BCRYPT_KEY_HANDLE       hKey = NULL;
             // Generate the key from supplied input key bytes.
@@ -364,33 +342,8 @@ namespace MIDEncryption
             }
 
             std::vector<uint8_t> keyBuffer;
-            Hash::Sha1(key, keyBuffer);
-            //参见 http://msdn.microsoft.com/en-us/library/aa379916(v=vs.85).aspx remarks步骤  
-            {
-                std::vector<uint8_t> buffer1(64, 0x36);
-                for (int index = 0; index < keyBuffer.size(); ++index) {
-                    buffer1[index] ^= keyBuffer[index];
-                }
-
-                std::vector<uint8_t> buffer2(64, 0x5C);
-                for (int index = 0; index < keyBuffer.size(); ++index) {
-                    buffer2[index] ^= keyBuffer[index];
-                }
-
-                std::vector<uint8_t> buffer1Sha1;
-                Hash::Sha1(buffer1, buffer1Sha1);
-                std::vector<uint8_t> buffer2Sha1;
-                Hash::Sha1(buffer2, buffer2Sha1);
-
-                keyBuffer.resize(BLOCK_SIZE_256);
-                int index = 0;
-                for (; index < 20; ++index) {
-                    keyBuffer[index] = buffer1Sha1[index];
-                }
-                for (; index < BLOCK_SIZE_256; ++index) {
-                    keyBuffer[index] = buffer2Sha1[index - buffer1Sha1.size()];
-                }
-            }
+            keyBuffer.resize(BLOCK_SIZE_256);
+            Key::CreateKey<Hash::Sha1, 20>(key, keyBuffer);
 
             BCRYPT_KEY_HANDLE       hKey = NULL;
             // Generate the key from supplied input key bytes.
