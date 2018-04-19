@@ -11,7 +11,7 @@ public:
 	void StartFixed();
 
 private:
-	bool ParseTax(std::shared_ptr<rapidjson::Document> jsonDocument, std::string &before_tax, std::string &tax, std::string &after_tax);
+	bool ParseTax(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::string &before_tax, std::string &tax, std::string &after_tax);
 	
 	bool CheckAmountData(const std::string &data);
 	void FixedAmountData(std::string &data);
@@ -23,6 +23,9 @@ private:
 	bool FixedDataByBeforeTax(std::string &tax, std::string &after_tax, double d_before_tax);
 
 	bool CheckBeforeTaxFixedResult(const std::string &before_tax, const std::string &fixed_before_tax, double similarity);
+
+	std::string DoubleToString(double invalue);
+	double Round(double value);
 
 private:
 	const std::string ValidatedPath;

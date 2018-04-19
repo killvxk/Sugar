@@ -40,7 +40,7 @@ void VisitFolder(const std::string &lpPath, Vistor vistor)
 	FindClose(hFind);
 }
 
-void StringReplace(std::string &strBase, std::string strSrc, std::string strDes)
+inline void StringReplace(std::string &strBase, std::string strSrc, std::string strDes)
 {
 	std::string::size_type pos = 0;
 	std::string::size_type srcLen = strSrc.size();
@@ -53,7 +53,7 @@ void StringReplace(std::string &strBase, std::string strSrc, std::string strDes)
 	}
 }
 
-std::shared_ptr<rapidjson::Document> ReadFromFile(const std::string &jsonPath)
+inline std::shared_ptr<rapidjson::Document> ReadFromFile(const std::string &jsonPath)
 {
 	std::shared_ptr<rapidjson::Document> jsonDocument = std::make_shared<rapidjson::Document>();
 
@@ -67,7 +67,7 @@ std::shared_ptr<rapidjson::Document> ReadFromFile(const std::string &jsonPath)
 	long size = ftell(fp);
 	std::string buffer(size, 0);
 	fseek(fp, 0, SEEK_SET);
-	long n = fread(&buffer[0], 1, size, fp);
+	size_t n = fread(&buffer[0], 1, size, fp);
 	fclose(fp);
 	StringReplace(buffer, "\r\n", "");
 	jsonDocument->Parse(&buffer[0]);
@@ -75,10 +75,10 @@ std::shared_ptr<rapidjson::Document> ReadFromFile(const std::string &jsonPath)
 }
 
 template <class Type>
-bool Equal(Type value1, Type value2) { return value1 == value2; }
+inline bool Equal(Type value1, Type value2) { return value1 == value2; }
 
 template <>
-bool Equal(double value1, double value2) {
+inline bool Equal(double value1, double value2) {
 	static constexpr double epsilon = std::numeric_limits<double>::epsilon();
 	return std::abs(value1 - value2) < epsilon;
 }
@@ -91,21 +91,21 @@ bool Equal(double value1, double value2) {
 #undef max
 #endif // max
 
-float Similarity(const std::string &str1, const std::string &str2) {
+inline float Similarity(const std::string &str1, const std::string &str2) {
 
-	int len1 = str1.length();
-	int len2 = str2.length();
-	std::vector<std::vector<int> > diff((len1 + 1), std::vector<int>(len2 + 1));
-	for (int index = 0; index <= len1; index++) {
+	size_t len1 = str1.length();
+	size_t len2 = str2.length();
+	std::vector<std::vector<size_t> > diff((len1 + 1), std::vector<size_t>(len2 + 1));
+	for (size_t index = 0; index <= len1; index++) {
 		diff[index][0] = index;
 	}
-	for (int index = 0; index <= len2; index++) {
+	for (size_t index = 0; index <= len2; index++) {
 		diff[0][index] = index;
 	}
 
-	int temp;
-	for (int i = 1; i <= len1; i++) {
-		for (int j = 1; j <= len2; j++) {
+	size_t temp;
+	for (size_t i = 1; i <= len1; i++) {
+		for (size_t j = 1; j <= len2; j++) {
 			if (str1[i - 1] == str2[j - 1]) {
 				temp = 0;
 			}
@@ -118,31 +118,4 @@ float Similarity(const std::string &str1, const std::string &str2) {
 	}
 
 	return 1 - (float)diff[len1][len2] / std::max(len1, len2);
-}
-
-std::string DoubleToString(double invalue)
-{
-	std::string value = std::to_string(int(invalue * 100));
-	if (value.length() >= 3) {
-		value.insert(value.end() - 2, '.');
-	}
-	else {
-		value = std::to_string(invalue);
-		size_t dotIndex = value.find('.');
-		if (dotIndex != std::string::npos) {
-			return value.substr(0, dotIndex + 3);
-		}
-	}
-	return value;
-}
-
-double Round(double value)
-{
-	int ivalue = value * 1000;
-	if (ivalue % 10 > 4)
-	{
-		return value + 0.01;
-	}
-
-	return value;
 }

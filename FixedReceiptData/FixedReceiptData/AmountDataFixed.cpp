@@ -79,7 +79,7 @@ void AmountDataFixed::StartFixed() {
 	std::cout << "<=================End Fixed Amount Data" << std::endl;
 }
 
-bool AmountDataFixed::ParseTax(std::shared_ptr<rapidjson::Document> jsonDocument, std::string &before_tax, std::string &tax, std::string &after_tax) {
+bool AmountDataFixed::ParseTax(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::string &before_tax, std::string &tax, std::string &after_tax) {
 	if (!jsonDocument || !jsonDocument->IsObject() || !jsonDocument->HasMember("regions"))
 		return false;
 
@@ -284,4 +284,32 @@ bool AmountDataFixed::CheckBeforeTaxFixedResult(const std::string &before_tax, c
 	}
 
 	return false;
+}
+
+
+std::string AmountDataFixed::DoubleToString(double invalue)
+{
+	std::string value = std::to_string(int(invalue * 100));
+	if (value.length() >= 3) {
+		value.insert(value.end() - 2, '.');
+	}
+	else {
+		value = std::to_string(invalue);
+		size_t dotIndex = value.find('.');
+		if (dotIndex != std::string::npos) {
+			return value.substr(0, dotIndex + 3);
+		}
+	}
+	return value;
+}
+
+double AmountDataFixed::Round(double value)
+{
+	int ivalue = int(value * 1000);
+	if (ivalue % 10 > 4)
+	{
+		return value + 0.01;
+	}
+
+	return value;
 }
