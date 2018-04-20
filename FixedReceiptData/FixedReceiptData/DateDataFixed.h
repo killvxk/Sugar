@@ -1,24 +1,27 @@
 #pragma once
-#include <memory>
-#include <rapidjson\document.h>
 #include <vector>
+#include "DataFixed.h"
 
-class DateDataFixed
+class DateDataFixed : public DataFixed
 {
 public:
-	DateDataFixed(const std::string &validatedPath, const std::string &resultPath);
+	DateDataFixed(const std::string &InValidatedPath, const std::string &InResultPath);
 	~DateDataFixed();
 
-	void StartFixed();
-
 private:
-	bool ParaseDate(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::vector<std::string> &FVectorDate);
+	void BeforeFixed() override;
+	void FixedData(std::shared_ptr<rapidjson::Document> &InValidatedDocument,
+		std::shared_ptr<rapidjson::Document> InResultDocument) override;
+	void AfterFixed() override;
+
+	bool ParseDate(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::vector<std::string> &FVectorDate);
 
 	bool CheckDate(const std::string &date);
 	bool FixedDate(std::string &date, std::vector<std::string> &DateVector);
 
 private:
-	const std::string ValidatedPath;
-	const std::string ResultPath;
+	int totalCount = 0;
+	int fixedCount = 0;
+	int fixedErrorCount = 0;
 };
 

@@ -4,89 +4,83 @@
 #include "Utils.h"
 #include "DateDataFixed.h"
 
-DateDataFixed::DateDataFixed(const std::string &validatedPath, const std::string &resultPath)
-	: ValidatedPath(validatedPath)
-	, ResultPath(resultPath) {
+DateDataFixed::DateDataFixed(const std::string &InValidatedPath, const std::string &InResultPath)
+	: DataFixed(InValidatedPath, InResultPath) {
 }
 
 DateDataFixed::~DateDataFixed()
 {
 }
 
-void DateDataFixed::StartFixed() {
-	int totalCount = 0;
-	int fixedCount = 0;
-	int fixedErrorCount = 0;
-
-	auto vistor = [&](const std::string &filePath, const std::string &fileName) {
-		std::shared_ptr<rapidjson::Document> validatedDocument = ReadFromFile(ValidatedPath + fileName);
-		std::shared_ptr<rapidjson::Document> resultDocument = ReadFromFile(ResultPath + fileName);
-
-		std::vector<std::string> FVectorValidatedDate;
-		std::vector<std::string> FVectorResultDate;
-
-		if (!ParaseDate(validatedDocument, FVectorValidatedDate)
-			|| !ParaseDate(resultDocument, FVectorResultDate)
-			|| !CheckDate(FVectorValidatedDate[0])) {
-			std::cout << fileName << " Data Error" << std::endl;
-			std::cout << std::endl;
-			return;
-		}
-
-		if (!Equal(FVectorResultDate[0], FVectorValidatedDate[0])) {
-
-		}
-		else {
-			return;
-		}
-
-		totalCount++;
-		std::string origin_result_date = FVectorResultDate[0];
-
-		std::cout << fileName << " Validated Not Equal To Result" << std::endl;
-		std::cout << FVectorResultDate[0] << " Fixed To " << std::endl;
-
-		std::string result_date;
-		for (auto date : FVectorResultDate) {
-			result_date = date;
-			if (FixedDate(result_date, FVectorResultDate)) {
-				break;
-			}
-		}
-
-		std::cout << result_date << std::endl;
-
-		if (Equal(FVectorValidatedDate[0], result_date)) {
-			fixedCount++;
-			std::cout << "Fixed Success!" << std::endl;
-		}
-		else {
-			std::cout << "Validated " << FVectorValidatedDate[0] << std::endl;
-			if (Equal(FVectorValidatedDate[0], origin_result_date)) {
-				fixedErrorCount++;
-				std::cout << "Fixed origin before tax " << origin_result_date << " to " << result_date << std::endl;
-			}
-
-			std::cout << "Result List" << std::endl;
-			for (auto date : FVectorResultDate) {
-				std::cout << date << std::endl;
-			}
-
-			std::cout << "Fixed Falied!" << std::endl;
-		}
-
-		std::cout << std::endl;
-	};
-
-	//vistor(ValidatedPath, "10102_769.jpg.json");
-	VisitFolder(ValidatedPath, vistor);
-
-	std::cout << "Total Count " << totalCount << ", Fixed Count " << fixedCount << ", Fixed Error Count " << fixedErrorCount << std::endl;
-
+void DateDataFixed::BeforeFixed() {
+	std::cout << "Start Fixed Date Data=================>" << std::endl;
 	std::cout << std::endl;
 }
 
-bool DateDataFixed::ParaseDate(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::vector<std::string> &FVectorDate) {
+void DateDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidatedDocument,
+	std::shared_ptr<rapidjson::Document> InResultDocument) {
+	std::vector<std::string> ValidatedDateVector;
+	std::vector<std::string> ResultDateVector;
+
+	if (!ParseDate(InValidatedDocument, ValidatedDateVector)
+		|| !ParseDate(InResultDocument, ResultDateVector)
+		|| !CheckDate(ValidatedDateVector[0])) {
+		std::cout << "Data Error" << std::endl;
+		return;
+	}
+
+	if (!Equal(ResultDateVector[0], ValidatedDateVector[0])) {
+
+	}
+	else {
+		std::cout << "Validated Equal To Result" << std::endl;
+		return;
+	}
+
+	totalCount++;
+	std::string origin_result_date = ResultDateVector[0];
+
+	std::cout << "Validated Not Equal To Result" << std::endl;
+	std::cout << ResultDateVector[0] << " Fixed To " << std::endl;
+
+	std::string result_date;
+	for (auto date : ResultDateVector) {
+		result_date = date;
+		if (FixedDate(result_date, ResultDateVector)) {
+			break;
+		}
+	}
+
+	std::cout << result_date << std::endl;
+
+	if (Equal(ValidatedDateVector[0], result_date)) {
+		fixedCount++;
+		std::cout << "Fixed Success!" << std::endl;
+	}
+	else {
+		std::cout << "Validated " << ValidatedDateVector[0] << std::endl;
+		if (Equal(ValidatedDateVector[0], origin_result_date)) {
+			fixedErrorCount++;
+			std::cout << "Fixed origin before tax " << origin_result_date << " to " << result_date << std::endl;
+		}
+
+		std::cout << "Result List" << std::endl;
+		for (auto date : ResultDateVector) {
+			std::cout << date << std::endl;
+		}
+
+		std::cout << "Fixed Falied!" << std::endl;
+	}
+}
+
+void DateDataFixed::AfterFixed() {
+	std::cout << "Total Count " << totalCount << ", Fixed Count " << fixedCount << ", Fixed Error Count " << fixedErrorCount << std::endl;
+
+	std::cout << std::endl;
+	std::cout << "<=================End Fixed Date Data" << std::endl;
+}
+
+bool DateDataFixed::ParseDate(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::vector<std::string> &FVectorDate) {
 	if (!jsonDocument || !jsonDocument->IsObject() || !jsonDocument->HasMember("regions"))
 		return false;
 

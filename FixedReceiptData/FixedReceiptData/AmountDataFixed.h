@@ -1,16 +1,18 @@
 #pragma once
-#include <memory>
-#include <rapidjson\document.h>
+#include "DataFixed.h"
 
-class AmountDataFixed
+class AmountDataFixed : public DataFixed
 {
 public:
-	AmountDataFixed(const std::string &validatedPath, const std::string &resultPath);
+	AmountDataFixed(const std::string &InValidatedPath, const std::string &InResultPath);
 	~AmountDataFixed();
 
-	void StartFixed();
-
 private:
+	void BeforeFixed() override;
+	void FixedData(std::shared_ptr<rapidjson::Document> &InValidatedDocument,
+		std::shared_ptr<rapidjson::Document> InResultDocument) override;
+	void AfterFixed() override;
+
 	bool ParseTax(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::string &before_tax, std::string &tax, std::string &after_tax);
 	
 	bool CheckAmountData(const std::string &data);
@@ -28,7 +30,8 @@ private:
 	double Round(double value);
 
 private:
-	const std::string ValidatedPath;
-	const std::string ResultPath;
+	int errorCount = 0;
+	int fixedCount = 0;
+	int fixedErrorCount = 0;
 };
 

@@ -4,9 +4,8 @@
 #include "Utils.h"
 #include "AmountDataFixed.h"
 
-AmountDataFixed::AmountDataFixed(const std::string &validatedPath, const std::string &resultPath)
-	: ValidatedPath(validatedPath)
-	, ResultPath(resultPath) {
+AmountDataFixed::AmountDataFixed(const std::string &InValidatedPath, const std::string &InResultPath)
+	: DataFixed(InValidatedPath, InResultPath) {
 
 }
 
@@ -14,65 +13,58 @@ AmountDataFixed::~AmountDataFixed() {
 
 }
 
-void AmountDataFixed::StartFixed() {
+void AmountDataFixed::BeforeFixed() {
 	std::cout << "Start Fixed Amount Data=================>" << std::endl;
 	std::cout << std::endl;
+}
 
-	int errorCount = 0;
-	int fixedCount = 0;
-	int fixedErrorCount = 0;
-	auto vistor = [&](const std::string &filePath, const std::string &fileName) {
-		std::shared_ptr<rapidjson::Document> validatedDocument = ReadFromFile(ValidatedPath + fileName);
-		std::shared_ptr<rapidjson::Document> resultDocument = ReadFromFile(ResultPath + fileName);
+void AmountDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidatedDocument,
+	std::shared_ptr<rapidjson::Document> InResultDocument) {
 
-		std::string validated_before_tax, validated_tax, validated_after_tax;
-		std::string result_before_tax, result_tax, result_after_tax;
+	std::string validated_before_tax, validated_tax, validated_after_tax;
+	std::string result_before_tax, result_tax, result_after_tax;
 
-		if (!ParseTax(validatedDocument, validated_before_tax, validated_tax, validated_after_tax)
-			|| !ParseTax(resultDocument, result_before_tax, result_tax, result_after_tax)
-			|| !CheckAmountData(validated_before_tax)
-			|| !CheckAmountData(validated_tax)
-			|| !CheckAmountData(validated_after_tax)) {
-			std::cout << fileName << " Data Error" << std::endl;
-			std::cout << std::endl;
-			return;
+	if (!ParseTax(InValidatedDocument, validated_before_tax, validated_tax, validated_after_tax)
+		|| !ParseTax(InResultDocument, result_before_tax, result_tax, result_after_tax)
+		|| !CheckAmountData(validated_before_tax)
+		|| !CheckAmountData(validated_tax)
+		|| !CheckAmountData(validated_after_tax)) {
+		std::cout << " Data Error" << std::endl;
+		return;
+	}
+
+	if (!Equal(validated_before_tax, result_before_tax) || !Equal(validated_tax, result_tax) || !Equal(validated_after_tax, result_after_tax)) {
+		errorCount++;
+	}
+	else {
+		std::cout << "Validated Equal To Result" << std::endl;
+		return;
+	}
+
+	std::string origin_result_before_tax = result_before_tax;
+
+	std::cout << "Validated Not Equal To Result" << std::endl;
+	std::cout << result_before_tax << ", " << result_tax << ", " << result_after_tax << " Fixed To " << std::endl;
+
+	FixedAmountData(result_before_tax, result_tax, result_after_tax);
+
+	std::cout << result_before_tax << ", " << result_tax << ", " << result_after_tax << std::endl;
+
+	if (Equal(validated_before_tax, result_before_tax) && Equal(validated_tax, result_tax) && Equal(validated_after_tax, result_after_tax)) {
+		fixedCount++;
+		std::cout << "Fixed Success!" << std::endl;
+	}
+	else {
+		std::cout << "Validated " << validated_before_tax << ", " << validated_tax << ", " << validated_after_tax << std::endl;
+		if (Equal(origin_result_before_tax, validated_before_tax) && !Equal(result_before_tax, validated_before_tax)) {
+			fixedErrorCount++;
+			std::cout << "Fixed origin before tax " << origin_result_before_tax << " to " << result_before_tax << std::endl;
 		}
+		std::cout << "Fixed Falied!" << std::endl;
+	}
+}
 
-		if (!Equal(validated_before_tax, result_before_tax) || !Equal(validated_tax, result_tax) || !Equal(validated_after_tax, result_after_tax)) {
-			errorCount++;
-		}
-		else {
-			return;
-		}
-
-		std::string origin_result_before_tax = result_before_tax;
-
-		std::cout << fileName << " Validated Not Equal To Result" << std::endl;
-		std::cout << result_before_tax << ", " << result_tax << ", " << result_after_tax << " Fixed To " << std::endl;
-
-		FixedAmountData(result_before_tax, result_tax, result_after_tax);
-
-		std::cout << result_before_tax << ", " << result_tax << ", " << result_after_tax << std::endl;
-
-		if (Equal(validated_before_tax, result_before_tax) && Equal(validated_tax, result_tax) && Equal(validated_after_tax, result_after_tax)) {
-			fixedCount++;
-			std::cout << "Fixed Success!" << std::endl;
-		}
-		else {
-			std::cout << "Validated " << validated_before_tax << ", " << validated_tax << ", " << validated_after_tax << std::endl;
-			if (Equal(origin_result_before_tax, validated_before_tax) && !Equal(result_before_tax, validated_before_tax)) {
-				fixedErrorCount++;
-				std::cout << "Fixed origin before tax " << origin_result_before_tax << " to " << result_before_tax << std::endl;
-			}
-			std::cout << "Fixed Falied!" << std::endl;
-		}
-
-		std::cout << std::endl;
-	};
-
-	//vistor(ValidatedPath, "10101_562.jpg.json");
-	VisitFolder(ValidatedPath, vistor);
-
+void AmountDataFixed::AfterFixed() {
 	std::cout << "Error Count " << errorCount << ", Fixed Count " << fixedCount << ", Fixed Error Count " << fixedErrorCount << std::endl;
 
 	std::cout << std::endl;

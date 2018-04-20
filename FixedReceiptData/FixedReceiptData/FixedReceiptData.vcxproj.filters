@@ -4,10 +4,14 @@
     <ClCompile Include="AmountDataFixed.cpp" />
     <ClCompile Include="FixedReceiptData.cpp" />
     <ClCompile Include="DateDataFixed.cpp" />
+    <ClCompile Include="NumberDataFixed.cpp" />
+    <ClCompile Include="DataFixed.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AmountDataFixed.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="DateDataFixed.h" />
+    <ClInclude Include="NumberDataFixed.h" />
+    <ClInclude Include="DataFixed.h" />
   </ItemGroup>
 </Project>
