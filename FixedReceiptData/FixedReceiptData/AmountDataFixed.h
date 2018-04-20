@@ -30,8 +30,8 @@ private:
 	double Round(double value);
 
 private:
-	int errorCount = 0;
-	int fixedCount = 0;
-	int fixedErrorCount = 0;
+	int ErrorCount = 0;
+	int FixedCount = 0;
+	int FixedErrorCount = 0;
 };
 

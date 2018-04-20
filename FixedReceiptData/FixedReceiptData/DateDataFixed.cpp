@@ -37,7 +37,7 @@ void DateDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidatedD
 		return;
 	}
 
-	totalCount++;
+	ErrorCount++;
 	std::string origin_result_date = ResultDateVector[0];
 
 	std::cout << "Validated Not Equal To Result" << std::endl;
@@ -54,13 +54,13 @@ void DateDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidatedD
 	std::cout << result_date << std::endl;
 
 	if (Equal(ValidatedDateVector[0], result_date)) {
-		fixedCount++;
+		FixedCount++;
 		std::cout << "Fixed Success!" << std::endl;
 	}
 	else {
 		std::cout << "Validated " << ValidatedDateVector[0] << std::endl;
 		if (Equal(ValidatedDateVector[0], origin_result_date)) {
-			fixedErrorCount++;
+			FixedErrorCount++;
 			std::cout << "Fixed origin before tax " << origin_result_date << " to " << result_date << std::endl;
 		}
 
@@ -74,7 +74,7 @@ void DateDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidatedD
 }
 
 void DateDataFixed::AfterFixed() {
-	std::cout << "Total Count " << totalCount << ", Fixed Count " << fixedCount << ", Fixed Error Count " << fixedErrorCount << std::endl;
+	std::cout << "Total Count " << ErrorCount << ", Fixed Count " << FixedCount << ", Fixed Error Count " << FixedErrorCount << std::endl;
 
 	std::cout << std::endl;
 	std::cout << "<=================End Fixed Date Data" << std::endl;

@@ -34,7 +34,7 @@ void AmountDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidate
 	}
 
 	if (!Equal(validated_before_tax, result_before_tax) || !Equal(validated_tax, result_tax) || !Equal(validated_after_tax, result_after_tax)) {
-		errorCount++;
+		ErrorCount++;
 	}
 	else {
 		std::cout << "Validated Equal To Result" << std::endl;
@@ -51,13 +51,13 @@ void AmountDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidate
 	std::cout << result_before_tax << ", " << result_tax << ", " << result_after_tax << std::endl;
 
 	if (Equal(validated_before_tax, result_before_tax) && Equal(validated_tax, result_tax) && Equal(validated_after_tax, result_after_tax)) {
-		fixedCount++;
+		FixedCount++;
 		std::cout << "Fixed Success!" << std::endl;
 	}
 	else {
 		std::cout << "Validated " << validated_before_tax << ", " << validated_tax << ", " << validated_after_tax << std::endl;
 		if (Equal(origin_result_before_tax, validated_before_tax) && !Equal(result_before_tax, validated_before_tax)) {
-			fixedErrorCount++;
+			FixedErrorCount++;
 			std::cout << "Fixed origin before tax " << origin_result_before_tax << " to " << result_before_tax << std::endl;
 		}
 		std::cout << "Fixed Falied!" << std::endl;
@@ -65,7 +65,7 @@ void AmountDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidate
 }
 
 void AmountDataFixed::AfterFixed() {
-	std::cout << "Error Count " << errorCount << ", Fixed Count " << fixedCount << ", Fixed Error Count " << fixedErrorCount << std::endl;
+	std::cout << "Error Count " << ErrorCount << ", Fixed Count " << FixedCount << ", Fixed Error Count " << FixedErrorCount << std::endl;
 
 	std::cout << std::endl;
 	std::cout << "<=================End Fixed Amount Data" << std::endl;

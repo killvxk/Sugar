@@ -4,7 +4,7 @@
 class NumberDataFixed : public DataFixed
 {
 public:
-	NumberDataFixed(const std::string &InValidatedPath, const std::string &InResultPath, int InNumberCount);
+	NumberDataFixed(const std::string &InValidatedPath, const std::string &InResultPath);
 	virtual ~NumberDataFixed();
 
 private:
@@ -14,14 +14,14 @@ private:
 	void AfterFixed() override;
 
 	virtual bool ParseData(const std::shared_ptr<rapidjson::Document> &InJsonDocument, std::vector<std::string> &NumberFirstVector, std::vector<std::string> &NumberSecondVector);
-	bool CheckCode(const std::string &date);
+	bool CheckNumber(const std::string &date);
 
 	std::string FixedNumber(std::vector<std::string> &NumberFirstVector, std::vector<std::string> &NumberSecondVector);
 
 private:
-	const int NumberCount;
+	const int NumberCount = 8;
 
 	int ErrorCount = 0;
-	int fixedCount = 0;
-	int fixedErrorCount = 0;
+	int FixedCount = 0;
+	int FixedErrorCount = 0;
 };
