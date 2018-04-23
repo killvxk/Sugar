@@ -25,6 +25,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="CheckCodeDataFixed.cpp" />
     <ClCompile Include="DataFixed.cpp" />
     <ClCompile Include="DateDataFixed.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -42,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AmountDataFixed.h" />
+    <ClInclude Include="CheckCodeDataFixed.h" />
     <ClInclude Include="DataFixed.h" />
     <ClInclude Include="DateDataFixed.h" />
     <ClInclude Include="NumberDataFixed.h" />

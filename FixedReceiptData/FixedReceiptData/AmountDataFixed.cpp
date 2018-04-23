@@ -24,11 +24,11 @@ void AmountDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidate
 	std::string validated_before_tax, validated_tax, validated_after_tax;
 	std::string result_before_tax, result_tax, result_after_tax;
 
-	if (!ParseTax(InValidatedDocument, validated_before_tax, validated_tax, validated_after_tax)
-		|| !ParseTax(InResultDocument, result_before_tax, result_tax, result_after_tax)
-		|| !CheckAmountData(validated_before_tax)
-		|| !CheckAmountData(validated_tax)
-		|| !CheckAmountData(validated_after_tax)) {
+	if (!ParseData(InValidatedDocument, validated_before_tax, validated_tax, validated_after_tax)
+		|| !ParseData(InResultDocument, result_before_tax, result_tax, result_after_tax)
+		|| !CheckData(validated_before_tax)
+		|| !CheckData(validated_tax)
+		|| !CheckData(validated_after_tax)) {
 		std::cout << " Data Error" << std::endl;
 		return;
 	}
@@ -71,7 +71,7 @@ void AmountDataFixed::AfterFixed() {
 	std::cout << "<=================End Fixed Amount Data" << std::endl;
 }
 
-bool AmountDataFixed::ParseTax(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::string &before_tax, std::string &tax, std::string &after_tax) {
+bool AmountDataFixed::ParseData(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::string &before_tax, std::string &tax, std::string &after_tax) {
 	if (!jsonDocument || !jsonDocument->IsObject() || !jsonDocument->HasMember("regions"))
 		return false;
 
@@ -110,7 +110,7 @@ bool AmountDataFixed::ParseTax(const std::shared_ptr<rapidjson::Document> &jsonD
 	return has_before_tax && has_tax && has_after_tax;
 }
 
-bool AmountDataFixed::CheckAmountData(const std::string &data)
+bool AmountDataFixed::CheckData(const std::string &data)
 {
 	size_t dotIndex = data.rfind('.');
 	if (dotIndex != std::string::npos && (data.length() - data.rfind('.')) == 3)
@@ -130,27 +130,27 @@ void AmountDataFixed::FixedAmountData(std::string &before_tax, std::string &tax,
 	double d_before_tax = std::stod(before_tax), d_tax = std::stod(tax), d_after_tax = std::stod(after_tax);
 
 	if (Equal(d_after_tax, d_before_tax + d_tax)) {
-		if (!CheckAmountData(before_tax)) {
+		if (!CheckData(before_tax)) {
 			FixedAmountData(before_tax);
 		}
-		if (!CheckAmountData(tax)) {
+		if (!CheckData(tax)) {
 			FixedAmountData(tax);
 		}
-		if (!CheckAmountData(after_tax)) {
+		if (!CheckData(after_tax)) {
 			FixedAmountData(after_tax);
 		}
 		return;
 	}
 
-	if (CheckAmountData(after_tax) && FixedDataByAfterTax(before_tax, tax, d_after_tax)) {
+	if (CheckData(after_tax) && FixedDataByAfterTax(before_tax, tax, d_after_tax)) {
 		return;
 	}
 
-	if (CheckAmountData(tax) && FixedDataByTax(before_tax, after_tax, d_tax)) {
+	if (CheckData(tax) && FixedDataByTax(before_tax, after_tax, d_tax)) {
 		return;
 	}
 
-	if (CheckAmountData(before_tax) && FixedDataByBeforeTax(tax, after_tax, d_before_tax)) {
+	if (CheckData(before_tax) && FixedDataByBeforeTax(tax, after_tax, d_before_tax)) {
 		return;
 	}
 }
@@ -191,7 +191,7 @@ bool AmountDataFixed::FixedDataByAfterTax(std::string &before_tax, std::string &
 }
 
 bool AmountDataFixed::FixedDataByTax(std::string &before_tax, std::string &after_tax, double d_tax) {
-	if (CheckAmountData(before_tax)) {
+	if (CheckData(before_tax)) {
 		double d_before_tax = std::stod(before_tax);
 		double fixed_after_tax = d_before_tax + d_tax;
 		std::string fixed = DoubleToString(fixed_after_tax);

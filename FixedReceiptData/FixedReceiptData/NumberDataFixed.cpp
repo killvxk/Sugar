@@ -27,7 +27,7 @@ void NumberDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidate
 
 	if (!ParseData(InValidatedDocument, ValidatedNumberFirstVector, ValidatedNumberSecondVector)
 		|| !ParseData(InResultDocument, ResultNumberFirstVector, ResultNumberSecondVector)
-		|| !CheckNumber(ValidatedNumberFirstVector[0])) {
+		|| !CheckData(ValidatedNumberFirstVector[0])) {
 		std::cout << "Data Error" << std::endl;
 		return;
 	}
@@ -132,7 +132,7 @@ bool NumberDataFixed::ParseData(const std::shared_ptr<rapidjson::Document> &InJs
 	return has_first_number && has_second_number;
 }
 
-bool NumberDataFixed::CheckNumber(const std::string &date) {
+bool NumberDataFixed::CheckData(const std::string &date) {
 	if (date.length() != NumberCount) {
 		return false;
 	}
@@ -152,7 +152,7 @@ std::string NumberDataFixed::FixedNumber(std::vector<std::string> &NumberFirstVe
 		return std::abs((int)first.length() - NumberCount) < std::abs((int)second.length() - NumberCount);
 	});
 
-	if (CheckNumber(NumberSecondVector[0])) {
+	if (CheckData(NumberSecondVector[0])) {
 		std::sort(NumberFirstVector.begin(), NumberFirstVector.end(), [this, &NumberSecondVector](const std::string &first, const std::string &second) {
 			//if (first.length() == second.length()) {
 			//	return Similarity(first.substr(0, 2), NumberSecondVector[0].substr(0, 2)) > Similarity(second.substr(0, 2), NumberSecondVector[0].substr(0, 2));
@@ -167,18 +167,18 @@ std::string NumberDataFixed::FixedNumber(std::vector<std::string> &NumberFirstVe
 		});
 	}
 
-	if (NumberFirstVector[0] == NumberSecondVector[0] && CheckNumber(NumberFirstVector[0])) {
+	if (NumberFirstVector[0] == NumberSecondVector[0] && CheckData(NumberFirstVector[0])) {
 		return NumberFirstVector[0];
 	}
 
 	for (auto number : NumberFirstVector) {
-		if (CheckNumber(number)) {
+		if (CheckData(number)) {
 			return number;
 		}
 	}
 
 	for (auto number : NumberSecondVector) {
-		if (CheckNumber(number)) {
+		if (CheckData(number)) {
 			return number;
 		}
 	}

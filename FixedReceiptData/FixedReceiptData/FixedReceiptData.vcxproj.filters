@@ -6,6 +6,7 @@
     <ClCompile Include="DateDataFixed.cpp" />
     <ClCompile Include="NumberDataFixed.cpp" />
     <ClCompile Include="DataFixed.cpp" />
+    <ClCompile Include="CheckCodeDataFixed.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AmountDataFixed.h" />
@@ -13,5 +14,6 @@
     <ClInclude Include="DateDataFixed.h" />
     <ClInclude Include="NumberDataFixed.h" />
     <ClInclude Include="DataFixed.h" />
+    <ClInclude Include="CheckCodeDataFixed.h" />
   </ItemGroup>
 </Project>

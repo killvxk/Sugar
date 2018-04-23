@@ -22,9 +22,9 @@ void DateDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidatedD
 	std::vector<std::string> ValidatedDateVector;
 	std::vector<std::string> ResultDateVector;
 
-	if (!ParseDate(InValidatedDocument, ValidatedDateVector)
-		|| !ParseDate(InResultDocument, ResultDateVector)
-		|| !CheckDate(ValidatedDateVector[0])) {
+	if (!ParseData(InValidatedDocument, ValidatedDateVector)
+		|| !ParseData(InResultDocument, ResultDateVector)
+		|| !CheckData(ValidatedDateVector[0])) {
 		std::cout << "Data Error" << std::endl;
 		return;
 	}
@@ -80,7 +80,7 @@ void DateDataFixed::AfterFixed() {
 	std::cout << "<=================End Fixed Date Data" << std::endl;
 }
 
-bool DateDataFixed::ParseDate(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::vector<std::string> &FVectorDate) {
+bool DateDataFixed::ParseData(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::vector<std::string> &FVectorDate) {
 	if (!jsonDocument || !jsonDocument->IsObject() || !jsonDocument->HasMember("regions"))
 		return false;
 
@@ -121,7 +121,7 @@ bool DateDataFixed::ParseDate(const std::shared_ptr<rapidjson::Document> &jsonDo
 #define LAST_YEAR 2018 // fetch lasy year
 std::vector<std::string> patters = { "Äê", "ÔÂ", "ÈÕ" };
 
-bool DateDataFixed::CheckDate(const std::string &date) {
+bool DateDataFixed::CheckData(const std::string &date) {
 	size_t indexOfYear = date.find(patters[0]);
 	if (indexOfYear == std::string::npos || indexOfYear != 4) {
 		return false;
@@ -194,7 +194,7 @@ bool DateDataFixed::FixedDate(std::string &date, std::vector<std::string> &DateV
 		std::map<std::string, int> yearMap;
 		for (auto date : DateVector) {
 			std::string year;
-			if (CheckDate(date)) {
+			if (CheckData(date)) {
 				size_t indexOfYear = date.find(patters[0]);
 				if (indexOfYear == std::string::npos || indexOfYear != 4) {
 					return 0;
@@ -326,5 +326,5 @@ bool DateDataFixed::FixedDate(std::string &date, std::vector<std::string> &DateV
 		date.replace(indexOfMonth + patters[1].length(), indexOfDay - indexOfMonth - patters[1].length(), day);
 	}
 
-	return CheckDate(date);
+	return CheckData(date);
 }

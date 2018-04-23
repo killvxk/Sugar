@@ -1,12 +1,11 @@
 #pragma once
-#include <vector>
 #include "DataFixed.h"
 
-class DateDataFixed : public DataFixed
+class CheckCodeDataFixed : public DataFixed
 {
 public:
-	DateDataFixed(const std::string &InValidatedPath, const std::string &InResultPath);
-	~DateDataFixed();
+	CheckCodeDataFixed(const std::string &InValidatedPath, const std::string &InResultPath);
+	~CheckCodeDataFixed();
 
 private:
 	void BeforeFixed() override;
@@ -14,10 +13,8 @@ private:
 		std::shared_ptr<rapidjson::Document> InResultDocument) override;
 	void AfterFixed() override;
 
-	bool ParseData(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::vector<std::string> &FVectorDate);
+	bool ParseData(const std::shared_ptr<rapidjson::Document> &InJsonDocument, std::vector<std::string> &CheckCodeVector);
 	bool CheckData(const std::string &date);
-
-	bool FixedDate(std::string &date, std::vector<std::string> &DateVector);
 
 private:
 	int ErrorCount = 0;

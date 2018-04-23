@@ -13,8 +13,8 @@ private:
 		std::shared_ptr<rapidjson::Document> InResultDocument) override;
 	void AfterFixed() override;
 
-	virtual bool ParseData(const std::shared_ptr<rapidjson::Document> &InJsonDocument, std::vector<std::string> &NumberFirstVector, std::vector<std::string> &NumberSecondVector);
-	bool CheckNumber(const std::string &date);
+	bool ParseData(const std::shared_ptr<rapidjson::Document> &InJsonDocument, std::vector<std::string> &NumberFirstVector, std::vector<std::string> &NumberSecondVector);
+	bool CheckData(const std::string &date);
 
 	std::string FixedNumber(std::vector<std::string> &NumberFirstVector, std::vector<std::string> &NumberSecondVector);
 
