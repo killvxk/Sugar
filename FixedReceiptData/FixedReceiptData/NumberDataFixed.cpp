@@ -45,7 +45,7 @@ void NumberDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidate
 	std::cout << " Validated Not Equal To Result" << std::endl;
 	std::cout << ResultNumberFirstVector[0] << " Fixed To " << std::endl;
 
-	std::string result_date = this->FixedNumber(ResultNumberFirstVector, ResultNumberSecondVector);
+	std::string result_date = FixedNumber(ResultNumberFirstVector, ResultNumberSecondVector);
 
 	std::cout << result_date << std::endl;
 

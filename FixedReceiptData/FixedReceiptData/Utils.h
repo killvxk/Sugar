@@ -78,3 +78,15 @@ inline std::string UTF8_To_string(const std::string & str)
 
 	return retStr;
 }
+
+inline void StringReplace(std::string &InBase, std::string InSrc, std::string InDes) {
+	std::string::size_type pos = 0;
+	std::string::size_type srcLen = InSrc.size();
+	std::string::size_type desLen = InDes.size();
+	pos = InBase.find(InSrc, pos);
+	while ((pos != std::string::npos))
+	{
+		InBase.replace(pos, srcLen, InDes);
+		pos = InBase.find(InSrc, (pos + desLen));
+	}
+}

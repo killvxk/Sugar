@@ -23,23 +23,25 @@ void CheckCodeDataFixed::BeforeFixed() {
 void CheckCodeDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValidatedDocument,
 	std::shared_ptr<rapidjson::Document> InResultDocument) {
 	std::vector<std::string> ValidatedCheckCodeVector;
-	std::vector<std::string> ResultCheckCodeFirstVector;
+	std::vector<std::string> ResultCheckCodeVector;
 
 	if (!ParseData(InValidatedDocument, ValidatedCheckCodeVector)
-		|| !ParseData(InResultDocument, ResultCheckCodeFirstVector)
+		|| !ParseData(InResultDocument, ResultCheckCodeVector)
 		|| !CheckData(ValidatedCheckCodeVector[0])) {
 		std::cout << "Data Error" << std::endl;
-		if (ValidatedCheckCodeVector.size() && ValidatedCheckCodeVector[0].size() != 0) {
-			std::cout << "Data Error" << std::endl;
-		}
 		return;
+	}
+
+	if (!Equal(ValidatedCheckCodeVector[0], ResultCheckCodeVector[0])) {
+		ErrorCount++;
 	}
 	else {
 		std::cout << "Validated Equal To Result" << std::endl;
 		return;
 	}
+	
 
-	std::string result_date;
+	std::string result_date = FixedData(ResultCheckCodeVector);
 
 	if (Equal(ValidatedCheckCodeVector[0], result_date)) {
 		FixedCount++;
@@ -53,7 +55,7 @@ void CheckCodeDataFixed::FixedData(std::shared_ptr<rapidjson::Document> &InValid
 		//}
 
 		std::cout << "First Result List" << std::endl;
-		for (auto date : ResultCheckCodeFirstVector) {
+		for (auto date : ResultCheckCodeVector) {
 			std::cout << date << std::endl;
 		}
 
@@ -85,14 +87,14 @@ bool CheckCodeDataFixed::ParseData(const std::shared_ptr<rapidjson::Document> &I
 		switch (region["cls"].GetInt())
 		{
 		case 5: {
-			for (auto &date : region["result"].GetArray()) {
-				if (strlen(date.GetString()) > 0)
-					CheckCodeVector.push_back(date.GetString());
+			for (auto &data : region["result"].GetArray()) {
+				if (strlen(data.GetString()) > 0)
+					CheckCodeVector.push_back(data.GetString());
 			}
 
-			for (auto &date : region["ref_result"].GetArray()) {
-				if (strlen(date.GetString()) > 0)
-					CheckCodeVector.push_back(date.GetString());
+			for (auto &data : region["ref_result"].GetArray()) {
+				if (strlen(data.GetString()) > 0)
+					CheckCodeVector.push_back(data.GetString());
 			}
 
 			has_checkcode = CheckCodeVector.size();
@@ -103,15 +105,19 @@ bool CheckCodeDataFixed::ParseData(const std::shared_ptr<rapidjson::Document> &I
 		}
 	}
 
+	for (auto &checkCode : CheckCodeVector) {
+		StringReplace(checkCode, " ", "");
+	}
+
 	return has_checkcode;
 }
 
 bool CheckCodeDataFixed::CheckData(const std::string &date) {
-	//if (date.length() != NumberCount) {
-	//	return false;
-	//}
+	if (date.length() != NumberCount) {
+		return false;
+	}
 
-	static std::set<char> checkcodePatterns = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ' };
+	static std::set<char> checkcodePatterns = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 	for (auto ch : date) {
 		if (checkcodePatterns.count(ch) == 0) {
 			return false;
@@ -119,4 +125,18 @@ bool CheckCodeDataFixed::CheckData(const std::string &date) {
 	}
 
 	return true;
+}
+
+std::string CheckCodeDataFixed::FixedData(std::vector<std::string> &CheckDataVector) {
+	std::sort(CheckDataVector.begin(), CheckDataVector.end(), [this](const std::string &first, const std::string &second) {
+		return std::abs((int)first.length() - NumberCount) < std::abs((int)second.length() - NumberCount);
+	});
+
+	for (auto number : CheckDataVector) {
+		if (CheckData(number)) {
+			return number;
+		}
+	}
+
+	return "";
 }

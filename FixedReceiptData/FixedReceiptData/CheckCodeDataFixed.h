@@ -16,7 +16,11 @@ private:
 	bool ParseData(const std::shared_ptr<rapidjson::Document> &InJsonDocument, std::vector<std::string> &CheckCodeVector);
 	bool CheckData(const std::string &date);
 
+	std::string FixedData(std::vector<std::string> &CheckDataVector);
+
 private:
+	const int NumberCount = 20;
+
 	int ErrorCount = 0;
 	int FixedCount = 0;
 	int FixedErrorCount = 0;

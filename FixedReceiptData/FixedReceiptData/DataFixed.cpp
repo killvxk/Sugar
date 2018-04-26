@@ -5,6 +5,7 @@
 #include <rapidjson\document.h>
 
 #include "DataFixed.h"
+#include "Utils.h"
 
 template <class Vistor>
 void VisitFolder(const std::string &lpPath, Vistor vistor)
@@ -87,17 +88,4 @@ std::shared_ptr<rapidjson::Document> DataFixed::ReadFromFile(const std::string &
 	StringReplace(buffer, "\r\n", "");
 	jsonDocument->Parse(&buffer[0]);
 	return jsonDocument;
-}
-
-void DataFixed::StringReplace(std::string &InBase, std::string InSrc, std::string InDes)
-{
-	std::string::size_type pos = 0;
-	std::string::size_type srcLen = InSrc.size();
-	std::string::size_type desLen = InDes.size();
-	pos = InBase.find(InSrc, pos);
-	while ((pos != std::string::npos))
-	{
-		InBase.replace(pos, srcLen, InDes);
-		pos = InBase.find(InSrc, (pos + desLen));
-	}
 }

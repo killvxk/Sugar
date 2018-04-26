@@ -17,7 +17,6 @@ private:
 	virtual void AfterFixed() { }
 
 	std::shared_ptr<rapidjson::Document> ReadFromFile(const std::string &InJsonPath);
-	void StringReplace(std::string &InBase, std::string InSrc, std::string InDes);
 
 private:
 	const std::string ValidatedPath;
