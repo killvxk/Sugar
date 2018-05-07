@@ -55,6 +55,8 @@ Double::Double(const std::string& def) {
 
 	std::reverse(Integer.begin(), Integer.end());
 	std::reverse(Decimal.begin(), Decimal.end());
+
+	Trim();
 }
 
 Double::Double(const Double &op) {
@@ -244,7 +246,7 @@ Double operator-=(Double& op1, const Double& op2) {
 			else break;
 			iter1++;
 		}
-		op1.trim();
+		op1.Trim();
 		return op1;
 	}
 	else {
@@ -292,7 +294,7 @@ Double operator*=(Double& op1, const Double& op2) {
 				Double temp2;
 				temp2.Integer.clear();
 				temp2.Integer.insert(temp2.Integer.end(), temp.begin(), temp.end());
-				temp2.trim();
+				temp2.Trim();
 				result = result + temp2;
 			}
 			iter2++;
@@ -379,7 +381,7 @@ Double operator/=(Double& op1, const Double& op2) {
 	}
 
 	op1 = re;
-	op1.trim();
+	op1.Trim();
 	op1.Tag = ((op1.Tag && op2.Tag) || (!op1.Tag && !op2.Tag));
 
 	return op1;
@@ -388,24 +390,28 @@ Double operator/=(Double& op1, const Double& op2) {
 Double operator+(const Double& op1, const Double& op2) {
 	Double temp(op1);
 	temp += op2;
+	temp.Trim();
 	return temp;
 }
 
 Double operator-(const Double& op1, const Double& op2) {
 	Double temp(op1);
 	temp -= op2;
+	temp.Trim();
 	return temp;
 }
 
 Double operator*(const Double& op1, const Double& op2) {
 	Double temp(op1);
 	temp *= op2;
+	temp.Trim();
 	return temp;
 }
 
 Double operator/(const Double& op1, const Double& op2) {
 	Double temp(op1);
 	temp /= op2;
+	temp.Trim();
 	return temp;
 }
 
@@ -511,7 +517,7 @@ bool operator<=(const Double& op1, const Double& op2) {
 	return tag;
 }
 
-void Double::trim() {
+void Double::Trim() {
 	std::vector<char>::reverse_iterator iter = Integer.rbegin();
 	while (!Integer.empty() && (*iter) == 0) {
 		Integer.pop_back();
@@ -519,7 +525,6 @@ void Double::trim() {
 	}
 
 	if (Integer.size() == 0) {
-		Tag = true;
 		Integer.push_back(0);
 	}
 
@@ -529,7 +534,6 @@ void Double::trim() {
 	}
 
 	if (Decimal.size() == 0) {
-		Tag = true;
 		Decimal.push_back(0);
 	}
 }

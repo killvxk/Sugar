@@ -151,6 +151,9 @@ namespace International
 			}
 		}
 
+		if (std::count(data.begin(), data.end(), '.') > 1)
+			return false;
+
 		return true;
 	}
 
@@ -239,21 +242,46 @@ namespace International
 			return;
 		}
 
+		if (CheckNumber(subtotal)) {
+			Double d_subtotal = Double(subtotal);
+			if (tip.empty() || !CheckNumber(tip)) {
+				tip = "0.00";
+				total = d_subtotal.ToString();
+			}
+			else if (CheckNumber(tip)) {
+				total = (d_subtotal + Double(tip)).ToString();
+			}
+		}
+		else if (CheckNumber(total)) {
+			Double d_total = Double(total);
+			if (tip.empty() || !CheckNumber(tip)) {
+				tip = "0.00";
+				subtotal = Double(d_total).ToString();
+			}
+			else if (CheckNumber(tip)) {
+				subtotal = (Double(d_total) - Double(tip)).ToString();
+			}
+		}
+
 		return;
 	}
 
 	bool AmountDataFixed::FixedDataBySubTotal(std::string &subtotal, std::string &tip, std::string &total) {
 		Double d_subtotal = subtotal;
+		bool tipTooMuch = false;
 
 		if (CheckNumber(tip)) {
 			Double d_tip = tip;
-			Double d_total = d_subtotal + d_tip;
-			std::string fixed = d_total.ToString();
-			if (total.length() == 0 || !CheckNumber(total) ||Similarity(fixed, total) > 0.7) {
-				total = fixed;
-				if (!CheckData(tip))
-					FixedAmountData(tip);
-				return true;
+			tipTooMuch = d_tip > d_subtotal * Double("0.4");
+			if (!tipTooMuch) {
+				Double d_total = d_subtotal + d_tip;
+				std::string fixed = d_total.ToString();
+				if (d_total >= d_subtotal && (total.length() == 0 || !CheckNumber(total) || Similarity(fixed, total) > 0.5)) {
+					total = fixed;
+					if (!CheckData(tip))
+						FixedAmountData(tip);
+					return true;
+				}
 			}
 		}
 
@@ -261,7 +289,7 @@ namespace International
 			Double d_total = total;
 			Double d_tip = d_total - d_subtotal;
 			std::string fixed = d_tip.ToString();
-			if (tip.length() == 0 || !CheckNumber(tip) || Similarity(fixed, tip) > 0.7) {
+			if (d_tip >= Double("0.00") && (tip.length() == 0 || !CheckNumber(tip) || tipTooMuch || Similarity(fixed, tip) > 0.5)) {
 				tip = fixed;
 				if (!CheckData(total))
 					FixedAmountData(total);
@@ -274,30 +302,21 @@ namespace International
 
 	bool AmountDataFixed::FixedDataByTotal(std::string &subtotal, std::string &tip, std::string &total) {
 		Double d_total = total;
+		bool tipTooMuch = false;
 
 		if (CheckNumber(tip)) {
 			Double d_tip = tip;
-			Double d_subtotal = d_total - d_tip;
-			std::string fixed = d_subtotal.ToString();
-			if (subtotal.length() == 0 || !CheckNumber(subtotal) || Similarity(fixed, subtotal) > 0.7) {
-				subtotal = fixed;
-				if (!CheckData(tip)) {
-					FixedAmountData(tip);
+			tipTooMuch = d_tip > d_total * Double("0.4");
+			if (!tipTooMuch) {
+				Double d_subtotal = d_total - d_tip;
+				std::string fixed = d_subtotal.ToString();
+				if (subtotal.length() == 0 || !CheckNumber(subtotal) || Similarity(fixed, subtotal) > 0.5) {
+					subtotal = fixed;
+					if (!CheckData(tip)) {
+						FixedAmountData(tip);
+					}
+					return true;
 				}
-				return true;
-			}
-		}
-
-		if (CheckNumber(subtotal)) {
-			Double d_subtotal = subtotal;
-			Double d_tip = d_total - d_subtotal;
-			std::string fixed = d_tip.ToString();
-			if (tip.length() == 0 || !CheckNumber(tip) || Similarity(fixed, tip) > 0.7) {
-				tip = fixed;
-				if (!CheckData(subtotal)) {
-					FixedAmountData(subtotal);
-				}
-				return true;
 			}
 		}
 

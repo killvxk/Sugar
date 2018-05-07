@@ -33,7 +33,7 @@ public:
 	friend Double operator/=(Double&, const Double&);
 
 private:
-	void trim();
+	void Trim();
 
 private:
 	std::vector<char> Integer;
