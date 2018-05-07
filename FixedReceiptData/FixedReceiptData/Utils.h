@@ -12,7 +12,7 @@ inline bool Equal(Type value1, Type value2) { return value1 == value2; }
 template <>
 inline bool Equal(double value1, double value2) {
 	static constexpr double epsilon = std::numeric_limits<double>::epsilon();
-	return std::abs(value1 - value2) < epsilon;
+	return std::abs(value1 - value2) < 0.0000001;
 }
 
 #ifdef min
@@ -59,7 +59,7 @@ inline std::string UTF8_To_string(const std::string & str)
 	wchar_t * pwBuf = new wchar_t[nwLen + 1];
 	memset(pwBuf, 0, nwLen * 2 + 2);
 
-	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), str.length(), pwBuf, nwLen);
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.length(), pwBuf, nwLen);
 
 	int nLen = WideCharToMultiByte(CP_ACP, 0, pwBuf, -1, NULL, NULL, NULL, NULL);
 

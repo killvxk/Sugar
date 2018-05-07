@@ -13,7 +13,7 @@ from PIL import ImageDraw
 
 MockIndex = 1
 
-def vistor(rootdir):
+def Vistor(rootdir):
     fileList = []
     if not os.path.exists(rootdir):
         return
@@ -22,7 +22,7 @@ def vistor(rootdir):
     for name in names:
         if os.path.isdir(rootdir + name):
             subdir = rootdir + name + '/'
-            subnames = vistor(subdir)
+            subnames = Vistor(subdir)
             for subname in subnames:
                 fileList.append(subname)
         elif os.path.splitext(name)[1] == '.jpg':
@@ -91,7 +91,7 @@ def DrawPoly(image):
     draw.polygon(poly, fill=(0, 0, 0, 200))
     return imageResult
 
-def mockData(mockType, InFilePath, InOutputPath):
+def MockData(mockType, InFilePath, InOutputPath):
     folder = os.path.split(InFilePath)[0]
     fileName = os.path.split(InFilePath)[1]
     name, ext = os.path.splitext(fileName)
@@ -126,15 +126,15 @@ def mockData(mockType, InFilePath, InOutputPath):
 
         MockIndex = MockIndex + 1
 
-def generate(mockType, fileList, rate, InOutputPath):
+def Generate(mockType, fileList, rate, InOutputPath):
     print('Start Generate')
 
     count = int(len(fileList) * rate)
     for index in range(0, count):
-        mockData(mockType, fileList[index], InOutputPath)
+        MockData(mockType, fileList[index], InOutputPath)
 
     print('End Generate')
 
 if __name__ == '__main__':
-    fileList = vistor('C:/Users/User/Desktop/Test/')
-    generate(EMock.MIX, fileList, 1.0, 'C:/Users/User/Desktop/output/')
+    fileList = Vistor('C:/Users/User/Desktop/Test/')
+    Generate(EMock.MIX, fileList, 1.0, 'C:/Users/User/Desktop/output/')

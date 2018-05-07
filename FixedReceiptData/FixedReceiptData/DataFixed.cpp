@@ -64,6 +64,7 @@ void DataFixed::StartFixed() {
 		std::cout << "End Handler " << InFileName << std::endl << std::endl;
 	};
 
+	//vistor(ValidatedPath, "1524103041759_32.48_6.50_38.98.jpg.json");
 	VisitFolder(ValidatedPath, vistor);
 
 	AfterFixed();
