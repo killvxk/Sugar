@@ -3,8 +3,9 @@
 #include <set>
 #include <regex>
 
-#include "../Utils.h"
 #include "AmountDataFixed.h"
+#include "../Utils.h"
+#include "../Double.h"
 
 namespace International
 {
@@ -202,16 +203,16 @@ namespace International
 
 	void AmountDataFixed::FixedAmountData(std::string &subtotal, std::string &tip, std::string &total, const std::string &tiprate_tip, const std::string &tiprate_total) {
 		if (CheckNumber(subtotal) && CheckNumber(tip) && CheckNumber(total)) {
-			double d_subtotal = std::stod(subtotal), d_tip = std::stod(tip), d_total = std::stod(total);
+			Double d_subtotal(subtotal), d_tip(tip), d_total(total);
 			if (Equal(d_total, d_subtotal + d_tip)) {
 				return;
 			}
 		}
 
 		if (CheckNumber(tiprate_tip) && CheckNumber(tiprate_total)) {
-			double d_tip = std::stod(tiprate_tip), d_total = std::stod(tiprate_total);
+			Double d_tip = tiprate_tip, d_total = tiprate_total;
 			if (CheckNumber(subtotal)) {
-				double d_subtotal = std::stod(subtotal), d_tip = std::stod(tiprate_tip), d_total = std::stod(tiprate_total);
+				Double d_subtotal =subtotal, d_tip = tiprate_tip, d_total = tiprate_total;
 				if (Equal(d_total, d_subtotal + d_tip)) {
 					total = tiprate_total;
 					tip = tiprate_tip;
@@ -219,8 +220,8 @@ namespace International
 				}
 			}
 			else {
-				double d_subtotal = d_total - d_tip;
-				std::string fixed = DoubleToString(d_subtotal);
+				Double d_subtotal = d_total - d_tip;
+				std::string fixed = d_subtotal.ToString();
 				if (subtotal.length() == 0 || !CheckNumber(subtotal) || Similarity(fixed, subtotal) > 0.7) {
 					subtotal = fixed;
 					total = tiprate_total;
@@ -229,7 +230,6 @@ namespace International
 				}
 			}
 		}
-
 
 		if (CheckData(subtotal) && FixedDataBySubTotal(subtotal, tip, total)) {
 			return;
@@ -243,12 +243,12 @@ namespace International
 	}
 
 	bool AmountDataFixed::FixedDataBySubTotal(std::string &subtotal, std::string &tip, std::string &total) {
-		double d_subtotal = std::stod(subtotal);
+		Double d_subtotal = subtotal;
 
 		if (CheckNumber(tip)) {
-			double d_tip = std::stod(tip);
-			double d_total = d_subtotal + d_tip;
-			std::string fixed = DoubleToString(d_total);
+			Double d_tip = tip;
+			Double d_total = d_subtotal + d_tip;
+			std::string fixed = d_total.ToString();
 			if (total.length() == 0 || !CheckNumber(total) ||Similarity(fixed, total) > 0.7) {
 				total = fixed;
 				if (!CheckData(tip))
@@ -258,9 +258,9 @@ namespace International
 		}
 
 		if (CheckNumber(total)) {
-			double d_total = std::stod(total);
-			double d_tip = d_total - d_subtotal;
-			std::string fixed = DoubleToString(d_tip);
+			Double d_total = total;
+			Double d_tip = d_total - d_subtotal;
+			std::string fixed = d_tip.ToString();
 			if (tip.length() == 0 || !CheckNumber(tip) || Similarity(fixed, tip) > 0.7) {
 				tip = fixed;
 				if (!CheckData(total))
@@ -273,12 +273,12 @@ namespace International
 	}
 
 	bool AmountDataFixed::FixedDataByTotal(std::string &subtotal, std::string &tip, std::string &total) {
-		double d_total = std::stod(total);
+		Double d_total = total;
 
 		if (CheckNumber(tip)) {
-			double d_tip = std::stod(tip);
-			double d_subtotal = d_total - d_tip;
-			std::string fixed = DoubleToString(d_subtotal);
+			Double d_tip = tip;
+			Double d_subtotal = d_total - d_tip;
+			std::string fixed = d_subtotal.ToString();
 			if (subtotal.length() == 0 || !CheckNumber(subtotal) || Similarity(fixed, subtotal) > 0.7) {
 				subtotal = fixed;
 				if (!CheckData(tip)) {
@@ -289,9 +289,9 @@ namespace International
 		}
 
 		if (CheckNumber(subtotal)) {
-			double d_subtotal = std::stod(subtotal);
-			double d_tip = d_total - d_subtotal;
-			std::string fixed = DoubleToString(d_tip);
+			Double d_subtotal = subtotal;
+			Double d_tip = d_total - d_subtotal;
+			std::string fixed = d_tip.ToString();
 			if (tip.length() == 0 || !CheckNumber(tip) || Similarity(fixed, tip) > 0.7) {
 				tip = fixed;
 				if (!CheckData(subtotal)) {
@@ -302,33 +302,6 @@ namespace International
 		}
 
 		return false;
-	}
-
-	std::string AmountDataFixed::DoubleToString(double invalue)
-	{
-		std::string value = std::to_string(int(invalue * 100));
-		if (value.length() >= 3) {
-			value.insert(value.end() - 2, '.');
-		}
-		else {
-			value = std::to_string(invalue);
-			size_t dotIndex = value.find('.');
-			if (dotIndex != std::string::npos) {
-				return value.substr(0, dotIndex + 3);
-			}
-		}
-		return value;
-	}
-
-	double AmountDataFixed::Round(double value)
-	{
-		int ivalue = int(value * 1000);
-		if (ivalue % 10 > 4)
-		{
-			return value + 0.01;
-		}
-
-		return value;
 	}
 
 	void AmountDataFixed::NormalizeData(std::string &data) {

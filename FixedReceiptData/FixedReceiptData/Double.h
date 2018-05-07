@@ -6,7 +6,7 @@
 class Double {
 public:
 	Double(int);
-	Double(std::string&);
+	Double(const std::string&);
 	Double();
 	Double(const Double&);
 	Double operator=(const Double& op);

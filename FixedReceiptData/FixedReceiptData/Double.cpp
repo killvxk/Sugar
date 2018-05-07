@@ -29,28 +29,32 @@ Double::Double() {
 	Decimal.push_back(0);
 }
 
-Double::Double(std::string& def) {
+Double::Double(const std::string& def) {
 	bool type = true;
 
-	for (std::string::reverse_iterator iter = def.rbegin(); iter < def.rend(); iter++)
-	{
+	for (std::string::const_iterator iter = def.begin(); iter != def.end(); iter++) {
 		char ch = (*iter);
-		if (ch == '.') {
-			type = false;
-			iter++;
-		}
-		if (iter == def.rend() - 1) {
+		if (iter == def.begin()) {
 			if (ch == '+')
-				break;
+				continue;
 			if (ch == '-') {
 				Tag = false;
-				break;
 			}
 		}
 
-		if (type)Decimal.push_back((char)((*iter) - '0'));
-		else Integer.push_back((char)((*iter) - '0'));
+		if (ch == '.') {
+			type = false;
+			continue;
+		}
+
+		if (type)
+			Integer.push_back((char)((*iter) - '0')); 
+		else 
+			Decimal.push_back((char)((*iter) - '0'));
 	}
+
+	std::reverse(Integer.begin(), Integer.end());
+	std::reverse(Decimal.begin(), Decimal.end());
 }
 
 Double::Double(const Double &op) {
@@ -72,7 +76,7 @@ std::string Double::ToString() const {
 		stringStream << "-";
 	for (std::vector<char>::const_reverse_iterator iter = Integer.rbegin(); iter != Integer.rend(); iter++)
 		stringStream << (char)((*iter) + '0');
-	std::cout << '.';
+	stringStream << '.';
 	for (std::vector<char>::const_reverse_iterator iter = Decimal.rbegin(); iter != Decimal.rend(); iter++)
 		stringStream << (char)((*iter) + '0');
 	return stringStream.str();
@@ -199,9 +203,10 @@ Double operator-=(Double& op1, const Double& op2) {
 			int number = b - a;
 			while (number != 0)
 			{
-				op1.Decimal.insert(op1.Decimal.begin(), '0');
+				op1.Decimal.insert(op1.Decimal.begin(), 0);
 				number--;
 			}
+			it1 = op1.Decimal.begin();
 		}
 		while (it1 != op1.Decimal.end() && it2 != op2.Decimal.end()) {
 			(*it1) = (*it1) - (*it2) - to_substract;

@@ -25,8 +25,6 @@ namespace International
 		bool FixedDataBySubTotal(std::string &subtotal, std::string &tip, std::string &total);
 		bool FixedDataByTotal(std::string &subtotal, std::string &tip, std::string &total);;
 
-		std::string DoubleToString(double invalue);
-		double Round(double value);
 		void NormalizeData(std::string &data);
 
 	private:
