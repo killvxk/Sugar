@@ -1,0 +1,3 @@
+[submodule "FixedReceiptData/FixedReceiptData/rapidjson"]
+	path = FixedReceiptData/FixedReceiptData/rapidjson
+	url = https://github.com/Tencent/rapidjson.git
