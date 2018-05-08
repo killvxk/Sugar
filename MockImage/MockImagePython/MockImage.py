@@ -11,6 +11,9 @@ from PIL import Image
 from PIL import ImageFilter
 from PIL import ImageDraw
 
+from keras.datasets import mnist
+from keras.preprocessing.image import img_to_array, array_to_img
+
 MockIndex = 1
 
 def Vistor(rootdir):
@@ -136,5 +139,9 @@ def Generate(mockType, fileList, rate, InOutputPath):
     print('End Generate')
 
 if __name__ == '__main__':
-    fileList = Vistor('C:/Users/User/Desktop/Test/')
-    Generate(EMock.MIX, fileList, 1.0, 'C:/Users/User/Desktop/output/')
+    (x_train, y_train), (x_test, y_test) = mnist.load_data('C:/Users/User/Desktop/train-images.idx3-ubyte');
+    for index in range(0, x_train.size):
+        imageResult = Image.fromarray(x_train[index])
+        imageResult.save('C:/Users/User/Desktop/output/' + str(y_train[index]) + '-' + str(index) + '.jpg');
+    #fileList = Vistor('C:/Users/User/Desktop/Test/')
+    #Generate(EMock.MIX, fileList, 1.0, 'C:/Users/User/Desktop/output/')

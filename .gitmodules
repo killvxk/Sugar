@@ -1,3 +1,6 @@
 [submodule "FixedReceiptData/FixedReceiptData/rapidjson"]
 	path = FixedReceiptData/FixedReceiptData/rapidjson
 	url = https://github.com/Tencent/rapidjson.git
+[submodule "MockImage/MockImageC++/rapidjson"]
+	path = MockImage/MockImageC++/rapidjson
+	url = https://github.com/Tencent/rapidjson.git

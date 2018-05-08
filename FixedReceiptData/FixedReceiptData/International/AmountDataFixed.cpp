@@ -330,15 +330,5 @@ namespace International
 		for (const auto &pattern : patterns) {
 			StringReplace(data, pattern, "");
 		}
-		/*std::vector<std::string> invalidch;
-		static std::set<char> numberPatterns = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' };
-		for (int index = 0; index < data.size(); ) {
-			if (numberPatterns.count(data[index]) == 0) {
-				data.erase(data.begin() + index);
-			}
-			else {
-				index++;
-			}
-		}*/
 	}
 }
