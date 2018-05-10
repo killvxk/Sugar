@@ -122,9 +122,22 @@ namespace Domestic
 	}
 
 	void AmountDataFixed::FixedAmountData(std::string &data) {
+		if (data.length() == 0) return;
+
 		size_t dotIndex = data.rfind('.');
-		if (dotIndex != std::string::npos && (data.length() - dotIndex) > 2) {
-			data = data.substr(0, dotIndex + 3);
+		if (dotIndex != std::string::npos) {
+			if ((data.length() - dotIndex) > 2) {
+				data = data.substr(0, dotIndex + 3);
+			}
+			else if ((data.length() - dotIndex) == 2) {
+				data.append("0");
+			}
+			else if ((data.length() - dotIndex) == 1) {
+				data.append("00");
+			}
+		}
+		else {
+			data.append(".00");
 		}
 	}
 
