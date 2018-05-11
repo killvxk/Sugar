@@ -1,0 +1,16 @@
+HKCR
+{
+	NoRemove CLSID
+	{
+		ForceRemove {60505FA3-3FAA-4EC5-AE2B-C002F2E4271B} = s 'PPTXml2Bin_Converter Class'
+		{
+			ForceRemove Programmable
+			LocalServer32 = s '%MODULE%'
+			{
+				val ServerExecutable = s '%MODULE_RAW%'
+			}
+			TypeLib = s '{013e0d26-1ae2-43a9-85d7-ad1e0a32172d}'
+			Version = s '1.0'
+		}
+	}
+}
