@@ -9,7 +9,7 @@ namespace International
 		AmountDataFixed(const std::string &InValidatedPath, const std::string &InResultPath);
 		~AmountDataFixed();
 
-	private:
+	protected:
 		void BeforeFixed() override;
 		void FixedData(std::shared_ptr<rapidjson::Document> &InValidatedDocument,
 			std::shared_ptr<rapidjson::Document> InResultDocument) override;
@@ -21,7 +21,7 @@ namespace International
 
 		void FixedTipRate(std::string &tiprate, std::string &tip, std::string &total);
 		void FixedAmountData(std::string &data);
-		void FixedAmountData(std::string &subtotal, std::string &tip, std::string &total, const std::string &tiprate_tip, const std::string &tiprate_total);
+		virtual void FixedAmountData(std::string &subtotal, std::string &tip, std::string &total, const std::string &tiprate_tip, const std::string &tiprate_total);
 		bool FixedDataBySubTotal(std::string &subtotal, std::string &tip, std::string &total);
 		bool FixedDataByTotal(std::string &subtotal, std::string &tip, std::string &total);;
 
@@ -31,5 +31,19 @@ namespace International
 		int ErrorCount = 0;
 		int FixedCount = 0;
 		int FixedErrorCount = 0;
+	};
+
+	class AmountDataMildFixed : public AmountDataFixed
+	{
+	public:
+		AmountDataMildFixed(const std::string &InValidatedPath, const std::string &InResultPath);
+		~AmountDataMildFixed();
+
+	private:
+		void FixedAmountData(std::string &subtotal, std::string &tip, std::string &total, const std::string &tiprate_tip, const std::string &tiprate_total) override;
+		void FormatData(std::string &data);
+		bool MissDot(const std::string &data);
+		bool MissInteger(const std::string &data);
+		void Trim(std::string &data, char ch);
 	};
 }

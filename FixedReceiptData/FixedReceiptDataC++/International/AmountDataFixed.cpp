@@ -331,4 +331,81 @@ namespace International
 			StringReplace(data, pattern, "");
 		}
 	}
+
+	AmountDataMildFixed::AmountDataMildFixed(const std::string &InValidatedPath, const std::string &InResultPath)
+		: AmountDataFixed(InValidatedPath, InResultPath) {
+
+	}
+
+	AmountDataMildFixed::~AmountDataMildFixed() {
+
+	}
+
+	void AmountDataMildFixed::FixedAmountData(std::string &subtotal, std::string &tip, std::string &total, const std::string &tiprate_tip, const std::string &tiprate_total) {
+		FormatData(subtotal);
+		FormatData(tip);
+		FormatData(total);
+
+		if (CheckNumber(subtotal) && CheckNumber(tip) && CheckNumber(total)) {
+			Double d_subtotal(subtotal), d_tip(tip), d_total(total);
+			if (Equal(d_total, d_subtotal + d_tip)) {
+				return;
+			}
+
+			if (tip.length()) {
+				Double d_tip = d_total - d_subtotal;
+				std::string fixed = d_tip.ToString();
+				if (MissDot(tip)) {
+					Trim(tip, '0');
+					if (Similarity(fixed, tip) == 1 && fixed.length() - tip.length() == 1) {
+						tip = fixed;
+						return;
+					}
+				}
+				else if (MissInteger(tip)) {
+					if (Similarity(fixed, Double(tip).ToString()) == 1) {
+						tip = fixed;
+						return;
+					}
+				}
+			}
+
+			if (MissDot(total)) {
+				Double d_total = d_subtotal + d_tip;
+				std::string fixed = d_total.ToString();
+				Trim(total, '0');
+				if (Similarity(fixed, total) == 1 && fixed.length() - total.length() == 1) {
+					total = fixed;
+					return;
+				}
+			}
+		}
+	}
+
+	void AmountDataMildFixed::FormatData(std::string &data) {
+		size_t dotIndex = data.rfind('.');
+		if (dotIndex != std::string::npos) {
+			if ((data.length() - dotIndex) > 2) {
+				data = data.substr(0, dotIndex + 3);
+			}
+		}
+	}
+
+	bool AmountDataMildFixed::MissDot(const std::string &data) {
+		size_t dotIndex = data.rfind('.');
+		return dotIndex == std::string::npos;
+	}
+
+	bool AmountDataMildFixed::MissInteger(const std::string &data) {
+		size_t dotIndex = data.rfind('.');
+		if (dotIndex != std::string::npos && dotIndex == 0) {
+			return true;
+		}
+
+		return false;
+	}
+
+	void AmountDataMildFixed::Trim(std::string &data, char ch) {
+		while (data.length() && data[data.length() - 1] == ch) data.pop_back();
+	}
 }

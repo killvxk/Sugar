@@ -182,7 +182,7 @@ namespace Domestic
 				double temp_tax = Round(temp_before_tax * rate);
 				if (Equal((int(temp_before_tax * 100) % 100 + int(temp_tax * 100) % 100) % 100, int(d_after_tax * 100) % 100)) {
 					std::string fixed = DoubleToString(temp_before_tax);
-					float fixed_similarity = Similarity(fixed, before_tax);
+					float fixed_similarity = SimilarityRate(fixed, before_tax);
 					if (!(fixed_similarity < similarity)) {
 						fixed_before_tax = fixed;
 						fixed_tax = DoubleToString(temp_tax);
@@ -210,7 +210,7 @@ namespace Domestic
 			double d_before_tax = std::stod(before_tax);
 			double fixed_after_tax = d_before_tax + d_tax;
 			std::string fixed = DoubleToString(fixed_after_tax);
-			if (Similarity(fixed, after_tax) > 0.7) {
+			if (SimilarityRate(fixed, after_tax) > 0.7) {
 				after_tax = fixed;
 				return true;
 			}
@@ -223,7 +223,7 @@ namespace Domestic
 			for (double error = -0.09; error < 0.1; error += 0.01) {
 				double temp_before_tax = (d_tax / rate) + error;
 				std::string fixed = DoubleToString(temp_before_tax);
-				float fixed_similarity = Similarity(fixed, before_tax);
+				float fixed_similarity = SimilarityRate(fixed, before_tax);
 				if (fixed_similarity > similarity) {
 					fixed_before_tax = fixed;
 					fixed_after_tax = DoubleToString(temp_before_tax + Round(temp_before_tax * rate));
@@ -247,7 +247,7 @@ namespace Domestic
 		for (auto rate : tax_rate) {
 			double temp_tax = Round(d_before_tax * rate);
 			std::string fixed = DoubleToString(d_before_tax + Round(d_before_tax * rate));
-			float fixed_similarity = Similarity(fixed, after_tax);
+			float fixed_similarity = SimilarityRate(fixed, after_tax);
 			if (fixed_similarity > similarity) {
 				fixed_tax = temp_tax;
 				similarity = fixed_similarity;

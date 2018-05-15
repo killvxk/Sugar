@@ -23,8 +23,7 @@ inline bool Equal(double value1, double value2) {
 #undef max
 #endif // max
 
-template <typename T>
-inline T Similarity(const std::string &str1, const std::string &str2) {
+inline size_t Similarity(const std::string &str1, const std::string &str2) {
 	size_t len1 = str1.length();
 	size_t len2 = str2.length();
 	std::vector<std::vector<size_t> > diff((len1 + 1), std::vector<size_t>(len2 + 1));
@@ -49,41 +48,11 @@ inline T Similarity(const std::string &str1, const std::string &str2) {
 		}
 	}
 
-	return (T)diff[len1][len2];
+	return diff[len1][len2];
 }
 
-template <>
-inline float Similarity(const std::string &str1, const std::string &str2) {
-	return 1 - (float)Similarity<int>(str1, str2) / std::max(str1.length(), str2.length());
-}
-
-inline float Similarity(const std::string &str1, const std::string &str2) {
-
-	size_t len1 = str1.length();
-	size_t len2 = str2.length();
-	std::vector<std::vector<size_t> > diff((len1 + 1), std::vector<size_t>(len2 + 1));
-	for (size_t index = 0; index <= len1; index++) {
-		diff[index][0] = index;
-	}
-	for (size_t index = 0; index <= len2; index++) {
-		diff[0][index] = index;
-	}
-
-	size_t temp;
-	for (size_t i = 1; i <= len1; i++) {
-		for (size_t j = 1; j <= len2; j++) {
-			if (str1[i - 1] == str2[j - 1]) {
-				temp = 0;
-			}
-			else {
-				temp = 1;
-			}
-
-			diff[i][j] = std::min(std::min(diff[i - 1][j - 1] + temp, diff[i][j - 1] + 1), diff[i - 1][j] + 1);
-		}
-	}
-
-	return 1 - (float)diff[len1][len2] / std::max(len1, len2);
+inline float SimilarityRate(const std::string &str1, const std::string &str2) {
+	return 1 - (float)Similarity(str1, str2) / std::max(str1.length(), str2.length());
 }
 
 inline std::string UTF8_To_string(const std::string & str)
