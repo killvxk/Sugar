@@ -17,6 +17,7 @@ namespace Domestic
 
 		bool ParseData(const std::shared_ptr<rapidjson::Document> &jsonDocument, std::string &before_tax, std::string &tax, std::string &after_tax);
 		bool CheckData(const std::string &data);
+		bool CheckNumber(const std::string &data);
 
 		void FixedAmountData(std::string &data);
 		void FixedAmountData(std::string &before_tax, std::string &tax, std::string &after_tax);

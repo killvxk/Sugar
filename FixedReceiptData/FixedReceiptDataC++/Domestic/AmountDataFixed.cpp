@@ -121,6 +121,22 @@ namespace Domestic
 		return false;
 	}
 
+	bool AmountDataFixed::CheckNumber(const std::string &data) {
+		if (data.length() == 0) return false;
+
+		static std::set<char> numberPatterns = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' };
+		for (auto ch : data) {
+			if (numberPatterns.count(ch) == 0) {
+				return false;
+			}
+		}
+
+		if (std::count(data.begin(), data.end(), '.') > 1)
+			return false;
+
+		return true;
+	}
+
 	void AmountDataFixed::FixedAmountData(std::string &data) {
 		if (data.length() == 0) return;
 
@@ -207,12 +223,22 @@ namespace Domestic
 
 	bool AmountDataFixed::FixedDataByTax(std::string &before_tax, std::string &after_tax, double d_tax) {
 		if (CheckData(before_tax)) {
+			bool valiedTax = false;
 			double d_before_tax = std::stod(before_tax);
-			double fixed_after_tax = d_before_tax + d_tax;
-			std::string fixed = DoubleToString(fixed_after_tax);
-			if (SimilarityRate(fixed, after_tax) > 0.7) {
-				after_tax = fixed;
-				return true;
+			for (auto rate : tax_rate) {
+				if (Equal(Round(d_before_tax * rate), d_tax)) {
+					valiedTax = true;
+					break;
+				}
+			}
+
+			if (valiedTax) {
+				double fixed_after_tax = d_before_tax + d_tax;
+				std::string fixed = DoubleToString(fixed_after_tax);
+				if (SimilarityRate(fixed, after_tax) > 0.7) {
+					after_tax = fixed;
+					return true;
+				}
 			}
 		}
 
@@ -246,8 +272,10 @@ namespace Domestic
 		double fixed_tax;
 		for (auto rate : tax_rate) {
 			double temp_tax = Round(d_before_tax * rate);
-			std::string fixed = DoubleToString(d_before_tax + Round(d_before_tax * rate));
+			std::string fixed = DoubleToString(d_before_tax + temp_tax);
 			float fixed_similarity = SimilarityRate(fixed, after_tax);
+			fixed_similarity += SimilarityRate(DoubleToString(temp_tax), tax);
+			
 			if (fixed_similarity > similarity) {
 				fixed_tax = temp_tax;
 				similarity = fixed_similarity;
@@ -265,7 +293,7 @@ namespace Domestic
 		size_t length = fixed_before_tax.length();
 		if (length && similarity > 0.4999) {
 			if (length == before_tax.length()) {
-				std::vector<std::set<char> > patterns = { { '8', '6', '0', '5', '9', '4' },{ '1', '4', '7' },{ '3', '8' },{ '3', '7' } };
+				std::vector<std::set<char> > patterns = { { '8', '6', '0'},{ '1', '7' },{ '3', '8' },{'0', '4'} };
 				for (int index = 0; index < length; ++index) {
 					if (fixed_before_tax[index] != before_tax[index]) {
 						bool match = false;

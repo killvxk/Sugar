@@ -156,10 +156,17 @@ class AmountDataFixed(DataFixed):
 
         if self.__CheckNumber__(before_tax):
             d_before_tax = Decimal(before_tax)
-            fixed_after_tax = d_before_tax + d_tax
-            fixed = self.__DoubleToString__(fixed_after_tax)
-            if Utils.SimilarityRate(fixed, after_tax) > 0.7:
-                return True, self.__FormatData__(before_tax), self.__FormatData__(tax), self.__FormatData__(fixed)
+            valiedTax = False
+            for rate in self.__TaxRate__:
+                temp_tax = self.__DoubleToString__(self.__Round__(d_before_tax * rate))
+                if temp_tax == tax:
+                    valiedTax = True
+
+            if valiedTax:
+                fixed_after_tax = d_before_tax + d_tax
+                fixed = self.__DoubleToString__(fixed_after_tax)
+                if Utils.SimilarityRate(fixed, after_tax) > 0.7:
+                    return True, self.__FormatData__(before_tax), self.__FormatData__(tax), self.__FormatData__(fixed)
 
         similarity = Decimal(0.0)
         fixed_before_tax = ''
@@ -202,7 +209,7 @@ class AmountDataFixed(DataFixed):
 
         if length and similarity > 0.49999:
             if length == len(before_tax):
-                patterns = ( ( '8', '6', '0', '5', '9', '4' ) , ( '1', '4', '7' ), ( '3', '8' ), ( '3', '7' ) );
+                patterns = ( ( '8', '6', '0' ) , ( '1', '4', '7' ), ( '3', '8' ), ( '3', '7' ), ('0', '4') );
                 for index in range(length):
                     if fixed_before_tax[index] != before_tax[index]:
                         match = False
