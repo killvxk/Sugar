@@ -11,6 +11,7 @@ class DataFixed(object):
     def StartFixed(self):
         self.__BeforeFixed__();
 
+        self.__Handler__(self.ValidatedPath, '10101_229.jpg.json')
         self.__VisitFolder__(self.ValidatedPath, self.__Handler__)
 
         self.__AfterFixed__();
@@ -42,13 +43,12 @@ class DataFixed(object):
 
 
     def __Handler__(self, filepath, filename):
-        print('Start Handler ' + filename + '\n')
+        print('Start Handler ' + filename)
 
         validateJson = json.load(open(self.ValidatedPath + filename, encoding='utf-8'))
-        resultJson = json.load(open(self.ValidatedPath + filename, encoding='utf-8'))
+        resultJson = json.load(open(self.ResultPath + filename, encoding='utf-8'))
 
         self.__FixedData__(validateJson, resultJson);
 
         print('End Handler ' + filename + '\n')
-
 
