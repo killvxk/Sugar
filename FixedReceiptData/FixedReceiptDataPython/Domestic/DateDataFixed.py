@@ -6,8 +6,8 @@ from DataFixed import DataFixed
 class DateDataFixed(DataFixed):
     """description of class"""
 
-    def __init__(self, validatedPath, resultPath):
-        DataFixed.__init__(self, validatedPath, resultPath)
+    def __init__(self):
+        DataFixed.__init__(self)
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
         self.__Patterns__ = '年|月|日|-|\.| '
@@ -19,9 +19,29 @@ class DateDataFixed(DataFixed):
         print('Start Fixed Date Data=================>\n')
 
     
-    def __FixedData__(self, validateJson, resultJson):
-        validated_datelist = self.__ParseData__(validateJson)
+    def __FixedData__(self, resultJson):
         result_datelist = self.__ParseData__(resultJson)
+        if len(result_datelist) == 0:
+            print('Data Error')
+            return
+
+        print(result_datelist[0] + ' Fixed To ')
+
+        date = ''
+        for result in result_datelist:
+            flag, year, month, day = self.__FixedDateData__(result)
+            date = year + '年' + month + '月' + day + '日'
+            if flag and self.__CheckData__(date):
+                break
+
+        print(date)
+
+        return date
+
+
+    def __FixedDataWithValidate__(self, resultJson, validateJson):
+        result_datelist = self.__ParseData__(resultJson)
+        validated_datelist = self.__ParseData__(validateJson)
 
         if len(validated_datelist) == 0 or len(result_datelist) == 0 or not self.__CheckData__(validated_datelist[0]):
             print('Validated Data Error')

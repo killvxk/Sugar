@@ -5,8 +5,8 @@ from DataFixed import DataFixed
 class CheckCodeFixed(DataFixed):
     """description of class"""
 
-    def __init__(self, validatedPath, resultPath):
-        DataFixed.__init__(self, validatedPath, resultPath)
+    def __init__(self):
+        DataFixed.__init__(self)
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
         self.__NumberCount__ = 20
@@ -16,9 +16,24 @@ class CheckCodeFixed(DataFixed):
         print('Start Fixed CheckCode Data=================>\n')
 
     
-    def __FixedData__(self, validateJson, resultJson):
-        validated_checkcodelist = self.__ParseData__(validateJson)
+    def __FixedData__(self, resultJson):
         result_checkcodelist = self.__ParseData__(resultJson)
+        if len(result_checkcodelist) == 0:
+            print('Data Error')
+            return ''
+
+        print(result_checkcodelist[0] + ' Fixed To ')
+        
+        flag, checkcode = self.__FixedCheckCodeData__(result_checkcodelist)
+
+        print(checkcode)
+
+        return checkcode
+
+
+    def __FixedDataWithValidate__(self, resultJson, validateJson):
+        result_checkcodelist = self.__ParseData__(resultJson)
+        validated_checkcodelist = self.__ParseData__(validateJson)
 
         if len(validated_checkcodelist) == 0 or len(result_checkcodelist) == 0 or not self.__CheckData__(validated_checkcodelist[0]):
             print('Validated Data Error')

@@ -3,16 +3,23 @@ import json
 
 class DataFixed(object):
     """description of class"""
-    def __init__(self, validatedPath, resultPath):
-        self.__ValidatedPath__ = validatedPath
+    def __init__(self):
+        pass
+
+
+    def StartFixedFromJson(self, resultJson):
+        return self.__FixedData__(resultJson)
+
+
+    # for test
+    def StartFixedFromPath(self, resultPath, validatedPath):
         self.__ResultPath__ = resultPath
+        self.__ValidatedPath__ = validatedPath
 
-
-    def StartFixed(self):
         self.__BeforeFixed__();
 
-        self.__Handler__(self.__ValidatedPath__, '10101_339.jpg.json')
-        self.__VisitFolder__(self.__ValidatedPath__, self.__Handler__)
+        #self.__Handler__('', '10101_680.jpg.json')
+        self.__VisitFolder__(self.__Handler__)
 
         self.__AfterFixed__();
 
@@ -25,30 +32,34 @@ class DataFixed(object):
         pass
 
 
+    def __FixedDataWithValidate__(self, validateJson, resultJson):
+        pass
+
+
     def __AfterFixed__(self):
         pass
 
 
-    def __VisitFolder__(self, folderpath, visitor):
-        if not os.path.exists(folderpath):
+    def __VisitFolder__(self, visitor, subfolder = ''):
+        if not os.path.exists(self.__ValidatedPath__ + subfolder):
             return
 
-        names = os.listdir(folderpath)
+        names = os.listdir(self.__ValidatedPath__ + subfolder)
         for name in names:
-            if os.path.isdir(folderpath + name):
-                subdir = folderpath + name + '/'
-                self.__VisitFolder__(subdir)
+            if os.path.isdir(self.__ValidatedPath__ + subfolder + name):
+                subdir = subfolder + name + '/'
+                self.__VisitFolder__(subdir, subdir)
             else:
-                self.__Handler__(folderpath, name)
+                self.__Handler__(subfolder, name)
 
 
-    def __Handler__(self, filepath, filename):
+    def __Handler__(self, subfolder, filename):
         print('Start Handler ' + filename)
 
-        validateJson = json.load(open(self.__ValidatedPath__ + filename, encoding='utf-8'))
-        resultJson = json.load(open(self.__ResultPath__ + filename, encoding='utf-8'))
+        validateJson = json.load(open(self.__ValidatedPath__ + subfolder + filename, encoding='utf-8'))
+        resultJson = json.load(open(self.__ResultPath__ + subfolder + filename, encoding='utf-8'))
 
-        self.__FixedData__(validateJson, resultJson);
+        self.__FixedDataWithValidate__(resultJson, validateJson)
 
         print('End Handler ' + filename + '\n')
 

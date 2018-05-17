@@ -3,8 +3,8 @@ from DataFixed import DataFixed
 class CodeDataFixed(DataFixed):
     """description of class"""
 
-    def __init__(self, validatedPath, resultPath):
-        DataFixed.__init__(self, validatedPath, resultPath)
+    def __init__(self):
+        DataFixed.__init__(self)
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
         self.__NumberCount__ = 10
@@ -15,9 +15,24 @@ class CodeDataFixed(DataFixed):
         print('Start Fixed Code Data=================>\n')
 
     
-    def __FixedData__(self, validateJson, resultJson):
-        validated_firstcodelist, validated_secondcodelist = self.__ParseData__(validateJson)
+    def __FixedData__(self, resultJson):
         result_firstcodelist, result_secondcodelist = self.__ParseData__(resultJson)
+        if len(result_firstcodelist) == 0:
+            print('Data Error')
+            return
+
+        print(result_firstcodelist[0] + ' Fixed To ')
+        
+        flag, code = self.__FixedCodeData__(result_firstcodelist, result_secondcodelist)
+
+        print(code)
+
+        return code
+
+
+    def __FixedDataWithValidate__(self, resultJson, validateJson):
+        result_firstcodelist, result_secondcodelist = self.__ParseData__(resultJson)
+        validated_firstcodelist, validated_secondcodelist = self.__ParseData__(validateJson)
 
         if len(validated_firstcodelist) == 0 or len(result_firstcodelist) == 0 or not self.__CheckData__(validated_firstcodelist[0]):
             print('Validated Data Error')

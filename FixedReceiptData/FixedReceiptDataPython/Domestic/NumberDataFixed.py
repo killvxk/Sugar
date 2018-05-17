@@ -3,8 +3,8 @@ from Domestic.CodeDataFixed import CodeDataFixed
 class NumberDataFixed(CodeDataFixed):
     """description of class"""
 
-    def __init__(self, validatedPath, resultPath):
-        CodeDataFixed.__init__(self, validatedPath, resultPath)
+    def __init__(self):
+        CodeDataFixed.__init__(self)
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
         self.__NumberCount__ = 8
@@ -13,9 +13,27 @@ class NumberDataFixed(CodeDataFixed):
         print('Start Fixed Number Data=================>\n')
 
     
-    def __FixedData__(self, validateJson, resultJson):
-        validated_firstnumberlist, validated_firstconfidence, validated_secondnumberlist, validated_secondconfidence = self.__ParseData__(validateJson)
+    def __FixedData__(self, resultJson):
         result_firstnumberlist, result_firstconfidence, result_secondnumberlist, result_secondconfidence = self.__ParseData__(resultJson)
+        if len(result_firstnumberlist) == 0:
+            print('Data Error')
+            return
+
+        print(result_firstnumberlist[0] + ' Fixed To ')
+        
+        if (result_firstconfidence > result_secondconfidence):
+            flag, number = self.__FixedCodeData__(result_firstnumberlist, result_secondnumberlist)
+        else:
+            flag, number = self.__FixedCodeData__(result_secondnumberlist, result_firstnumberlist)
+
+        print(number)
+
+        return number
+
+
+    def __FixedDataWithValidate__(self, resultJson, validateJson):
+        result_firstnumberlist, result_firstconfidence, result_secondnumberlist, result_secondconfidence = self.__ParseData__(resultJson)
+        validated_firstnumberlist, validated_firstconfidence, validated_secondnumberlist, validated_secondconfidence = self.__ParseData__(validateJson)
 
         if len(validated_firstnumberlist) == 0 or len(result_firstnumberlist) == 0 or not self.__CheckData__(validated_firstnumberlist[0]):
             print('Validated Data Error')

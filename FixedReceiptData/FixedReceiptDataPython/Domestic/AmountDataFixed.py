@@ -6,8 +6,8 @@ import Utils
 
 class AmountDataFixed(DataFixed):
     """description of class"""
-    def __init__(self, validatedPath, resultPath):
-        DataFixed.__init__(self, validatedPath, resultPath)
+    def __init__(self):
+        DataFixed.__init__(self)
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
         self.__TaxRate__ = (Decimal('0.03'), Decimal('0.05'), Decimal('0.06'), Decimal('0.11'), Decimal('0.17'))
@@ -19,9 +19,21 @@ class AmountDataFixed(DataFixed):
         print('Start Fixed Amount Data=================>\n')
 
 
-    def __FixedData__(self, validateJson, resultJson):
-        validated_before_tax, validated_tax, validated_after_tax = self.__ParseData__(validateJson)
+    def __FixedData__(self, resultJson):
         result_before_tax, result_tax, result_after_tax = self.__ParseData__(resultJson)
+
+        print(result_before_tax + ', ' + result_tax + ', ' + result_after_tax + ' Fixed To ')
+
+        result_before_tax, result_tax, result_after_tax = self.__FixedAmountData__(result_before_tax, result_tax, result_after_tax)
+
+        print(result_before_tax + ', ' + result_tax + ', ' + result_after_tax)
+
+        return result_before_tax, result_tax, result_after_tax
+
+
+    def __FixedDataWithValidate__(self, resultJson, validateJson):
+        result_before_tax, result_tax, result_after_tax = self.__ParseData__(resultJson)
+        validated_before_tax, validated_tax, validated_after_tax = self.__ParseData__(validateJson)
 
         if not self.__CheckData__(validated_before_tax) or not self.__CheckData__(validated_tax) or not self.__CheckData__(validated_after_tax):
             print('Validated Data Error')
