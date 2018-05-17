@@ -27,7 +27,7 @@ namespace Domestic
 		if (!ParseData(InValidatedDocument, ValidatedDateVector)
 			|| !ParseData(InResultDocument, ResultDateVector)
 			|| !CheckData(ValidatedDateVector[0])) {
-			std::cout << "Data Error" << std::endl;
+			std::cout << "Validated Data Error" << std::endl;
 			return;
 		}
 
@@ -66,10 +66,10 @@ namespace Domestic
 				std::cout << "Fixed origin before tax " << origin_result_date << " to " << result_date << std::endl;
 			}
 
-			std::cout << "Result List" << std::endl;
-			for (auto date : ResultDateVector) {
-				std::cout << date << std::endl;
-			}
+			//std::cout << "Result List" << std::endl;
+			//for (auto date : ResultDateVector) {
+			//	std::cout << date << std::endl;
+			//}
 
 			std::cout << "Fixed Falied!" << std::endl;
 		}
@@ -88,7 +88,6 @@ namespace Domestic
 
 		rapidjson::Value &regions = jsonDocument->operator[]("regions");
 
-		int has_date = 0;
 		for (auto &region : regions.GetArray()) {
 			if (!region.HasMember("cls")
 				|| !region.HasMember("ref_result")
@@ -109,7 +108,6 @@ namespace Domestic
 						FVectorDate.push_back(UTF8_To_string(date.GetString()));
 				}
 
-				has_date++;
 				break;
 			}
 			default:
@@ -117,14 +115,14 @@ namespace Domestic
 			}
 		}
 
-		return has_date == 1 && FVectorDate.size();
+		return FVectorDate.size();
 	}
 
 #define LAST_YEAR 2018 // fetch lasy year
-	std::vector<std::string> patters = { "年", "月", "日" };
+	std::vector<std::string> patterns = { "年", "月", "日" };
 
 	bool DateDataFixed::CheckData(const std::string &date) {
-		size_t indexOfYear = date.find(patters[0]);
+		size_t indexOfYear = date.find(patterns[0]);
 		if (indexOfYear == std::string::npos || indexOfYear != 4) {
 			return false;
 		}
@@ -134,22 +132,22 @@ namespace Domestic
 			return false;
 		}
 
-		size_t indexOfMonth = date.find(patters[1], indexOfYear + 1);
+		size_t indexOfMonth = date.find(patterns[1], indexOfYear + 1);
 		if (indexOfMonth == std::string::npos || indexOfMonth != 8) {
 			return false;
 		}
 
-		int month = std::atoi(date.substr(indexOfYear + patters[0].length(), indexOfMonth - indexOfYear - patters[0].length()).c_str());
+		int month = std::atoi(date.substr(indexOfYear + patterns[0].length(), indexOfMonth - indexOfYear - patterns[0].length()).c_str());
 		if (month < 1 || month > 12) {
 			return false;
 		}
 
-		size_t indexOfDay = date.find(patters[2], indexOfMonth + 1);
+		size_t indexOfDay = date.find(patterns[2], indexOfMonth + 1);
 		if (indexOfDay == std::string::npos || indexOfDay != 12) {
 			return false;
 		}
 
-		int day = std::atoi(date.substr(indexOfMonth + patters[1].length(), indexOfDay - indexOfMonth - patters[1].length()).c_str());
+		int day = std::atoi(date.substr(indexOfMonth + patterns[1].length(), indexOfDay - indexOfMonth - patterns[1].length()).c_str());
 		if (day < 1 || day > 31) {
 			return false;
 		}
@@ -158,23 +156,23 @@ namespace Domestic
 	}
 
 	bool DateDataFixed::FixedDate(std::string &date, std::vector<std::string> &DateVector) {
-		size_t indexOfYear = date.find(patters[0]);
+		size_t indexOfYear = date.find(patterns[0]);
 		if (indexOfYear == std::string::npos) {
 			std::vector<std::string> errorPatters = { { "0." } };
 			for (auto error : errorPatters) {
 				size_t indexOfError = date.find(error);
 				if (indexOfError != std::string::npos) {
 					date.replace(indexOfError, error.length(), "年");
-					indexOfYear = date.find(patters[0]);
+					indexOfYear = date.find(patterns[0]);
 					break;
 				}
 			}
 		}
 
-		indexOfYear = date.find(patters[0]);
+		indexOfYear = date.find(patterns[0]);
 		if (indexOfYear == std::string::npos) {
 			if (date.length() > 4) {
-				date.insert(4, patters[0]);
+				date.insert(4, patterns[0]);
 				indexOfYear = 4;
 			}
 			else {
@@ -197,7 +195,7 @@ namespace Domestic
 			for (auto date : DateVector) {
 				std::string year;
 				if (CheckData(date)) {
-					size_t indexOfYear = date.find(patters[0]);
+					size_t indexOfYear = date.find(patterns[0]);
 					if (indexOfYear == std::string::npos || indexOfYear != 4) {
 						return 0;
 					}
@@ -241,12 +239,12 @@ namespace Domestic
 			}
 		}
 
-		size_t indexOfMonth = date.find(patters[1], indexOfYear + 1);
+		size_t indexOfMonth = date.find(patterns[1], indexOfYear + 1);
 		if (indexOfMonth != std::string::npos) {
-			std::string month = date.substr(indexOfYear + patters[0].length(), indexOfMonth - indexOfYear - patters[0].length());
+			std::string month = date.substr(indexOfYear + patterns[0].length(), indexOfMonth - indexOfYear - patterns[0].length());
 			std::map<std::string, std::string> monthMappings = { { "13", "10" } };
 			if (monthMappings.count(month)) {
-				date.replace(indexOfYear + patters[0].length(), month.length(), monthMappings[month]);
+				date.replace(indexOfYear + patterns[0].length(), month.length(), monthMappings[month]);
 			}
 
 			if (month.length() == 2)
@@ -260,37 +258,37 @@ namespace Domestic
 						month[1] = '1';
 					}
 
-					date.replace(indexOfYear + patters[0].length(), indexOfMonth - indexOfYear - patters[0].length(), month);
+					date.replace(indexOfYear + patterns[0].length(), indexOfMonth - indexOfYear - patterns[0].length(), month);
 				}
 			}
 			else if (month.length() == 1) {
 				month = '0' + month;
-				date.replace(indexOfYear + patters[0].length(), indexOfMonth - indexOfYear - patters[0].length(), month);
+				date.replace(indexOfYear + patterns[0].length(), indexOfMonth - indexOfYear - patterns[0].length(), month);
 				indexOfMonth += 1;
 			}
 		}
-		else if ((date.length() - indexOfYear - patters[0].length()) > 2) {
-			switch (date[indexOfYear + patters[0].length() + 2]) {
+		else if ((date.length() - indexOfYear - patterns[0].length()) > 2) {
+			switch (date[indexOfYear + patterns[0].length() + 2]) {
 			case '4':
 			case '8': {
-				date.replace(indexOfYear + patters[0].length() + 2, 1, patters[1]);
-				indexOfMonth = date.find(patters[1], indexOfYear + 1);
+				date.replace(indexOfYear + patterns[0].length() + 2, 1, patterns[1]);
+				indexOfMonth = date.find(patterns[1], indexOfYear + 1);
 				break;
 			}
 			default: {
-				date.insert(date.length() - indexOfYear - patters[0].length() - 1, patters[1]);
-				indexOfMonth = date.find(patters[1], indexOfYear + 1);
+				date.insert(date.length() - indexOfYear - patterns[0].length() - 1, patterns[1]);
+				indexOfMonth = date.find(patterns[1], indexOfYear + 1);
 			}
 			}
 		}
 
-		size_t indexOfDay = date.find(patters[2], indexOfMonth + 1);
+		size_t indexOfDay = date.find(patterns[2], indexOfMonth + 1);
 		if (indexOfDay == std::string::npos) {
-			date.append(patters[2]);
-			indexOfDay = date.find(patters[2], indexOfMonth + 1);
+			date.append(patterns[2]);
+			indexOfDay = date.find(patterns[2], indexOfMonth + 1);
 		}
 
-		std::string day = date.substr(indexOfMonth + patters[1].length(), indexOfDay - indexOfMonth - patters[1].length());
+		std::string day = date.substr(indexOfMonth + patterns[1].length(), indexOfDay - indexOfMonth - patterns[1].length());
 
 		{
 			bool needReplace = false;
@@ -303,7 +301,7 @@ namespace Domestic
 				}
 			}
 			if (needReplace) {
-				date.replace(indexOfMonth + patters[1].length(), indexOfDay - indexOfMonth - patters[1].length(), day);
+				date.replace(indexOfMonth + patterns[1].length(), indexOfDay - indexOfMonth - patterns[1].length(), day);
 			}
 		}
 
@@ -316,16 +314,16 @@ namespace Domestic
 					day[1] = '0';
 				}
 
-				date.replace(indexOfMonth + patters[1].length(), indexOfDay - indexOfMonth - patters[1].length(), day);
+				date.replace(indexOfMonth + patterns[1].length(), indexOfDay - indexOfMonth - patterns[1].length(), day);
 			}
 		}
 		else if (day.length() == 1) {
 			day = '0' + day;
-			date.replace(indexOfMonth + patters[1].length(), indexOfDay - indexOfMonth - patters[1].length(), day);
+			date.replace(indexOfMonth + patterns[1].length(), indexOfDay - indexOfMonth - patterns[1].length(), day);
 		}
 		else {
 			day = day.substr(0, 2);
-			date.replace(indexOfMonth + patters[1].length(), indexOfDay - indexOfMonth - patters[1].length(), day);
+			date.replace(indexOfMonth + patterns[1].length(), indexOfDay - indexOfMonth - patterns[1].length(), day);
 		}
 
 		return CheckData(date);

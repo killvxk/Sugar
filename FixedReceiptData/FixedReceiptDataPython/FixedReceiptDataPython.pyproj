@@ -27,6 +27,9 @@
     <Compile Include="Domestic\AmountDataFixed.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Domestic\DateDataFixed.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="FixedReceiptData.py" />
     <Compile Include="Utils.py">
       <SubType>Code</SubType>

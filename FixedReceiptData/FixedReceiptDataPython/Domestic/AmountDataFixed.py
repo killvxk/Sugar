@@ -1,5 +1,6 @@
 from decimal import Decimal
 import numpy as np
+
 from DataFixed import DataFixed
 import Utils
 
@@ -11,7 +12,7 @@ class AmountDataFixed(DataFixed):
         self.__FixedCount__ = 0
         self.__TaxRate__ = (Decimal('0.03'), Decimal('0.05'), Decimal('0.06'), Decimal('0.11'), Decimal('0.17'))
         self.__Error__ = np.arange(Decimal('-0.09'), Decimal('0.1'), Decimal('0.01'), Decimal)
-        self.__numberPatterns__ = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' )
+        self.__NumberPatterns__ = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' )
 
 
     def __BeforeFixed__(self):
@@ -23,11 +24,11 @@ class AmountDataFixed(DataFixed):
         result_before_tax, result_tax, result_after_tax = self.__ParseData__(resultJson)
 
         if not self.__CheckData__(validated_before_tax) or not self.__CheckData__(validated_tax) or not self.__CheckData__(validated_after_tax):
-            print(' Data Error')
+            print('Validated Data Error')
             return
 
         if validated_before_tax != result_before_tax or validated_tax != result_tax or validated_after_tax != result_after_tax:
-            self.__ErrorCount__ += 1;
+            self.__ErrorCount__ += 1
         else:
             print('Validated Equal To Result')
             return
@@ -81,7 +82,7 @@ class AmountDataFixed(DataFixed):
             return False
 
         for ch in data:
-            if ch not in self.__numberPatterns__:
+            if ch not in self.__NumberPatterns__:
                 return False
 
         return data.count('.') == 1
@@ -191,7 +192,6 @@ class AmountDataFixed(DataFixed):
         d_before_tax = Decimal(before_tax)
         similarity = Decimal(0.0)
         fixed_tax = Decimal(0.0)
-        fixed_after_tax = Decimal(0.0)
 
         for rate in self.__TaxRate__:
             temp_tax = self.__Round__(d_before_tax * rate)
