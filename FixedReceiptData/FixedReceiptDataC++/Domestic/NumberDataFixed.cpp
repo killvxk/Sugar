@@ -62,14 +62,14 @@ namespace Domestic
 				std::cout << "Fixed origin before tax " << origin_result_number << " to " << result_date << std::endl;
 			}
 
-			std::cout << "First Result List" << std::endl;
-			for (auto date : ResultNumberFirstVector) {
-				std::cout << date << std::endl;
-			}
-			std::cout << "Second Result List" << std::endl;
-			for (auto date : ResultNumberSecondVector) {
-				std::cout << date << std::endl;
-			}
+			//std::cout << "First Result List" << std::endl;
+			//for (auto date : ResultNumberFirstVector) {
+			//	std::cout << date << std::endl;
+			//}
+			//std::cout << "Second Result List" << std::endl;
+			//for (auto date : ResultNumberSecondVector) {
+			//	std::cout << date << std::endl;
+			//}
 
 			std::cout << "Fixed Falied!" << std::endl;
 		}

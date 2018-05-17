@@ -4,15 +4,15 @@ import json
 class DataFixed(object):
     """description of class"""
     def __init__(self, validatedPath, resultPath):
-        self.ValidatedPath = validatedPath
-        self.ResultPath = resultPath
+        self.__ValidatedPath__ = validatedPath
+        self.__ResultPath__ = resultPath
 
 
     def StartFixed(self):
         self.__BeforeFixed__();
 
-        self.__Handler__(self.ValidatedPath, '10102_741.jpg.json')
-        self.__VisitFolder__(self.ValidatedPath, self.__Handler__)
+        #self.__Handler__(self.ValidatedPath, '10101_379.jpg.json')
+        self.__VisitFolder__(self.__ValidatedPath__, self.__Handler__)
 
         self.__AfterFixed__();
 
@@ -45,8 +45,8 @@ class DataFixed(object):
     def __Handler__(self, filepath, filename):
         print('Start Handler ' + filename)
 
-        validateJson = json.load(open(self.ValidatedPath + filename, encoding='utf-8'))
-        resultJson = json.load(open(self.ResultPath + filename, encoding='utf-8'))
+        validateJson = json.load(open(self.__ValidatedPath__ + filename, encoding='utf-8'))
+        resultJson = json.load(open(self.__ResultPath__ + filename, encoding='utf-8'))
 
         self.__FixedData__(validateJson, resultJson);
 
