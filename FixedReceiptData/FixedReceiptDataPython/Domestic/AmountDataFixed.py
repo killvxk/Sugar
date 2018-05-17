@@ -58,7 +58,7 @@ class AmountDataFixed(DataFixed):
         after_tax = ''
 
         if jsondata == None or not isinstance(jsondata, dict) or jsondata['regions'] == None:
-            return (before_tax, tax, after_tax)
+            return before_tax, tax, after_tax
 
         regions = jsondata['regions']
 
@@ -74,7 +74,7 @@ class AmountDataFixed(DataFixed):
             elif cls == 9:
                 after_tax = region['result'][0]
 
-        return (before_tax, tax, after_tax)
+        return before_tax, tax, after_tax
 
 
     def __CheckNumber__(self, data):

@@ -29,7 +29,7 @@ namespace Domestic
 		if (!ParseData(InValidatedDocument, ValidatedCheckCodeVector)
 			|| !ParseData(InResultDocument, ResultCheckCodeVector)
 			|| !CheckData(ValidatedCheckCodeVector[0])) {
-			std::cout << "Data Error" << std::endl;
+			std::cout << "Validated Data Error" << std::endl;
 			return;
 		}
 
@@ -41,8 +41,10 @@ namespace Domestic
 			return;
 		}
 	
-
+		std::cout << "Validated Not Equal To Result" << std::endl;
+		std::cout << ResultCheckCodeVector[0] << " Fixed To " << std::endl;
 		std::string result_date = FixedData(ResultCheckCodeVector);
+		std::cout << result_date << std::endl;
 
 		if (Equal(ValidatedCheckCodeVector[0], result_date)) {
 			FixedCount++;
@@ -55,10 +57,10 @@ namespace Domestic
 			//	std::cout << "Fixed origin before tax " << origin_result_number << " to " << result_date << std::endl;
 			//}
 
-			std::cout << "First Result List" << std::endl;
-			for (auto date : ResultCheckCodeVector) {
-				std::cout << date << std::endl;
-			}
+			//std::cout << "First Result List" << std::endl;
+			//for (auto date : ResultCheckCodeVector) {
+			//	std::cout << date << std::endl;
+			//}
 
 			std::cout << "Fixed Falied!" << std::endl;
 		}

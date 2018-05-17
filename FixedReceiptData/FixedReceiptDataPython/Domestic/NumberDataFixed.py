@@ -58,7 +58,7 @@ class NumberDataFixed(CodeDataFixed):
         secondconfidence = 0.0
 
         if jsondata == None or not isinstance(jsondata, dict) or jsondata['regions'] == None:
-            return (before_tax, tax, after_tax)
+            return firstnumberlist, firstconfidence, secondnumberlist, secondconfidence
 
         regions = jsondata['regions']
 

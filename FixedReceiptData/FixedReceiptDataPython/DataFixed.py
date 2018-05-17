@@ -11,7 +11,7 @@ class DataFixed(object):
     def StartFixed(self):
         self.__BeforeFixed__();
 
-        #self.__Handler__(self.ValidatedPath, '10101_379.jpg.json')
+        self.__Handler__(self.__ValidatedPath__, '10101_339.jpg.json')
         self.__VisitFolder__(self.__ValidatedPath__, self.__Handler__)
 
         self.__AfterFixed__();

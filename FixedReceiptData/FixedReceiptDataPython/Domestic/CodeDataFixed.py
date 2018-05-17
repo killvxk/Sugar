@@ -55,7 +55,7 @@ class CodeDataFixed(DataFixed):
         secondcodelist = []
 
         if jsondata == None or not isinstance(jsondata, dict) or jsondata['regions'] == None:
-            return (before_tax, tax, after_tax)
+            return firstcodelist, secondcodelist
 
         regions = jsondata['regions']
 

@@ -63,7 +63,7 @@ class DateDataFixed(DataFixed):
         datelist = []
 
         if jsondata == None or not isinstance(jsondata, dict) or jsondata['regions'] == None:
-            return (before_tax, tax, after_tax)
+            return datelist
 
         regions = jsondata['regions']
 
