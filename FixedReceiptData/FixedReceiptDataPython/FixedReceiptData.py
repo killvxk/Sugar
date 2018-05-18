@@ -41,6 +41,13 @@ def FixedReceiptDataFromJson(receiptDataJson):
     return json.dumps(receiptData)
 
 if __name__ == '__main__':
+    #dataFixed = AmountDataFixed()
+    #dataFixed = DateDataFixed()
+    #dataFixed = CodeDataFixed()
+    #dataFixed = NumberDataFixed()
+    #dataFixed = CheckCodeFixed()
+    #dataFixed.StartFixedFromPath('C:/Users/User/Desktop/receipt/Domestic/result/', 'C:/Users/User/Desktop/receipt/Domestic/validated/')
+    
     receiptData = open('C:/Users/User/Desktop/receipt/Domestic/result/10100_1.jpg.json', encoding='utf-8').read()
     receiptData = FixedReceiptDataFromJson(receiptData)
     file = open('C:/Users/User/Desktop/output/10100_1.jpg.json', encoding='utf-8', mode='w')
