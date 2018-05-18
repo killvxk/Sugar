@@ -1,4 +1,5 @@
 from Domestic.CodeDataFixed import CodeDataFixed
+from DataFixed import ConfidenceLevel
 
 class NumberDataFixed(CodeDataFixed):
     """description of class"""
@@ -21,14 +22,15 @@ class NumberDataFixed(CodeDataFixed):
 
         print(result_firstnumberlist[0] + ' Fixed To ')
         
+        confidencelevel = ConfidenceLevel.Bad
         if (result_firstconfidence > result_secondconfidence):
-            flag, number = self.__FixedCodeData__(result_firstnumberlist, result_secondnumberlist)
+            confidencelevel, number = self.__FixedCodeData__(result_firstnumberlist, result_secondnumberlist)
         else:
-            flag, number = self.__FixedCodeData__(result_secondnumberlist, result_firstnumberlist)
+            confidencelevel, number = self.__FixedCodeData__(result_secondnumberlist, result_firstnumberlist)
 
         print(number)
 
-        return number
+        return confidencelevel, number
 
 
     def __FixedDataWithValidate__(self, resultJson, validateJson):
@@ -49,9 +51,9 @@ class NumberDataFixed(CodeDataFixed):
         print(result_firstnumberlist[0] + ' Fixed To ')
         
         if (result_firstconfidence > result_secondconfidence):
-            flag, number = self.__FixedCodeData__(result_firstnumberlist, result_secondnumberlist)
+            confidencelevel, number = self.__FixedCodeData__(result_firstnumberlist, result_secondnumberlist)
         else:
-            flag, number = self.__FixedCodeData__(result_secondnumberlist, result_firstnumberlist)
+            confidencelevel, number = self.__FixedCodeData__(result_secondnumberlist, result_firstnumberlist)
 
         print(number)
 

@@ -1,6 +1,7 @@
 import re
 
 from DataFixed import DataFixed
+from DataFixed import ConfidenceLevel
 
 class CheckCodeFixed(DataFixed):
     """description of class"""
@@ -24,11 +25,11 @@ class CheckCodeFixed(DataFixed):
 
         print(result_checkcodelist[0] + ' Fixed To ')
         
-        flag, checkcode = self.__FixedCheckCodeData__(result_checkcodelist)
+        confidencelevel, checkcode = self.__FixedCheckCodeData__(result_checkcodelist)
 
         print(checkcode)
 
-        return checkcode
+        return confidencelevel, checkcode
 
 
     def __FixedDataWithValidate__(self, resultJson, validateJson):
@@ -48,7 +49,7 @@ class CheckCodeFixed(DataFixed):
         print('Validated Not Equal To Result')
         print(result_checkcodelist[0] + ' Fixed To ')
         
-        flag, checkcode = self.__FixedCheckCodeData__(result_checkcodelist)
+        confidencelevel, checkcode = self.__FixedCheckCodeData__(result_checkcodelist)
 
         print(checkcode)
 
@@ -108,6 +109,6 @@ class CheckCodeFixed(DataFixed):
 
         for data in datalist:
             if self.__CheckData__(data):
-                return True, data;
+                return ConfidenceLevel.Fixed, data;
 
-        return False, datalist[0]
+        return ConfidenceLevel.Bad, datalist[0]

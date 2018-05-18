@@ -1,4 +1,5 @@
 from DataFixed import DataFixed
+from DataFixed import ConfidenceLevel
 
 class CodeDataFixed(DataFixed):
     """description of class"""
@@ -23,11 +24,11 @@ class CodeDataFixed(DataFixed):
 
         print(result_firstcodelist[0] + ' Fixed To ')
         
-        flag, code = self.__FixedCodeData__(result_firstcodelist, result_secondcodelist)
+        confidencelevel, code = self.__FixedCodeData__(result_firstcodelist, result_secondcodelist)
 
         print(code)
 
-        return code
+        return confidencelevel, code
 
 
     def __FixedDataWithValidate__(self, resultJson, validateJson):
@@ -47,7 +48,7 @@ class CodeDataFixed(DataFixed):
         print('Validated Not Equal To Result')
         print(result_firstcodelist[0] + ' Fixed To ')
         
-        flag, code = self.__FixedCodeData__(result_firstcodelist, result_secondcodelist)
+        confidencelevel, code = self.__FixedCodeData__(result_firstcodelist, result_secondcodelist)
 
         print(code)
 
@@ -117,14 +118,14 @@ class CodeDataFixed(DataFixed):
 
         for first in firstdata:
             if first in seconddata and self.__CheckData__(first):
-                return True, first
+                return ConfidenceLevel.Confident, first
 
         for first in firstdata:
             if self.__CheckData__(first):
-                return True, first;
+                return ConfidenceLevel.Fixed, first;
 
         for second in seconddata:
             if self.__CheckData__(second):
-                return True, second;
+                return ConfidenceLevel.Fixed, second;
 
-        return False, firstdata[0]
+        return ConfidenceLevel.Bad, firstdata[0]

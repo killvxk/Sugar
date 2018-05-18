@@ -1,5 +1,12 @@
 import os
 import json
+from enum import Enum
+
+class ConfidenceLevel(Enum):
+    Confident = 'Confident'
+    Fixed = 'Fixed'
+    Bad = 'Bad'
+
 
 class DataFixed(object):
     """description of class"""

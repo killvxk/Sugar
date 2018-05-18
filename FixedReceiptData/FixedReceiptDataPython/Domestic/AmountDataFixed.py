@@ -2,6 +2,7 @@ from decimal import Decimal
 import numpy as np
 
 from DataFixed import DataFixed
+from DataFixed import ConfidenceLevel
 import Utils
 
 class AmountDataFixed(DataFixed):
@@ -24,11 +25,11 @@ class AmountDataFixed(DataFixed):
 
         print(result_before_tax + ', ' + result_tax + ', ' + result_after_tax + ' Fixed To ')
 
-        result_before_tax, result_tax, result_after_tax = self.__FixedAmountData__(result_before_tax, result_tax, result_after_tax)
+        confidencelevel, result_before_tax, result_tax, result_after_tax = self.__FixedAmountData__(result_before_tax, result_tax, result_after_tax)
 
         print(result_before_tax + ', ' + result_tax + ', ' + result_after_tax)
 
-        return result_before_tax, result_tax, result_after_tax
+        return confidencelevel, result_before_tax, result_tax, result_after_tax
 
 
     def __FixedDataWithValidate__(self, resultJson, validateJson):
@@ -48,7 +49,7 @@ class AmountDataFixed(DataFixed):
         print('Validated Not Equal To Result')
         print(result_before_tax + ', ' + result_tax + ', ' + result_after_tax + ' Fixed To ')
 
-        result_before_tax, result_tax, result_after_tax = self.__FixedAmountData__(result_before_tax, result_tax, result_after_tax)
+        confidencelevel, result_before_tax, result_tax, result_after_tax = self.__FixedAmountData__(result_before_tax, result_tax, result_after_tax)
 
         print(result_before_tax + ', ' + result_tax + ', ' + result_after_tax)
 
@@ -117,24 +118,24 @@ class AmountDataFixed(DataFixed):
             d_tax = Decimal(tax)
             d_after_tax = Decimal(after_tax)
             if (d_after_tax == (d_before_tax + d_tax)):
-                return self.__FormatData__(before_tax), self.__FormatData__(tax), self.__FormatData__(after_tax)
+                return ConfidenceLevel.Confident, self.__FormatData__(before_tax), self.__FormatData__(tax), self.__FormatData__(after_tax)
 
         if self.__CheckData__(after_tax):
             flag, before_tax, tax, after_tax = self.__FixedDataByAfterTax__(before_tax, tax, after_tax)
             if flag:
-                return before_tax, tax, after_tax
+                return ConfidenceLevel.Fixed, before_tax, tax, after_tax
 
         if self.__CheckData__(tax):
             flag, before_tax, tax, after_tax = self.__FixedDataByTax__(before_tax, tax, after_tax)
             if flag:
-                return before_tax, tax, after_tax
+                return ConfidenceLevel.Fixed, before_tax, tax, after_tax
 
         if self.__CheckData__(before_tax):
             flag, before_tax, tax, after_tax = self.__FixedDataByBeforeTax__(before_tax, tax, after_tax)
             if flag:
-                return before_tax, tax, after_tax
+                return ConfidenceLevel.Fixed, before_tax, tax, after_tax
 
-        return before_tax, tax, after_tax
+        return ConfidenceLevel.Bad, before_tax, tax, after_tax
 
 
     def __FixedDataByAfterTax__(self, before_tax, tax, after_tax):

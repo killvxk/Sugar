@@ -2,6 +2,7 @@ import datetime
 import re
 
 from DataFixed import DataFixed
+from DataFixed import ConfidenceLevel
 
 class DateDataFixed(DataFixed):
     """description of class"""
@@ -28,15 +29,16 @@ class DateDataFixed(DataFixed):
         print(result_datelist[0] + ' Fixed To ')
 
         date = ''
+        confidencelevel = ConfidenceLevel.Bad
         for result in result_datelist:
-            flag, year, month, day = self.__FixedDateData__(result)
+            confidencelevel, year, month, day = self.__FixedDateData__(result)
             date = year + '年' + month + '月' + day + '日'
-            if flag and self.__CheckData__(date):
+            if (confidencelevel == ConfidenceLevel.Confident or confidencelevel == ConfidenceLevel.Fixed) and self.__CheckData__(date):
                 break
 
         print(date)
 
-        return date
+        return confidencelevel, date
 
 
     def __FixedDataWithValidate__(self, resultJson, validateJson):
@@ -58,9 +60,9 @@ class DateDataFixed(DataFixed):
 
         date = ''
         for result in result_datelist:
-            flag, year, month, day = self.__FixedDateData__(result)
+            confidencelevel, year, month, day = self.__FixedDateData__(result)
             date = year + '年' + month + '月' + day + '日'
-            if flag and self.__CheckData__(date):
+            if (confidencelevel == ConfidenceLevel.Confident or confidencelevel == ConfidenceLevel.Fixed) and self.__CheckData__(date):
                 break
 
         print(date)
@@ -129,7 +131,7 @@ class DateDataFixed(DataFixed):
         if self.__CheckData__(data):
             date = re.split(self.__Patterns__, data)
             date = list(filter(lambda x: len(x) != 0, date))
-            return True, date[0], date[1], date[2]
+            return ConfidenceLevel.Confident, date[0], date[1], date[2]
 
         year = ''
         month = ''
@@ -151,7 +153,7 @@ class DateDataFixed(DataFixed):
             elif len(year) == 2:
                 year = '20' + year
             else:
-                return False, year, month, day
+                return ConfidenceLevel.Bad, year, month, day
         else:
             if len(data) > 4:
                 year = data[0:4]
@@ -191,7 +193,7 @@ class DateDataFixed(DataFixed):
             elif len(day) == 1:
                 day = '0' + day
         else:
-            return False, year, month, day
+            return ConfidenceLevel.Bad, year, month, day
 
-        return True, year, month, day
+        return ConfidenceLevel.Fixed, year, month, day
 
