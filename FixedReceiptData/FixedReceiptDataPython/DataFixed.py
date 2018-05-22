@@ -23,20 +23,20 @@ class DataFixed(object):
         self.__ResultPath__ = resultPath
         self.__ValidatedPath__ = validatedPath
 
-        self.__BeforeFixed__();
+        self.__BeforeFixed__()
 
-        #self.__Handler__('', '10101_680.jpg.json')
+        self.__Handler__('', '1524103043889_32.48_6.00_38.48.jpg.json')
         self.__VisitFolder__(self.__Handler__)
 
-        self.__AfterFixed__();
+        self.__AfterFixed__()
 
 
     def __BeforeFixed__(self):
         pass
 
 
-    def __FixedData__(self, validateJson, resultJson):
-        pass
+    def __FixedData__(self, resultJson):
+        return ''
 
 
     def __FixedDataWithValidate__(self, validateJson, resultJson):

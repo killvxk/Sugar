@@ -5,18 +5,20 @@ import os, shutil
 import sys
 import random
 from enum import Enum
+import re
+import json
 
-import PIL
 from PIL import Image
 from PIL import ImageFilter
 from PIL import ImageDraw
+from PIL import ImageFont
 
-from keras.datasets import mnist
-from keras.preprocessing.image import img_to_array, array_to_img
+import cv2
+import numpy as np
 
 MockIndex = 1
 
-def Vistor(rootdir):
+def VistorFolder(rootdir):
     fileList = []
     if not os.path.exists(rootdir):
         return
@@ -25,10 +27,10 @@ def Vistor(rootdir):
     for name in names:
         if os.path.isdir(rootdir + name):
             subdir = rootdir + name + '/'
-            subnames = Vistor(subdir)
+            subnames = VistorFolder(subdir)
             for subname in subnames:
                 fileList.append(subname)
-        elif os.path.splitext(name)[1] == '.jpg':
+        else:
             fileList.append(rootdir + name)
 
     return fileList
@@ -138,10 +140,102 @@ def Generate(mockType, fileList, rate, InOutputPath):
 
     print('End Generate')
 
+
+def DrawText(text, bgImage):    
+    image = Image.new('RGBA', (3 * 24, 24), color=(0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype('C:/Windows/Fonts/simhei.ttf', int(24.0 * 3.0 / len(text)), encoding="unic")
+    draw.text((0, 0), text, (0, 0, 0, 160), font)
+    image = image.rotate(random.uniform(-5, 5), resample = Image.BICUBIC, expand = 1)
+    scaleWidth = int(bgImage.height / image.height * image.width)
+    image = image.resize((scaleWidth, bgImage.height), resample = Image.BICUBIC)
+    bgImageCrop = bgImage.crop(box=(0, 0, scaleWidth, bgImage.height))
+    image = Image.alpha_composite(bgImageCrop, image)
+    return image.convert(mode='RGB')
+
+
+def MockStations():
+    stations = re.split(u'\|', open('C:/Users/User/Desktop/station/newstations.txt').read())
+    infopath = 'C:/Users/User/Desktop/station/info/'
+    backgroundList = VistorFolder('C:/Users/User/Desktop/station/background/')
+
+    if False:
+        length = len(backgroundList)
+        for station in stations:
+            background = backgroundList[int(random.uniform(0, length))]
+            filepath, filename = os.path.split(background)
+            filename,fileext = os.path.splitext(filename)
+            info = json.loads(open(infopath + filename + '.txt').read())
+
+            with Image.open(background) as bgImage:
+                bgImage = bgImage.convert(mode = 'RGBA')
+
+                outputpath = 'C:/Users/User/Desktop/station/output/' + station + '-' + filename
+                print(station + '-' + filename)
+
+                text = station
+                while len(text) < 3:
+                    text = text[0:1] + ' ' + text[1:]
+
+                image = DrawText(text, bgImage)
+                image.save(outputpath + '.jpg')
+
+                info[0]['region'] = [0, 0, image.width, image.height]
+                info[0]['result'] = [text]
+                with open(outputpath + '.txt', mode='w') as file:
+                    file.write(json.dumps(info))
+
+    if True:
+        for background in backgroundList:
+            with Image.open(background) as bgImage:
+                filepath, filename = os.path.split(background)
+                filename,fileext = os.path.splitext(filename)
+                info = json.loads(open(infopath + filename + '.txt').read())
+                bgImage = bgImage.convert(mode = 'RGBA')
+                for station in stations:
+                    outputpath = 'C:/Users/User/Desktop/station/output/' + station + '-' + filename
+                    print(station + '-' + filename + '.jpg')
+
+                    text = station
+                    while len(text) < 3:
+                        text = text[0:1] + ' ' + text[1:]
+
+                    image = DrawText(text, bgImage)
+                    image.save(outputpath + '.jpg')
+
+                    info[0]['region'] = [0, 0, image.width, image.height]
+                    info[0]['result'] = [text]
+                    with open(outputpath + '.txt', mode='w') as file:
+                        file.write(json.dumps(info))
+
+
+def SIFT():
+    detector = cv2.xfeatures2d.SIFT_create()
+
+    img1 = cv2.imread('C:/Users/User/Desktop/header.jpg')
+    gray1 = cv2.cvtColor(img1,cv2.COLOR_BGR2GRAY)  
+    kp1, des1 = detector.detectAndCompute(img1, None)
+    #cv2.drawKeypoints(gray1,keypoints1, img1)  
+
+    img2 = cv2.imread('C:/Users/User/Desktop/headerInvert.jpg')
+    gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)  
+    kp2, des2 = detector.detectAndCompute(img2, None) 
+    #cv2.drawKeypoints(gray2,keypoints2, img2)  
+
+    bf = cv2.BFMatcher()  
+    matches = bf.knnMatch(des1, des2, k=2) 
+
+    #cv2.imshow('test1',img1)
+    #cv2.imshow('test2', img2)
+    good = []  
+    for m, n in matches:  
+        if m.distance < 0.75 * n.distance:  
+            good.append([m])  
+    img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, good, None, flags=2)  
+    cv2.imshow('matches', img3)
+    cv2.waitKey(0)
+
+
 if __name__ == '__main__':
-    (x_train, y_train), (x_test, y_test) = mnist.load_data('C:/Users/User/Desktop/train-images.idx3-ubyte');
-    for index in range(0, x_train.size):
-        imageResult = Image.fromarray(x_train[index])
-        imageResult.save('C:/Users/User/Desktop/output/' + str(y_train[index]) + '-' + str(index) + '.jpg');
-    #fileList = Vistor('C:/Users/User/Desktop/Test/')
-    #Generate(EMock.MIX, fileList, 1.0, 'C:/Users/User/Desktop/output/')
+    #MockStations()
+    SIFT()

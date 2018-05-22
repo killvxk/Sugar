@@ -60,10 +60,12 @@ class AmountDataFixed(DataFixed):
             print('Validated ' + validated_before_tax + ', ' + validated_tax + ', ' + validated_after_tax)
             print('Fixed Falied!')
 
+
     def __AfterFixed__(self):
         print('Error Count ' + str(self.__ErrorCount__) + ', Fixed Count ' + str(self.__FixedCount__))
 
         print('\n<=================End Fixed Amount Data')
+
 
     def __ParseData__(self, jsondata):
         before_tax = ''
@@ -222,7 +224,7 @@ class AmountDataFixed(DataFixed):
 
         if length and similarity > 0.49999:
             if length == len(before_tax):
-                patterns = ( ( '8', '6', '0' ) , ( '1', '4', '7' ), ( '3', '8' ), ( '3', '7' ), ('0', '4') );
+                patterns = ( ( '8', '6', '0' ) , ( '1', '4', '7' ), ( '3', '8' ), ( '3', '7' ), ('0', '4') )
                 for index in range(length):
                     if fixed_before_tax[index] != before_tax[index]:
                         match = False

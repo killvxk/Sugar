@@ -122,7 +122,7 @@ class DateDataFixed(DataFixed):
         date = list(map(lambda x: int(x), date))
 
         if date[0] > self.__Now__.year or date[1] > 12 or date[1] < 1 or date[2] > 31 or date[2] < 1:
-            return False;
+            return False
 
         return True
 
