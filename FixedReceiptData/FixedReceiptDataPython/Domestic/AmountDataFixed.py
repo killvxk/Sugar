@@ -11,23 +11,23 @@ class AmountDataFixed(DataFixed):
         DataFixed.__init__(self)
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
-        self.__TaxRate__ = (Decimal('0.03'), Decimal('0.05'), Decimal('0.06'), Decimal('0.11'), Decimal('0.17'))
-        self.__Error__ = np.arange(Decimal('-0.09'), Decimal('0.1'), Decimal('0.01'), Decimal)
-        self.__NumberPatterns__ = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' )
+        self.__TaxRate__ = (Decimal(u'0.03'), Decimal(u'0.05'), Decimal(u'0.06'), Decimal(u'0.11'), Decimal(u'0.16'), Decimal(u'0.17'))
+        self.__Error__ = np.arange(Decimal(u'-0.09'), Decimal(u'0.1'), Decimal(u'0.01'), Decimal)
+        self.__NumberPatterns__ = (u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', u'.' )
 
 
     def __BeforeFixed__(self):
-        print('Start Fixed Amount Data=================>\n')
+        print(u'Start Fixed Amount Data=================>\n')
 
 
     def __FixedData__(self, resultJson):
         result_before_tax, result_tax, result_after_tax = self.__ParseData__(resultJson)
 
-        print(result_before_tax + ', ' + result_tax + ', ' + result_after_tax + ' Fixed To ')
+        print(result_before_tax + u', ' + result_tax + u', ' + result_after_tax + u' Fixed To ')
 
         confidencelevel, result_before_tax, result_tax, result_after_tax = self.__FixedAmountData__(result_before_tax, result_tax, result_after_tax)
 
-        print(result_before_tax + ', ' + result_tax + ', ' + result_after_tax)
+        print(result_before_tax + u', ' + result_tax + u', ' + result_after_tax)
 
         return confidencelevel, result_before_tax, result_tax, result_after_tax
 
@@ -37,34 +37,34 @@ class AmountDataFixed(DataFixed):
         validated_before_tax, validated_tax, validated_after_tax = self.__ParseData__(validateJson)
 
         if not self.__CheckData__(validated_before_tax) or not self.__CheckData__(validated_tax) or not self.__CheckData__(validated_after_tax):
-            print('Validated Data Error')
+            print(u'Validated Data Error')
             return
 
         if validated_before_tax != result_before_tax or validated_tax != result_tax or validated_after_tax != result_after_tax:
             self.__ErrorCount__ += 1
         else:
-            print('Validated Equal To Result')
+            print(u'Validated Equal To Result')
             return
 
-        print('Validated Not Equal To Result')
-        print(result_before_tax + ', ' + result_tax + ', ' + result_after_tax + ' Fixed To ')
+        print(u'Validated Not Equal To Result')
+        print(result_before_tax + u', ' + result_tax + u', ' + result_after_tax + u' Fixed To ')
 
         confidencelevel, result_before_tax, result_tax, result_after_tax = self.__FixedAmountData__(result_before_tax, result_tax, result_after_tax)
 
-        print(result_before_tax + ', ' + result_tax + ', ' + result_after_tax)
+        print(result_before_tax + u', ' + result_tax + u', ' + result_after_tax)
 
         if validated_before_tax == result_before_tax and validated_tax == result_tax and validated_after_tax == result_after_tax:
             self.__FixedCount__ += 1
-            print('Fixed Success!')
+            print(u'Fixed Success!')
         else:
-            print('Validated ' + validated_before_tax + ', ' + validated_tax + ', ' + validated_after_tax)
-            print('Fixed Falied!')
+            print(u'Validated ' + validated_before_tax + u', ' + validated_tax + u', ' + validated_after_tax)
+            print(u'Fixed Falied!')
 
 
     def __AfterFixed__(self):
-        print('Error Count ' + str(self.__ErrorCount__) + ', Fixed Count ' + str(self.__FixedCount__))
+        print(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
 
-        print('\n<=================End Fixed Amount Data')
+        print(u'\n<=================End Fixed Amount Data')
 
 
     def __ParseData__(self, jsondata):
@@ -72,22 +72,22 @@ class AmountDataFixed(DataFixed):
         tax = ''
         after_tax = ''
 
-        if jsondata == None or not isinstance(jsondata, dict) or jsondata['regions'] == None:
+        if jsondata == None or not isinstance(jsondata, dict) or jsondata[u'regions'] == None:
             return before_tax, tax, after_tax
 
-        regions = jsondata['regions']
+        regions = jsondata[u'regions']
 
         for region in regions:
-            if region['cls'] == None or region['result'] == None:
+            if region[u'cls'] == None or region[u'result'] == None:
                 continue
 
-            cls = region['cls']
+            cls = region[u'cls']
             if cls == 4:
-                before_tax = region['result'][0]
+                before_tax = region[u'result'][0]
             elif cls == 8:
-                tax = region['result'][0]
+                tax = region[u'result'][0]
             elif cls == 9:
-                after_tax = region['result'][0]
+                after_tax = region[u'result'][0]
 
         return before_tax, tax, after_tax
 
@@ -100,14 +100,14 @@ class AmountDataFixed(DataFixed):
             if ch not in self.__NumberPatterns__:
                 return False
 
-        return data.count('.') == 1
+        return data.count(u'.') <= 1
 
 
     def __CheckData__(self, data):
         if not self.__CheckNumber__(data):
             return False
 
-        dotindex = data.find('.')
+        dotindex = data.find(u'.')
         if (dotindex != -1 and (len(data) - dotindex) == 3):
             return True
 
@@ -148,7 +148,7 @@ class AmountDataFixed(DataFixed):
 
         for rate in self.__TaxRate__:
             for error in self.__Error__:
-                temp_before_tax = (d_after_tax / (Decimal('1.0') + rate)) + error
+                temp_before_tax = (d_after_tax / (Decimal(u'1.0') + rate)) + error
                 temp_tax = self.__Round__(temp_before_tax * rate)
                 if ((int(temp_before_tax * 100) % 100 + int(temp_tax * 100) % 100) % 100) == (int(d_after_tax * 100) % 100):
                     fixed = self.__DoubleToString__(temp_before_tax)
@@ -185,8 +185,8 @@ class AmountDataFixed(DataFixed):
                     return True, self.__FormatData__(before_tax), self.__FormatData__(tax), self.__FormatData__(fixed)
 
         similarity = Decimal(0.0)
-        fixed_before_tax = ''
-        fixed_after_tax = ''
+        fixed_before_tax = u''
+        fixed_after_tax = u''
         for rate in self.__TaxRate__:
             for error in self.__Error__:
                 temp_before_tax = (d_tax / rate) + error
@@ -224,7 +224,7 @@ class AmountDataFixed(DataFixed):
 
         if length and similarity > 0.49999:
             if length == len(before_tax):
-                patterns = ( ( '8', '6', '0' ) , ( '1', '4', '7' ), ( '3', '8' ), ( '3', '7' ), ('0', '4') )
+                patterns = ( ( u'8', u'6', u'0' ) , ( u'1', u'4', u'7' ), ( u'3', u'8' ), ( u'3', u'7' ), ( u'0', u'4' ) )
                 for index in range(length):
                     if fixed_before_tax[index] != before_tax[index]:
                         match = False
@@ -239,7 +239,7 @@ class AmountDataFixed(DataFixed):
                 if similarity < 0.6 and max(length, len(before_tax) * similarity) > 3.0:
                     return False
 
-            return True
+            return len(before_tax) == len(fixed_before_tax) or Utils.Similarity(before_tax, fixed_before_tax) == 1
 
         return False
 
@@ -249,16 +249,16 @@ class AmountDataFixed(DataFixed):
         if length == 0:
             return ''
 
-        dotindex = amountdata.find('.')
+        dotindex = amountdata.find(u'.')
         if dotindex != -1:
             if (length - dotindex) > 2:
                 return amountdata[0: dotindex + 3]
             elif (length - dotindex) == 2:
-                return amountdata + '0'
+                return amountdata + u'0'
             elif (length - dotindex) == 1:
-                return amountdata + '00'
+                return amountdata + u'00'
         else:
-            return amountdata + '.00'
+            return amountdata + u'.00'
 
 
     def __Round__(self, value):
@@ -275,10 +275,10 @@ class AmountDataFixed(DataFixed):
         length = len(value)
 
         if (length >= 3):
-            return value[0:length - 2] + '.' + value[length - 2:length]
+            return value[0:length - 2] + u'.' + value[length - 2:length]
         else:
             value = str(invalue)
-            dotindex = value.find('.')
+            dotindex = value.find(u'.')
             if dotindex != -1:
                 return value[0: dotindex + 3]
 

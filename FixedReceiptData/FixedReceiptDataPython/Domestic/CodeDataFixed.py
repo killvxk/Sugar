@@ -9,20 +9,20 @@ class CodeDataFixed(DataFixed):
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
         self.__NumberCount__ = 10
-        self.__NumberPatterns__ = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+        self.__NumberPatterns__ = (u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9')
 
 
     def __BeforeFixed__(self):
-        print('Start Fixed Code Data=================>\n')
+        print(u'Start Fixed Code Data=================>\n')
 
     
     def __FixedData__(self, resultJson):
         result_firstcodelist, result_secondcodelist = self.__ParseData__(resultJson)
         if len(result_firstcodelist) == 0:
-            print('Data Error')
-            return
+            print(u'Data Error')
+            return ConfidenceLevel.Bad, ''
 
-        print(result_firstcodelist[0] + ' Fixed To ')
+        print(result_firstcodelist[0] + u' Fixed To ')
         
         confidencelevel, code = self.__FixedCodeData__(result_firstcodelist, result_secondcodelist)
 
@@ -36,17 +36,17 @@ class CodeDataFixed(DataFixed):
         validated_firstcodelist, validated_secondcodelist = self.__ParseData__(validateJson)
 
         if len(validated_firstcodelist) == 0 or len(result_firstcodelist) == 0 or not self.__CheckData__(validated_firstcodelist[0]):
-            print('Validated Data Error')
+            print(u'Validated Data Error')
             return
 
         if validated_firstcodelist[0] != result_firstcodelist[0]:
             self.__ErrorCount__ += 1
         else:
-            print('Validated Equal To Result')
+            print(u'Validated Equal To Result')
             return
 
-        print('Validated Not Equal To Result')
-        print(result_firstcodelist[0] + ' Fixed To ')
+        print(u'Validated Not Equal To Result')
+        print(result_firstcodelist[0] + u' Fixed To ')
         
         confidencelevel, code = self.__FixedCodeData__(result_firstcodelist, result_secondcodelist)
 
@@ -54,47 +54,47 @@ class CodeDataFixed(DataFixed):
 
         if validated_firstcodelist[0] == code:
             self.__FixedCount__ += 1
-            print('Fixed Success!')
+            print(u'Fixed Success!')
         else:
-            print('Validated ' + validated_firstcodelist[0])
-            print('Fixed Falied!')
+            print(u'Validated ' + validated_firstcodelist[0])
+            print(u'Fixed Falied!')
 
 
     def __AfterFixed__(self):
-        print('Error Count ' + str(self.__ErrorCount__) + ', Fixed Count ' + str(self.__FixedCount__))
+        print(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
 
-        print('\n<=================End Fixed Code Data')
+        print(u'\n<=================End Fixed Code Data')
 
 
     def __ParseData__(self, jsondata):
         firstcodelist = []
         secondcodelist = []
 
-        if jsondata == None or not isinstance(jsondata, dict) or jsondata['regions'] == None:
+        if jsondata == None or not isinstance(jsondata, dict) or jsondata[u'regions'] == None:
             return firstcodelist, secondcodelist
 
-        regions = jsondata['regions']
+        regions = jsondata[u'regions']
 
         for region in regions:
-            if region['cls'] == None or region['result'] == None or region['ref_result'] == None:
+            if region[u'cls'] == None or region[u'result'] == None or region[u'ref_result'] == None:
                 continue
 
-            cls = region['cls']
+            cls = region[u'cls']
             if cls == 1:
-                for result in region['result']:
+                for result in region[u'result']:
                     if len(result):
                         firstcodelist.append(result)
 
-                for result in region['ref_result']:
+                for result in region[u'ref_result']:
                     if len(result):
                         firstcodelist.append(result)
 
             elif cls == 6:
-                for result in region['result']:
+                for result in region[u'result']:
                     if len(result):
                         secondcodelist.append(result)
 
-                for result in region['ref_result']:
+                for result in region[u'ref_result']:
                     if len(result):
                         secondcodelist.append(result)
 

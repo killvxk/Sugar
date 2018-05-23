@@ -12,22 +12,22 @@ class AmountDataFixed(DataFixed):
         DataFixed.__init__(self)
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
-        self.__NumberPatterns__ = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' )
+        self.__NumberPatterns__ = (u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', u'.' )
 
 
     def __BeforeFixed__(self):
-        print('Start Fixed Amount Data=================>\n')
+        print(u'Start Fixed Amount Data=================>\n')
 
 
     def __FixedData__(self, resultJson):
         result_subtotal, result_tip, result_tip_rate, result_total = self.__ParseData__(resultJson)
 
-        print(result_subtotal + ', ' + result_tip + ', ' + result_total + ' Fixed To ')
+        print(result_subtotal + u', ' + result_tip + u', ' + result_total + u' Fixed To ')
 
         result_tip_rate = self.__FixedTipRate__(result_tip_rate)
         confidencelevel, result_subtotal, result_tip, result_total = self.__FixedAmountData__(result_before_tax, result_tax, result_after_tax)
 
-        print(result_subtotal + ', ' + result_tip + ', ' + result_total)
+        print(result_subtotal + u', ' + result_tip + u', ' + result_total)
 
         return confidencelevel, result_subtotal, result_tip, result_tip_rate, result_total
 
@@ -37,35 +37,35 @@ class AmountDataFixed(DataFixed):
         validated_subtotal, validated_tip, validated_tip_rate, validated_total = self.__ParseData__(validateJson)
 
         if not self.__CheckData__(validated_subtotal) or not self.__CheckData__(validated_tip) or not self.__CheckData__(validated_total):
-            print('Validated Data Error')
+            print(u'Validated Data Error')
             return
 
         if validated_subtotal != result_subtotal or validated_tip != result_tip or validated_total != result_total:
             self.__ErrorCount__ += 1
         else:
-            print('Validated Equal To Result')
+            print(u'Validated Equal To Result')
             return
 
-        print('Validated Not Equal To Result')
-        print(result_subtotal + ', ' + result_tip + ', ' + result_total + ' Fixed To ')
+        print(u'Validated Not Equal To Result')
+        print(result_subtotal + ', ' + result_tip + u', ' + result_total + u' Fixed To ')
 
         result_tip_rate = self.__FixedTipRate__(result_tip_rate)
         confidencelevel, result_subtotal, result_tip, result_total = self.__FixedAmountData__(result_subtotal, result_tip, result_total)
 
-        print(result_subtotal + ', ' + result_tip + ', ' + result_total)
+        print(result_subtotal + u', ' + result_tip + u', ' + result_total)
 
         if validated_subtotal == result_subtotal and validated_tip == result_tip and validated_total == result_total:
             self.__FixedCount__ += 1
-            print('Fixed Success!')
+            print(u'Fixed Success!')
         else:
-            print('Validated ' + validated_subtotal + ', ' + validated_tip + ', ' + validated_total)
-            print('Fixed Falied!')
+            print(u'Validated ' + validated_subtotal + u', ' + validated_tip + u', ' + validated_total)
+            print(u'Fixed Falied!')
 
 
     def __AfterFixed__(self):
-        print('Error Count ' + str(self.__ErrorCount__) + ', Fixed Count ' + str(self.__FixedCount__))
+        print(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
 
-        print('\n<=================End Fixed Amount Data')
+        print(u'\n<=================End Fixed Amount Data')
 
 
     def __ParseData__(self, jsondata):
@@ -74,24 +74,24 @@ class AmountDataFixed(DataFixed):
         tip_rate = ''
         total = ''
 
-        if jsondata == None or not isinstance(jsondata, dict) or jsondata['regions'] == None:
+        if jsondata == None or not isinstance(jsondata, dict) or jsondata[u'regions'] == None:
             return subtotal, tip, tip_rate, total
 
-        regions = jsondata['regions']
+        regions = jsondata[u'regions']
 
         for region in regions:
-            if region['cls'] == None or region['result'] == None:
+            if region[u'cls'] == None or region[u'result'] == None:
                 continue
 
-            cls = region['cls']
+            cls = region[u'cls']
             if cls == 3:
-                subtotal = region['result'][0]
+                subtotal = region[u'result'][0]
             elif cls == 5:
-                tip = region['result'][0]
+                tip = region[u'result'][0]
             elif cls == 6:
-                total = region['result'][0]
+                total = region[u'result'][0]
             elif cls == 11:
-                tip_rate = region['result'][0]
+                tip_rate = region[u'result'][0]
 
         return subtotal, tip, tip_rate, total
 
@@ -104,14 +104,14 @@ class AmountDataFixed(DataFixed):
             if ch not in self.__NumberPatterns__:
                 return False
 
-        return data.count('.') <= 1
+        return data.count(u'.') <= 1
 
 
     def __CheckData__(self, data):
         if not self.__CheckNumber__(data):
             return False
 
-        dotindex = data.find('.')
+        dotindex = data.find(u'.')
         if dotindex != -1 and (len(data) - dotindex) == 3:
             return True
 
@@ -163,7 +163,7 @@ class AmountDataFixed(DataFixed):
             return ''
 
         tokens = []
-        for token in re.split('%|\\$|,|:|-', tip_rate):
+        for token in re.split(u'%|\\$|,|:|-', tip_rate):
             if self.__CheckNumber__(token):
                 tokens.append(token)
 
@@ -172,9 +172,9 @@ class AmountDataFixed(DataFixed):
             if rate > 100:
                 tokens[0] = str(rate % 100)
 
-            return tokens[0] + '% tip = $' + tokens[1] + ', Total = $' + tokens[2]
+            return tokens[0] + u'% tip = $' + tokens[1] + u', Total = $' + tokens[2]
 
-        return ''
+        return u''
 
 
     def __NormalizeData__(self, amountdata):
@@ -182,10 +182,10 @@ class AmountDataFixed(DataFixed):
         if length == 0:
             return amountdata
 
-        amountdata = re.sub('\\$| |%|\\\\', '', amountdata)
+        amountdata = re.sub(u'\\$| |%|\\\\', '', amountdata)
 
         length = len(amountdata)
-        dotindex = amountdata.find('.')
+        dotindex = amountdata.find(u'.')
         if dotindex != -1:
             if (length - dotindex) > 2:
                 return amountdata[0: dotindex + 3]
@@ -198,26 +198,26 @@ class AmountDataFixed(DataFixed):
         if length == 0:
             return ''
 
-        while len(amountdata) > 1 and amountdata[0] == '0' and amountdata[1] == '0':
+        while len(amountdata) > 1 and amountdata[0] == u'0' and amountdata[1] == u'0':
             amountdata = amountdata[1:]
 
-        dotindex = amountdata.find('.')
+        dotindex = amountdata.find(u'.')
         if dotindex != -1:
             if (length - dotindex) > 2:
                 return amountdata[0: dotindex + 3]
             elif (length - dotindex) == 2:
-                return amountdata + '0'
+                return amountdata + u'0'
             elif (length - dotindex) == 1:
-                return amountdata + '00'
+                return amountdata + u'00'
         else:
-            return amountdata + '.00'
+            return amountdata + u'.00'
 
 
     def __MissDot__(self, amountdata):
-        dotindex = amountdata.find('.')
+        dotindex = amountdata.find(u'.')
         return dotindex == -1
     
     def __MissInteger__(self, amountdata):
-        dotindex = amountdata.find('.')
+        dotindex = amountdata.find(u'.')
         return dotindex == 0
 

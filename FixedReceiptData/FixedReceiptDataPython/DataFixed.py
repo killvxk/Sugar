@@ -1,6 +1,7 @@
 import os
 import json
 from enum import Enum
+import codecs
 
 class ConfidenceLevel(Enum):
     Confident = 'Confident'
@@ -25,7 +26,7 @@ class DataFixed(object):
 
         self.__BeforeFixed__()
 
-        self.__Handler__('', '1524103043889_32.48_6.00_38.48.jpg.json')
+        self.__Handler__(u'', '10101_283.jpg.json')
         self.__VisitFolder__(self.__Handler__)
 
         self.__AfterFixed__()
@@ -61,12 +62,12 @@ class DataFixed(object):
 
 
     def __Handler__(self, subfolder, filename):
-        print('Start Handler ' + filename)
+        print(u'Start Handler ' + filename)
 
-        validateJson = json.load(open(self.__ValidatedPath__ + subfolder + filename, encoding='utf-8'))
-        resultJson = json.load(open(self.__ResultPath__ + subfolder + filename, encoding='utf-8'))
+        validateJson = json.load(codecs.open(self.__ValidatedPath__ + subfolder + filename, encoding='utf-8'))
+        resultJson = json.load(codecs.open(self.__ResultPath__ + subfolder + filename, encoding='utf-8'))
 
         self.__FixedDataWithValidate__(resultJson, validateJson)
 
-        print('End Handler ' + filename + '\n')
+        print(u'End Handler ' + filename + '\n')
 

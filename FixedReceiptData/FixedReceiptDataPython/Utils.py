@@ -24,4 +24,4 @@ def Similarity(str1, str2):
     return diffarray[len1][len2]
 
 def SimilarityRate(str1, str2):
-    return 1.0 - Similarity(str1, str2) / max(len(str1), len(str2))
+    return 1.0 - float(Similarity(str1, str2)) / max(len(str1), len(str2))

@@ -114,8 +114,8 @@ namespace Domestic
 
 	bool AmountDataFixed::CheckData(const std::string &data)
 	{
-		size_t dotIndex = data.rfind('.');
-		if (dotIndex != std::string::npos && (data.length() - data.rfind('.')) == 3)
+		size_t dotIndex = data.rfind(u'.');
+		if (dotIndex != std::string::npos && (data.length() - data.rfind(u'.')) == 3)
 			return true;
 
 		return false;
@@ -140,7 +140,7 @@ namespace Domestic
 	void AmountDataFixed::FixedAmountData(std::string &data) {
 		if (data.length() == 0) return;
 
-		size_t dotIndex = data.rfind('.');
+		size_t dotIndex = data.rfind(u'.');
 		if (dotIndex != std::string::npos) {
 			if ((data.length() - dotIndex) > 2) {
 				data = data.substr(0, dotIndex + 3);
@@ -330,7 +330,7 @@ namespace Domestic
 		}
 		else {
 			value = std::to_string(invalue);
-			size_t dotIndex = value.find('.');
+			size_t dotIndex = value.find(u'.');
 			if (dotIndex != std::string::npos) {
 				return value.substr(0, dotIndex + 3);
 			}

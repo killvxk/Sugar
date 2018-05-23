@@ -41,8 +41,10 @@
     <Compile Include="Domestic\NumberDataFixed.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Domestic\__init__.py" />
     <Compile Include="FixedReceiptData.py" />
     <Compile Include="International\AmountDataFixed.py" />
+    <Compile Include="International\__init__.py" />
     <Compile Include="Utils.py">
       <SubType>Code</SubType>
     </Compile>
@@ -52,6 +54,7 @@
     <Folder Include="International\" />
   </ItemGroup>
   <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|2.7" />
     <InterpreterReference Include="Global|PythonCore|3.6" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

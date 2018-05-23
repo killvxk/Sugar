@@ -1,3 +1,6 @@
+#!/usr/bin/env python2
+# -*- coding:utf-8 -*-
+
 import datetime
 import re
 
@@ -11,28 +14,28 @@ class DateDataFixed(DataFixed):
         DataFixed.__init__(self)
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
-        self.__Patterns__ = '年|月|日|-|\.| '
+        self.__Patterns__ = u'年|月|日|-|\.| '
         self.__Now__ = datetime.datetime.now()
-        self.__MonthSwapMapping_ = {'13' : '10'}
+        self.__MonthSwapMapping_ = {u'13' : u'10'}
 
 
     def __BeforeFixed__(self):
-        print('Start Fixed Date Data=================>\n')
+        print(u'Start Fixed Date Data=================>\n')
 
     
     def __FixedData__(self, resultJson):
         result_datelist = self.__ParseData__(resultJson)
         if len(result_datelist) == 0:
-            print('Data Error')
-            return
+            print(u'Data Error')
+            return ConfidenceLevel.Bad, ''
 
-        print(result_datelist[0] + ' Fixed To ')
+        print(result_datelist[0] + u' Fixed To ')
 
         date = ''
         confidencelevel = ConfidenceLevel.Bad
         for result in result_datelist:
             confidencelevel, year, month, day = self.__FixedDateData__(result)
-            date = year + '年' + month + '月' + day + '日'
+            date = year + u'年' + month + u'月' + day + u'日'
             if (confidencelevel == ConfidenceLevel.Confident or confidencelevel == ConfidenceLevel.Fixed) and self.__CheckData__(date):
                 break
 
@@ -46,22 +49,22 @@ class DateDataFixed(DataFixed):
         validated_datelist = self.__ParseData__(validateJson)
 
         if len(validated_datelist) == 0 or len(result_datelist) == 0 or not self.__CheckData__(validated_datelist[0]):
-            print('Validated Data Error')
+            print(u'Validated Data Error')
             return
 
         if validated_datelist[0] != result_datelist[0]:
             self.__ErrorCount__ += 1
         else:
-            print('Validated Equal To Result')
+            print(u'Validated Equal To Result')
             return
 
-        print('Validated Not Equal To Result')
-        print(result_datelist[0] + ' Fixed To ')
+        print(u'Validated Not Equal To Result')
+        print(result_datelist[0] + u' Fixed To ')
 
         date = ''
         for result in result_datelist:
             confidencelevel, year, month, day = self.__FixedDateData__(result)
-            date = year + '年' + month + '月' + day + '日'
+            date = year + u'年' + month + u'月' + day + u'日'
             if (confidencelevel == ConfidenceLevel.Confident or confidencelevel == ConfidenceLevel.Fixed) and self.__CheckData__(date):
                 break
 
@@ -69,37 +72,37 @@ class DateDataFixed(DataFixed):
 
         if validated_datelist[0] == date:
             self.__FixedCount__ += 1
-            print('Fixed Success!')
+            print(u'Fixed Success!')
         else:
-            print('Validated ' + validated_datelist[0])
-            print('Fixed Falied!')
+            print(u'Validated ' + validated_datelist[0])
+            print(u'Fixed Falied!')
 
 
     def __AfterFixed__(self):
-        print('Error Count ' + str(self.__ErrorCount__) + ', Fixed Count ' + str(self.__FixedCount__))
+        print(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
 
-        print('\n<=================End Fixed Date Data')
+        print(u'\n<=================End Fixed Date Data')
 
 
     def __ParseData__(self, jsondata):
         datelist = []
 
-        if jsondata == None or not isinstance(jsondata, dict) or jsondata['regions'] == None:
+        if jsondata == None or not isinstance(jsondata, dict) or jsondata[u'regions'] == None:
             return datelist
 
-        regions = jsondata['regions']
+        regions = jsondata[u'regions']
 
         for region in regions:
-            if region['cls'] == None or region['result'] == None or region['ref_result'] == None:
+            if region[u'cls'] == None or region[u'result'] == None or region[u'ref_result'] == None:
                 continue
 
-            cls = region['cls']
+            cls = region[u'cls']
             if cls == 3:
-                for result in region['result']:
+                for result in region[u'result']:
                     if len(result):
                         datelist.append(result)
 
-                for result in region['ref_result']:
+                for result in region[u'ref_result']:
                     if len(result):
                         datelist.append(result)
 
@@ -137,29 +140,29 @@ class DateDataFixed(DataFixed):
         month = ''
         day = ''
 
-        yearlist = list(re.findall('^(\d*)[年|-|\.]', data))
+        yearlist = list(re.findall(u'^(\d*)[年|-|\.]', data))
         if len(yearlist):
             year = yearlist[0]
             if len(year) > 4:
-                while (len(year) > 4 and year[0] != '2'):
+                while (len(year) > 4 and year[0] != u'2'):
                     year = year[1:]
 
             if len(year) == 4:
-                if year[0] != '2':
-                    year = '2' + year[1:]
+                if year[0] != u'2':
+                    year = u'2' + year[1:]
                 pass
             elif len(year) == 3:
-                year = '2' + year
+                year = u'2' + year
             elif len(year) == 2:
-                year = '20' + year
+                year = u'20' + year
             else:
                 return ConfidenceLevel.Bad, year, month, day
         else:
             if len(data) > 4:
                 year = data[0:4]
-                data = data[0:4] + '年' + data[4:]
+                data = data[0:4] + u'年' + data[4:]
 
-        monthlist = list(re.findall('[年|-|\.](\d*)[月|-|\.]', data))
+        monthlist = list(re.findall(u'[年|-|\.](\d*)[月|-|\.]', data))
         if len(monthlist):
             month = monthlist[0]
             if month in self.__MonthSwapMapping_:
@@ -169,18 +172,18 @@ class DateDataFixed(DataFixed):
                 if imonth < 1:
                     return False, year, month, day
                 elif imonth > 12 and imonth < 20:
-                    if month[1] == '7':
-                        month = month[0] + '1'
+                    if month[1] == u'7':
+                        month = month[0] + u'1'
             elif len(month) == 1:
-                month = '0' + month
+                month = u'0' + month
         else:
-            yearindex = re.search('[年|-|\.]', data).span()[1]
+            yearindex = re.search(u'[年|-|\.]', data).span()[1]
             temp = data[yearindex:]
             if len(temp) > 2:
                 month = temp[0:2]
-                data = data[0:yearindex] + month + '月' + data[yearindex + 2:]
+                data = data[0:yearindex] + month + u'月' + data[yearindex + 2:]
 
-        daylist = list(re.findall('[月|-|\.](\d*)日?', data))
+        daylist = list(re.findall(u'[月|-|\.](\d*)日?', data))
         if len(daylist):
             day = daylist[0]
             if len(day) > 2:
@@ -188,10 +191,10 @@ class DateDataFixed(DataFixed):
             elif len(day) == 2:
                 iday = int(day)
                 if iday > 31 and iday < 40:
-                    if day[1] == '6':
-                        day = day[0] + '0'
+                    if day[1] == u'6':
+                        day = day[0] + u'0'
             elif len(day) == 1:
-                day = '0' + day
+                day = u'0' + day
         else:
             return ConfidenceLevel.Bad, year, month, day
 
