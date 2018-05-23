@@ -7,9 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Python", "Python", "{CA7DE1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "C++", "C++", "{040025C8-4632-4091-A7B4-212256000FC8}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "DataFixed", "Python\Receipt\DataFixed.pyproj", "{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ReceiptFixed", "Python\Receipt\ReceiptFixed.pyproj", "{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataFixed", "C++\Receipt\DataFixed.vcxproj", "{D3AFB62D-80DD-4822-9290-A2BE6B70EBA7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReceiptFixed", "C++\Receipt\DataFixed.vcxproj", "{D3AFB62D-80DD-4822-9290-A2BE6B70EBA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

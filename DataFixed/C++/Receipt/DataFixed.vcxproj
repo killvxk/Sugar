@@ -169,7 +169,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>FixedReceiptData</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
-    <ProjectName>DataFixed</ProjectName>
+    <ProjectName>ReceiptFixed</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
