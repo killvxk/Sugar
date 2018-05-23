@@ -25,7 +25,7 @@ class AmountDataFixed(DataFixed):
         print(result_subtotal + u', ' + result_tip + u', ' + result_total + u' Fixed To ')
 
         result_tip_rate = self.__FixedTipRate__(result_tip_rate)
-        confidencelevel, result_subtotal, result_tip, result_total = self.__FixedAmountData__(result_before_tax, result_tax, result_after_tax)
+        confidencelevel, result_subtotal, result_tip, result_total = self.__FixedAmountData__(result_subtotal, result_tip, result_total)
 
         print(result_subtotal + u', ' + result_tip + u', ' + result_total)
 
@@ -217,6 +217,7 @@ class AmountDataFixed(DataFixed):
         dotindex = amountdata.find(u'.')
         return dotindex == -1
     
+
     def __MissInteger__(self, amountdata):
         dotindex = amountdata.find(u'.')
         return dotindex == 0

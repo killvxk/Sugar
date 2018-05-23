@@ -122,10 +122,10 @@ class CodeDataFixed(DataFixed):
 
         for first in firstdata:
             if self.__CheckData__(first):
-                return ConfidenceLevel.Fixed, first;
+                return ConfidenceLevel.Fixed, first
 
         for second in seconddata:
             if self.__CheckData__(second):
-                return ConfidenceLevel.Fixed, second;
+                return ConfidenceLevel.Fixed, second
 
         return ConfidenceLevel.Bad, firstdata[0]

@@ -2,6 +2,8 @@
 # -*- coding:utf-8 -*-
 import os
 import json
+import logging
+import traceback
 
 from Domestic.AmountDataFixed import AmountDataFixed as Domestic_AmountDataFixed
 from Domestic.DateDataFixed import DateDataFixed as Domestic_DateDataFixed
@@ -13,17 +15,20 @@ from DataFixed import ConfidenceLevel
 
 def FixedReceiptData(receiptData):
     try:
-        serverType = receiptData.get(u'serverType', u'')
-        if serverType == u'Domestic':
+        
+        serverType = receiptData.get(u'servertype', u'').lower()
+        logging.info(u'servertype: {}'.format(serverType))
+        if serverType == u'domestic':
             return FixedReceiptDataForDomestic(receiptData)
         
-        if serverType == u'International':
+        if serverType == u'international':
             return FixedReceiptDataForInternational(receiptData)
         
         return receiptData
     
     except Exception as err:
-        print(u'FixedReceiptData err...', err)
+        traceback.print_exc()
+        logging.info(u'FixedReceiptData err: {}'.format(err))
         return receiptData
     
 
@@ -88,8 +93,8 @@ def FixedReceiptDataForInternational(receiptData):
 
 
 if __name__ == '__main__':
-    dataFixed = Domestic_AmountDataFixed()
-    #dataFixed = Domestic_DateDataFixed()
+    #dataFixed = Domestic_AmountDataFixed()
+    dataFixed = Domestic_DateDataFixed()
     #dataFixed = Domestic_CodeDataFixed()
     #dataFixed = Domestic_NumberDataFixed()
     #dataFixed = Domestic_CheckCodeFixed()

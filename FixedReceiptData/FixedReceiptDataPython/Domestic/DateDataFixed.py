@@ -3,6 +3,7 @@
 
 import datetime
 import re
+import logging
 
 from DataFixed import DataFixed
 from DataFixed import ConfidenceLevel
@@ -14,7 +15,7 @@ class DateDataFixed(DataFixed):
         DataFixed.__init__(self)
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
-        self.__Patterns__ = u'年|月|日|-|\.| '
+        self.__Patterns__ = u'年|月|日|-|\\.| '
         self.__Now__ = datetime.datetime.now()
         self.__MonthSwapMapping_ = {u'13' : u'10'}
 
@@ -29,7 +30,7 @@ class DateDataFixed(DataFixed):
             print(u'Data Error')
             return ConfidenceLevel.Bad, ''
 
-        print(result_datelist[0] + u' Fixed To ')
+        logging.info(result_datelist[0] + u' Fixed To ')
 
         date = ''
         confidencelevel = ConfidenceLevel.Bad
@@ -39,7 +40,7 @@ class DateDataFixed(DataFixed):
             if (confidencelevel == ConfidenceLevel.Confident or confidencelevel == ConfidenceLevel.Fixed) and self.__CheckData__(date):
                 break
 
-        print(date)
+        logging.info(date)
 
         return confidencelevel, date
 
@@ -59,7 +60,7 @@ class DateDataFixed(DataFixed):
             return
 
         print(u'Validated Not Equal To Result')
-        print(result_datelist[0] + u' Fixed To ')
+        logging.info(result_datelist[0] + u' Fixed To ')
 
         date = ''
         for result in result_datelist:
@@ -68,13 +69,13 @@ class DateDataFixed(DataFixed):
             if (confidencelevel == ConfidenceLevel.Confident or confidencelevel == ConfidenceLevel.Fixed) and self.__CheckData__(date):
                 break
 
-        print(date)
+        logging.info(date)
 
         if validated_datelist[0] == date:
             self.__FixedCount__ += 1
             print(u'Fixed Success!')
         else:
-            print(u'Validated ' + validated_datelist[0])
+            logging.info(u'Validated ' + validated_datelist[0])
             print(u'Fixed Falied!')
 
 
@@ -140,7 +141,7 @@ class DateDataFixed(DataFixed):
         month = ''
         day = ''
 
-        yearlist = list(re.findall(u'^(\d*)[年|-|\.]', data))
+        yearlist = list(re.findall(u'^(\\d*)[年|-|\\.]', data))
         if len(yearlist):
             year = yearlist[0]
             if len(year) > 4:
@@ -162,7 +163,7 @@ class DateDataFixed(DataFixed):
                 year = data[0:4]
                 data = data[0:4] + u'年' + data[4:]
 
-        monthlist = list(re.findall(u'[年|-|\.](\d*)[月|-|\.]', data))
+        monthlist = list(re.findall(u'[年|-|\\.](\d*)[月|-|\\.]', data))
         if len(monthlist):
             month = monthlist[0]
             if month in self.__MonthSwapMapping_:
@@ -177,13 +178,13 @@ class DateDataFixed(DataFixed):
             elif len(month) == 1:
                 month = u'0' + month
         else:
-            yearindex = re.search(u'[年|-|\.]', data).span()[1]
+            yearindex = re.search(u'[年|-|\\.]', data).span()[1]
             temp = data[yearindex:]
             if len(temp) > 2:
                 month = temp[0:2]
                 data = data[0:yearindex] + month + u'月' + data[yearindex + 2:]
 
-        daylist = list(re.findall(u'[月|-|\.](\d*)日?', data))
+        daylist = list(re.findall(u'[月|-|\\.](\\d*)日?', data))
         if len(daylist):
             day = daylist[0]
             if len(day) > 2:

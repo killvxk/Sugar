@@ -109,6 +109,6 @@ class CheckCodeFixed(DataFixed):
 
         for data in datalist:
             if self.__CheckData__(data):
-                return ConfidenceLevel.Fixed, data;
+                return ConfidenceLevel.Fixed, data
 
         return ConfidenceLevel.Bad, datalist[0]
