@@ -212,12 +212,12 @@ def MockStations():
 def SIFT():
     detector = cv2.xfeatures2d.SIFT_create()
 
-    img1 = cv2.imread('C:/Users/User/Desktop/header.jpg')
+    img1 = cv2.imread('C:/Users/User/Desktop/1.jpg')
     gray1 = cv2.cvtColor(img1,cv2.COLOR_BGR2GRAY)  
     kp1, des1 = detector.detectAndCompute(img1, None)
     #cv2.drawKeypoints(gray1,keypoints1, img1)  
 
-    img2 = cv2.imread('C:/Users/User/Desktop/headerInvert.jpg')
+    img2 = cv2.imread('C:/Users/User/Desktop/2.jpg')
     gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)  
     kp2, des2 = detector.detectAndCompute(img2, None) 
     #cv2.drawKeypoints(gray2,keypoints2, img2)  
