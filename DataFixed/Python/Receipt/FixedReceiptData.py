@@ -60,15 +60,15 @@ def FixedReceiptDataForDomestic(receiptData):
         else:
             summaryconfidencelevel = ConfidenceLevel.Confident
         
-    receiptData[u'fixedregions'] = [{u'cls':1, u'confidencelevel': code_confidencelevel.value, u'result':code}, 
-                                   {u'cls':2, u'confidencelevel': number_confidencelevel.value, u'result':number}, 
-                                   {u'cls':3, u'confidencelevel': date_confidencelevel.value, u'result':date}, 
-                                   {u'cls':4, u'confidencelevel': amount_confidencelevel.value, u'result':result_before_tax}, 
-                                   {u'cls':5, u'confidencelevel': checkcode_confidencelevel.value, u'result':checkcode},
-                                   {u'cls':8, u'confidencelevel': amount_confidencelevel.value, u'result':result_tax},
-                                   {u'cls':9, u'confidencelevel': amount_confidencelevel.value, u'result':result_after_tax},
-                                   {u'confidencelevel': summaryconfidencelevel.value}
+    receiptData[u'fixedregions'] = [{u'cls':1, u'confidencelevel': code_confidencelevel, u'result':code}, 
+                                   {u'cls':2, u'confidencelevel': number_confidencelevel, u'result':number}, 
+                                   {u'cls':3, u'confidencelevel': date_confidencelevel, u'result':date}, 
+                                   {u'cls':4, u'confidencelevel': amount_confidencelevel, u'result':result_before_tax}, 
+                                   {u'cls':5, u'confidencelevel': checkcode_confidencelevel, u'result':checkcode},
+                                   {u'cls':8, u'confidencelevel': amount_confidencelevel, u'result':result_tax},
+                                   {u'cls':9, u'confidencelevel': amount_confidencelevel, u'result':result_after_tax}
                                    ]
+    receiptData[u'confidencelevel'] = summaryconfidencelevel
 
     return receiptData
 
@@ -86,25 +86,26 @@ def FixedReceiptDataForInternational(receiptData):
     receiptData[u'fixedregions'] = [{u'cls':3, u'result':subtotal}, 
                                    {u'cls':5, u'result':tip}, 
                                    {u'cls':6, u'result':tip_rate}, 
-                                   {u'cls':11, u'result':total}, 
-                                   {u'confidencelevel': confidencelevel.value}
+                                   {u'cls':11, u'result':total}
                                    ]
+    receiptData[u'confidencelevel'] = summaryconfidencelevel.value
     return receiptData
 
 
 if __name__ == '__main__':
     #dataFixed = Domestic_AmountDataFixed()
-    dataFixed = Domestic_DateDataFixed()
+    #dataFixed = Domestic_DateDataFixed()
     #dataFixed = Domestic_CodeDataFixed()
     #dataFixed = Domestic_NumberDataFixed()
     #dataFixed = Domestic_CheckCodeFixed()
-    dataFixed.StartFixedFromPath(u'C:/Users/User/Desktop/receipt/Domestic/result/', u'C:/Users/User/Desktop/receipt/Domestic/validated/')
+    #dataFixed.StartFixedFromPath(u'C:/Users/User/Desktop/receipt/Domestic/result/', u'C:/Users/User/Desktop/receipt/Domestic/validated/')
     #dataFixed = International_AmountDataFixed()
     #dataFixed.StartFixedFromPath(u'C:/Users/User/Desktop/receipt/International/result/', 'C:/Users/User/Desktop/receipt/International/validated/')
     
-    #receiptData = json.load(open(u'../data/11111.json'))
-    #receiptData = FixedReceiptData(receiptData)
-    #print receiptData
-    #json.dump(receiptData,  open(u'../data/11111-2.json', "w"), indent = 4)
-    #file.close()
-    pass
+    with open(u'Receipt/data/11111.json') as src:
+        receiptData = json.load(src)
+        receiptData = FixedReceiptData(receiptData)
+        print receiptData
+        with open(u'Receipt/data/11111-2.json', "w") as dst:
+            json.dump(receiptData, dst, indent = 4)
+    

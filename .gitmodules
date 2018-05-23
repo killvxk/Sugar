@@ -1,6 +1,6 @@
 [submodule "MockImage/MockImageC++/rapidjson"]
 	path = MockImage/MockImageC++/rapidjson
 	url = https://github.com/Tencent/rapidjson.git
-[submodule "DataFixed/FixedReceiptDataC++/rapidjson"]
-	path = DataFixed/FixedReceiptDataC++/rapidjson
+[submodule "DataFixed/C++/Receipt/rapidjson"]
+	path = DataFixed/C++/Receipt/rapidjson
 	url = https://github.com/Tencent/rapidjson.git

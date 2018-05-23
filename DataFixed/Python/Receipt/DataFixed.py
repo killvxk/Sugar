@@ -26,7 +26,7 @@ class DataFixed(object):
 
         self.__BeforeFixed__()
 
-        self.__Handler__(u'', '10101_283.jpg.json')
+        #self.__Handler__(u'', '10101_283.jpg.json')
         self.__VisitFolder__(self.__Handler__)
 
         self.__AfterFixed__()

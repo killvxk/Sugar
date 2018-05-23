@@ -138,6 +138,7 @@
         }
     ], 
     "version": "4.9_20180418", 
+    "confidencelevel": "Bad", 
     "fixedregions": [
         {
             "result": "1200162130", 
@@ -173,9 +174,6 @@
             "result": "180.00.0", 
             "confidencelevel": "Bad", 
             "cls": 9
-        }, 
-        {
-            "confidencelevel": "Bad"
         }
     ]
 }

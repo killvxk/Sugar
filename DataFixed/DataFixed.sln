@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2011
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FixedReceiptDataC++", "FixedReceiptDataC++\FixedReceiptData.vcxproj", "{D3AFB62D-80DD-4822-9290-A2BE6B70EBA7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Python", "Python", "{CA7DE107-CF2B-4D3F-A859-7CC543F377D0}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "FixedReceiptDataPython", "FixedReceiptDataPython\FixedReceiptDataPython.pyproj", "{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "C++", "C++", "{040025C8-4632-4091-A7B4-212256000FC8}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "DataFixed", "Python\Receipt\DataFixed.pyproj", "{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataFixed", "C++\Receipt\DataFixed.vcxproj", "{D3AFB62D-80DD-4822-9290-A2BE6B70EBA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,6 +21,12 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Release|x64.ActiveCfg = Release|Any CPU
+		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Release|x86.ActiveCfg = Release|Any CPU
 		{D3AFB62D-80DD-4822-9290-A2BE6B70EBA7}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{D3AFB62D-80DD-4822-9290-A2BE6B70EBA7}.Debug|x64.ActiveCfg = Debug|x64
 		{D3AFB62D-80DD-4822-9290-A2BE6B70EBA7}.Debug|x64.Build.0 = Debug|x64
@@ -27,15 +37,13 @@ Global
 		{D3AFB62D-80DD-4822-9290-A2BE6B70EBA7}.Release|x64.Build.0 = Release|x64
 		{D3AFB62D-80DD-4822-9290-A2BE6B70EBA7}.Release|x86.ActiveCfg = Release|Win32
 		{D3AFB62D-80DD-4822-9290-A2BE6B70EBA7}.Release|x86.Build.0 = Release|Win32
-		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Release|x64.ActiveCfg = Release|Any CPU
-		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4F6D05A9-FB0B-4535-B231-9D94747B2ACA} = {CA7DE107-CF2B-4D3F-A859-7CC543F377D0}
+		{D3AFB62D-80DD-4822-9290-A2BE6B70EBA7} = {040025C8-4632-4091-A7B4-212256000FC8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3C61C977-F108-426B-A658-2186BCE30508}
