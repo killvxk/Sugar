@@ -1,33 +1,34 @@
 from decimal import Decimal
 import numpy as np
+import logging
 
 from DataFixed import DataFixed
-from DataFixed import ConfidenceLevel
+from ConfidenceLevel import ConfidenceLevel
 import Utils
 
 class AmountDataFixed(DataFixed):
     """description of class"""
+
     def __init__(self):
         DataFixed.__init__(self)
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
-        self.__TaxRate__ = (Decimal(u'0.03'), Decimal(u'0.05'), Decimal(u'0.06'), Decimal(u'0.11'), Decimal(u'0.16'), Decimal(u'0.17'))
+        self.__TaxRate__ = (Decimal(u'0.00'), Decimal(u'0.03'), Decimal(u'0.05'), Decimal(u'0.06'), Decimal(u'0.11'), Decimal(u'0.16'), Decimal(u'0.17'))
         self.__Error__ = np.arange(Decimal(u'-0.09'), Decimal(u'0.1'), Decimal(u'0.01'), Decimal)
-        self.__NumberPatterns__ = (u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', u'.' )
 
 
     def __BeforeFixed__(self):
-        print(u'Start Fixed Amount Data=================>\n')
+        logging.info(u'Start Fixed Amount Data=================>\n')
 
 
     def __FixedData__(self, resultJson):
         result_before_tax, result_tax, result_after_tax = self.__ParseData__(resultJson)
 
-        print(result_before_tax + u', ' + result_tax + u', ' + result_after_tax + u' Fixed To ')
+        logging.info(result_before_tax + u', ' + result_tax + u', ' + result_after_tax + u' Fixed To ')
 
         confidencelevel, result_before_tax, result_tax, result_after_tax = self.__FixedAmountData__(result_before_tax, result_tax, result_after_tax)
 
-        print(result_before_tax + u', ' + result_tax + u', ' + result_after_tax)
+        logging.info(result_before_tax + u', ' + result_tax + u', ' + result_after_tax)
 
         return confidencelevel, result_before_tax, result_tax, result_after_tax
 
@@ -37,34 +38,34 @@ class AmountDataFixed(DataFixed):
         validated_before_tax, validated_tax, validated_after_tax = self.__ParseData__(validateJson)
 
         if not self.__CheckData__(validated_before_tax) or not self.__CheckData__(validated_tax) or not self.__CheckData__(validated_after_tax):
-            print(u'Validated Data Error')
+            logging.info(u'Validated Data Error')
             return
 
         if validated_before_tax != result_before_tax or validated_tax != result_tax or validated_after_tax != result_after_tax:
             self.__ErrorCount__ += 1
         else:
-            print(u'Validated Equal To Result')
+            logging.info(u'Validated Equal To Result')
             return
 
-        print(u'Validated Not Equal To Result')
-        print(result_before_tax + u', ' + result_tax + u', ' + result_after_tax + u' Fixed To ')
+        logging.info(u'Validated Not Equal To Result')
+        logging.info(result_before_tax + u', ' + result_tax + u', ' + result_after_tax + u' Fixed To ')
 
         confidencelevel, result_before_tax, result_tax, result_after_tax = self.__FixedAmountData__(result_before_tax, result_tax, result_after_tax)
 
-        print(result_before_tax + u', ' + result_tax + u', ' + result_after_tax)
+        logging.info(result_before_tax + u', ' + result_tax + u', ' + result_after_tax)
 
         if validated_before_tax == result_before_tax and validated_tax == result_tax and validated_after_tax == result_after_tax:
             self.__FixedCount__ += 1
-            print(u'Fixed Success!')
+            logging.info(u'Fixed Success!')
         else:
-            print(u'Validated ' + validated_before_tax + u', ' + validated_tax + u', ' + validated_after_tax)
-            print(u'Fixed Falied!')
+            logging.info(u'Validated ' + validated_before_tax + u', ' + validated_tax + u', ' + validated_after_tax)
+            logging.info(u'Fixed Falied!')
 
 
     def __AfterFixed__(self):
-        print(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
+        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
 
-        print(u'\n<=================End Fixed Amount Data')
+        logging.info(u'\n<=================End Fixed Amount Data')
 
 
     def __ParseData__(self, jsondata):
@@ -92,19 +93,8 @@ class AmountDataFixed(DataFixed):
         return before_tax, tax, after_tax
 
 
-    def __CheckNumber__(self, data):
-        if len(data) == 0:
-            return False
-
-        for ch in data:
-            if ch not in self.__NumberPatterns__:
-                return False
-
-        return data.count(u'.') <= 1
-
-
     def __CheckData__(self, data):
-        if not self.__CheckNumber__(data):
+        if not self.__CheckFloat__(data):
             return False
 
         dotindex = data.find(u'.')
@@ -115,7 +105,7 @@ class AmountDataFixed(DataFixed):
 
 
     def __FixedAmountData__(self, before_tax, tax, after_tax):
-        if self.__CheckNumber__(before_tax) and self.__CheckNumber__(tax) and self.__CheckNumber__(after_tax):
+        if self.__CheckFloat__(before_tax) and self.__CheckFloat__(tax) and self.__CheckFloat__(after_tax):
             d_before_tax = Decimal(before_tax)
             d_tax = Decimal(tax)
             d_after_tax = Decimal(after_tax)
@@ -170,7 +160,7 @@ class AmountDataFixed(DataFixed):
     def __FixedDataByTax__(self, before_tax, tax, after_tax):
         d_tax = Decimal(tax)
 
-        if self.__CheckNumber__(before_tax):
+        if self.__CheckFloat__(before_tax):
             d_before_tax = Decimal(before_tax)
             valiedTax = False
             for rate in self.__TaxRate__:
@@ -257,6 +247,7 @@ class AmountDataFixed(DataFixed):
                 return amountdata + u'0'
             elif (length - dotindex) == 1:
                 return amountdata + u'00'
+            return amountdata
         else:
             return amountdata + u'.00'
 

@@ -16,6 +16,7 @@ import exifutil
 import traceback
 import requests
 import time
+import codecs
 
 @app.route('/', methods=['GET', 'POST'])
 def receipt_ocr():
@@ -95,8 +96,7 @@ def embed_image_html(image):
     b64 = base64.encodestring(cnt).replace('\n', '')
     return 'data:image/png;base64,' + b64
 
-
-default_server_url = "http://10.40.11.90:5010/"
+default_server_url = 'http://10.40.11.90:5004/raw'
 
 class ReceiptServer(object):
     def __init__(self, server_url):
@@ -121,11 +121,11 @@ class ReceiptServer(object):
             return None, [-1]
         
 def warmup(_app):
-    img_path = "./data/warmup.jpeg"
-    img_data = open(img_path).read()
+    img_path = "data/warmup.jpeg"
+    img_data = codecs.open(img_path).read()
     ret, time1 = _app.server.identify_receipt(img_data)
-    print ret.keys()
-    print time1
+    logging.info(ret.keys())
+    logging.info(time1)
     pass
 
 def setup_app(app):
@@ -148,15 +148,14 @@ def start_from_terminal(app):
     setup_app(app)
     app.run(debug=False, processes=1, host='0.0.0.0', port=opts.port)
 
-logging.getLogger().setLevel(logging.INFO)
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-formatter = logging.Formatter(
-    "%(asctime)s;%(levelname)s;%(message)s", "%Y-%m-%d %H:%M:%S")
-ch.setFormatter(formatter)
-logging.getLogger().addHandler(ch)
-
 if __name__ == '__main__':
+    logging.getLogger().setLevel(logging.INFO)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    formatter = logging.Formatter(
+        "%(asctime)s;%(levelname)s;%(message)s", "%Y-%m-%d %H:%M:%S")
+    ch.setFormatter(formatter)
+    logging.getLogger().addHandler(ch)
     start_from_terminal(app)
 else:
     gunicorn_error_logger = logging.getLogger('gunicorn.error')

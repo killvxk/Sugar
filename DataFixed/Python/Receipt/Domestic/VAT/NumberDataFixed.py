@@ -1,5 +1,7 @@
-from Domestic.CodeDataFixed import CodeDataFixed
-from DataFixed import ConfidenceLevel
+import logging
+
+from Domestic.VAT.CodeDataFixed import CodeDataFixed
+from ConfidenceLevel import ConfidenceLevel
 
 class NumberDataFixed(CodeDataFixed):
     """description of class"""
@@ -11,24 +13,24 @@ class NumberDataFixed(CodeDataFixed):
         self.__NumberCount__ = 8
 
     def __BeforeFixed__(self):
-        print(u'Start Fixed Number Data=================>\n')
+        logging.info(u'Start Fixed Number Data=================>\n')
 
     
     def __FixedData__(self, resultJson):
         result_firstnumberlist, result_firstconfidence, result_secondnumberlist, result_secondconfidence = self.__ParseData__(resultJson)
         if len(result_firstnumberlist) == 0:
-            print(u'Data Error')
+            logging.info(u'Number Data Error')
             return ConfidenceLevel.Bad, ''
 
-        print(result_firstnumberlist[0] + u' Fixed To ')
+        logging.info(result_firstnumberlist[0] + u' Fixed To ')
         
         confidencelevel = ConfidenceLevel.Bad
-        if (result_firstconfidence > result_secondconfidence):
+        if (result_firstconfidence >= result_secondconfidence):
             confidencelevel, number = self.__FixedCodeData__(result_firstnumberlist, result_secondnumberlist)
         else:
             confidencelevel, number = self.__FixedCodeData__(result_secondnumberlist, result_firstnumberlist)
 
-        print(number)
+        logging.info(number)
 
         return confidencelevel, number
 
@@ -38,37 +40,37 @@ class NumberDataFixed(CodeDataFixed):
         validated_firstnumberlist, validated_firstconfidence, validated_secondnumberlist, validated_secondconfidence = self.__ParseData__(validateJson)
 
         if len(validated_firstnumberlist) == 0 or len(result_firstnumberlist) == 0 or not self.__CheckData__(validated_firstnumberlist[0]):
-            print(u'Validated Data Error')
+            logging.info(u'Validated Data Error')
             return
 
         if validated_firstnumberlist[0] != result_firstnumberlist[0]:
             self.__ErrorCount__ += 1
         else:
-            print(u'Validated Equal To Result')
+            logging.info(u'Validated Equal To Result')
             return
 
-        print(u'Validated Not Equal To Result')
-        print(result_firstnumberlist[0] + u' Fixed To ')
+        logging.info(u'Validated Not Equal To Result')
+        logging.info(result_firstnumberlist[0] + u' Fixed To ')
         
         if (result_firstconfidence > result_secondconfidence):
             confidencelevel, number = self.__FixedCodeData__(result_firstnumberlist, result_secondnumberlist)
         else:
             confidencelevel, number = self.__FixedCodeData__(result_secondnumberlist, result_firstnumberlist)
 
-        print(number)
+        logging.info(number)
 
         if validated_firstnumberlist[0] == number:
             self.__FixedCount__ += 1
-            print(u'Fixed Success!')
+            logging.info(u'Fixed Success!')
         else:
-            print(u'Validated ' + validated_firstnumberlist[0])
-            print(u'Fixed Falied!')
+            logging.info(u'Validated ' + validated_firstnumberlist[0])
+            logging.info(u'Fixed Falied!')
 
 
     def __AfterFixed__(self):
-        print(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
+        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
 
-        print(u'\n<=================End Fixed Number Data')
+        logging.info(u'\n<=================End Fixed Number Data')
 
 
     def __ParseData__(self, jsondata):

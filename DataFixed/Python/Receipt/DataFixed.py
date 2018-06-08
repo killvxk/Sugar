@@ -2,17 +2,16 @@ import os
 import json
 from enum import Enum
 import codecs
-
-class ConfidenceLevel(Enum):
-    Confident = 'Confident'
-    Fixed = 'Fixed'
-    Bad = 'Bad'
+import logging
 
 
 class DataFixed(object):
     """description of class"""
     def __init__(self):
-        pass
+        self.__NumberPatterns__ = (u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9' )
+        self.__FloatPatterns__ = self.__NumberPatterns__ +  (u'.', )
+        self.__LetterPatterns__ = (u'A', u'B', u'C', u'D', u'E', u'F', u'G', u'H', u'I', u'J', u'K', 
+                                   u'L', u'M', u'N', u'O', u'P', u'Q', u'R', u'S', u'T', u'U', u'V', u'W', u'X', u'Y', u'Z' )
 
 
     def StartFixedFromJson(self, resultJson):
@@ -26,7 +25,7 @@ class DataFixed(object):
 
         self.__BeforeFixed__()
 
-        #self.__Handler__(u'', '10101_283.jpg.json')
+        self.__Handler__('', 'DH00117092684_22.50_6.jpeg.json')
         self.__VisitFolder__(self.__Handler__)
 
         self.__AfterFixed__()
@@ -56,18 +55,46 @@ class DataFixed(object):
         for name in names:
             if os.path.isdir(self.__ValidatedPath__ + subfolder + name):
                 subdir = subfolder + name + '/'
-                self.__VisitFolder__(subdir, subdir)
+                self.__VisitFolder__(visitor, subdir)
             else:
-                self.__Handler__(subfolder, name)
+                visitor(subfolder, name)
 
 
     def __Handler__(self, subfolder, filename):
-        print(u'Start Handler ' + filename)
+        logging.info(u'Start Handler ' + filename)
 
-        validateJson = json.load(codecs.open(self.__ValidatedPath__ + subfolder + filename, encoding='utf-8'))
-        resultJson = json.load(codecs.open(self.__ResultPath__ + subfolder + filename, encoding='utf-8'))
+        if os.path.exists(self.__ValidatedPath__ + subfolder + filename) and os.path.exists(self.__ResultPath__ + subfolder + filename):
+            validateJson = json.load(codecs.open(self.__ValidatedPath__ + subfolder + filename, encoding='utf-8'))
+            resultJson = json.load(codecs.open(self.__ResultPath__ + subfolder + filename, encoding='utf-8'))
 
-        self.__FixedDataWithValidate__(resultJson, validateJson)
+            self.__FixedDataWithValidate__(resultJson, validateJson)
+        else:
+            logging.info(u'Miss ' + filename + '\n')
 
-        print(u'End Handler ' + filename + '\n')
+        logging.info(u'End Handler ' + filename + '\n')
 
+
+    def __CheckInPatterns__(self, data, patterns):
+        if len(data) or not isinstance(patterns, tuple):
+            return False
+
+        for ch in patterns:
+            if ch not in patterns:
+                return False
+
+        return True
+
+
+    def __CheckNumber__(self, data):
+        return self.__CheckInPatterns__(data, self.__NumberPatterns__)
+
+
+    def __CheckFloat__(self, data):
+        if not self.__CheckInPatterns__(data, self.__FloatPatterns__):
+            return False
+
+        return data.count(u'.') <= 1
+
+
+    def __CheckLetter__(self, data):
+        return self.__CheckInPatterns__(data, self.__LetterPatterns__)

@@ -12,6 +12,7 @@ from PIL import Image
 from PIL import ImageFilter
 from PIL import ImageDraw
 from PIL import ImageFont
+from PIL import ImageShow
 
 import cv2
 import numpy as np
@@ -146,11 +147,13 @@ def DrawText(text, bgImage):
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype('C:/Windows/Fonts/simhei.ttf', int(24.0 * 3.0 / len(text)), encoding="unic")
     draw.text((0, 0), text, (0, 0, 0, 160), font)
+    ImageShow.show(image)
     image = image.rotate(random.uniform(-5, 5), resample = Image.BICUBIC, expand = 1)
     scaleWidth = int(bgImage.height / image.height * image.width)
     image = image.resize((scaleWidth, bgImage.height), resample = Image.BICUBIC)
     bgImageCrop = bgImage.crop(box=(0, 0, scaleWidth, bgImage.height))
     image = Image.alpha_composite(bgImageCrop, image)
+    ImageShow.show(image)
     return image.convert(mode='RGB')
 
 
@@ -185,6 +188,7 @@ def MockStations():
                 with open(outputpath + '.txt', mode='w') as file:
                     file.write(json.dumps(info))
 
+    index = 0
     if True:
         for background in backgroundList:
             with Image.open(background) as bgImage:
@@ -193,8 +197,9 @@ def MockStations():
                 info = json.loads(open(infopath + filename + '.txt').read())
                 bgImage = bgImage.convert(mode = 'RGBA')
                 for station in stations:
-                    outputpath = 'C:/Users/User/Desktop/station/output/' + station + '-' + filename
-                    print(station + '-' + filename + '.jpg')
+                    index += 1
+                    outputpath = 'C:/Users/User/Desktop/station/output/' + str(index) + '-' + filename
+                    print(str(index) + '-' + filename + '.jpg')
 
                     text = station
                     while len(text) < 3:
@@ -231,11 +236,11 @@ def SIFT():
     for m, n in matches:  
         if m.distance < 0.75 * n.distance:  
             good.append([m])  
-    img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, good, None, flags=2)  
+    img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, good, None, flags=2)
     cv2.imshow('matches', img3)
     cv2.waitKey(0)
 
 
 if __name__ == '__main__':
-    #MockStations()
-    SIFT()
+    MockStations()
+    #SIFT()

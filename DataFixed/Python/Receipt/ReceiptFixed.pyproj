@@ -1,0 +1,90 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>4f6d05a9-fb0b-4535-b231-9d94747b2aca</ProjectGuid>
+    <ProjectHome>
+    </ProjectHome>
+    <StartupFile>server.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>ReceiptFixed</Name>
+    <RootNamespace>FixedReceiptDataPython</RootNamespace>
+    <IsWindowsApplication>False</IsWindowsApplication>
+    <InterpreterId>Global|PythonCore|2.7</InterpreterId>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|2.7" />
+    <InterpreterReference Include="Global|PythonCore|3.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ConfidenceLevel.py" />
+    <Compile Include="DataFixed.py" />
+    <Compile Include="Domestic\Train\AmountDataFixed.py" />
+    <Compile Include="Domestic\Train\DateDataFixed.py" />
+    <Compile Include="Domestic\Train\NumberDataFixed.py" />
+    <Compile Include="Domestic\Train\SeatDataFixed.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domestic\Train\StationDataFixed.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domestic\Train\TrainNumberDataFixed.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domestic\Train\__init__.py" />
+    <Compile Include="Domestic\VAT\AmountDataFixed.py" />
+    <Compile Include="Domestic\VAT\CheckCodeFixed.py" />
+    <Compile Include="Domestic\VAT\CodeDataFixed.py" />
+    <Compile Include="Domestic\VAT\DateDataFixed.py" />
+    <Compile Include="Domestic\VAT\NumberDataFixed.py" />
+    <Compile Include="Domestic\VAT\__init__.py" />
+    <Compile Include="Domestic\__init__.py" />
+    <Compile Include="exifutil.py" />
+    <Compile Include="FixedReceiptData.py" />
+    <Compile Include="fix_test.py" />
+    <Compile Include="International\AmountDataFixed.py" />
+    <Compile Include="International\__init__.py" />
+    <Compile Include="server.py" />
+    <Compile Include="Domestic\Tax\AmountDataFixed.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domestic\Tax\CodeDataFixed.py" />
+    <Compile Include="Domestic\Tax\DateDataFixed.py" />
+    <Compile Include="Domestic\Tax\MileageDataFixed.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domestic\Tax\NumberDataFixed.py" />
+    <Compile Include="Domestic\Tax\TimeDataFixed.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domestic\Tax\__init__.py" />
+    <Compile Include="Utils.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domestic\" />
+    <Folder Include="Domestic\Train\" />
+    <Folder Include="Domestic\VAT\" />
+    <Folder Include="International\" />
+    <Folder Include="Domestic\Tax\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>

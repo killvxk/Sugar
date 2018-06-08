@@ -1,7 +1,8 @@
 import re
+import logging
 
 from DataFixed import DataFixed
-from DataFixed import ConfidenceLevel
+from ConfidenceLevel import ConfidenceLevel
 
 class CheckCodeFixed(DataFixed):
     """description of class"""
@@ -14,20 +15,20 @@ class CheckCodeFixed(DataFixed):
         self.__NumberPatterns__ = (u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', u' ')
 
     def __BeforeFixed__(self):
-        print(u'Start Fixed CheckCode Data=================>\n')
+        logging.info(u'Start Fixed CheckCode Data=================>\n')
 
     
     def __FixedData__(self, resultJson):
         result_checkcodelist = self.__ParseData__(resultJson)
         if len(result_checkcodelist) == 0:
-            print(u'Data Error')
+            logging.info(u'CheckCode Data Error')
             return ConfidenceLevel.Bad, ''
 
-        print(result_checkcodelist[0] + u' Fixed To ')
+        logging.info(result_checkcodelist[0] + u' Fixed To ')
         
         confidencelevel, checkcode = self.__FixedCheckCodeData__(result_checkcodelist)
 
-        print(checkcode)
+        logging.info(checkcode)
 
         return confidencelevel, checkcode
 
@@ -37,34 +38,34 @@ class CheckCodeFixed(DataFixed):
         validated_checkcodelist = self.__ParseData__(validateJson)
 
         if len(validated_checkcodelist) == 0 or len(result_checkcodelist) == 0 or not self.__CheckData__(validated_checkcodelist[0]):
-            print(u'Validated Data Error')
+            logging.info(u'Validated Data Error')
             return
 
         if validated_checkcodelist[0] != result_checkcodelist[0]:
             self.__ErrorCount__ += 1
         else:
-            print(u'Validated Equal To Result')
+            logging.info(u'Validated Equal To Result')
             return
 
-        print(u'Validated Not Equal To Result')
-        print(result_checkcodelist[0] + u' Fixed To ')
+        logging.info(u'Validated Not Equal To Result')
+        logging.info(result_checkcodelist[0] + u' Fixed To ')
         
         confidencelevel, checkcode = self.__FixedCheckCodeData__(result_checkcodelist)
 
-        print(checkcode)
+        logging.info(checkcode)
 
         if validated_checkcodelist[0] == checkcode:
             self.__FixedCount__ += 1
-            print(u'Fixed Success!')
+            logging.info(u'Fixed Success!')
         else:
-            print(u'Validated ' + validated_checkcodelist[0])
-            print(u'Fixed Falied!')
+            logging.info(u'Validated ' + validated_checkcodelist[0])
+            logging.info(u'Fixed Falied!')
 
 
     def __AfterFixed__(self):
-        print(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
+        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
 
-        print(u'\n<=================End Fixed CheckCode Data')
+        logging.info(u'\n<=================End Fixed CheckCode Data')
 
 
     def __ParseData__(self, jsondata):
@@ -111,4 +112,7 @@ class CheckCodeFixed(DataFixed):
             if self.__CheckData__(data):
                 return ConfidenceLevel.Fixed, data
 
-        return ConfidenceLevel.Bad, datalist[0]
+        if len(datalist):
+            return ConfidenceLevel.Bad, datalist[0]
+        else:
+            return ConfidenceLevel.Bad, ''

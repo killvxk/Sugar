@@ -1,5 +1,7 @@
+import logging
+
 from DataFixed import DataFixed
-from DataFixed import ConfidenceLevel
+from ConfidenceLevel import ConfidenceLevel
 
 class CodeDataFixed(DataFixed):
     """description of class"""
@@ -9,24 +11,24 @@ class CodeDataFixed(DataFixed):
         self.__ErrorCount__ = 0
         self.__FixedCount__ = 0
         self.__NumberCount__ = 10
-        self.__NumberPatterns__ = (u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9')
 
 
     def __BeforeFixed__(self):
-        print(u'Start Fixed Code Data=================>\n')
+        logging.info(u'Start Fixed Code Data=================>\n')
 
     
     def __FixedData__(self, resultJson):
         result_firstcodelist, result_secondcodelist = self.__ParseData__(resultJson)
         if len(result_firstcodelist) == 0:
-            print(u'Data Error')
+            logging.info(u'Code Data Error')
             return ConfidenceLevel.Bad, ''
 
-        print(result_firstcodelist[0] + u' Fixed To ')
+        logging.info(result_firstcodelist[0] + u' Fixed To ')
         
+        self.__NumberCount__ = self.__GuessCodeNumberCount__(result_firstcodelist, result_secondcodelist)
         confidencelevel, code = self.__FixedCodeData__(result_firstcodelist, result_secondcodelist)
 
-        print(code)
+        logging.info(code)
 
         return confidencelevel, code
 
@@ -36,34 +38,35 @@ class CodeDataFixed(DataFixed):
         validated_firstcodelist, validated_secondcodelist = self.__ParseData__(validateJson)
 
         if len(validated_firstcodelist) == 0 or len(result_firstcodelist) == 0 or not self.__CheckData__(validated_firstcodelist[0]):
-            print(u'Validated Data Error')
+            logging.info(u'Validated Data Error')
             return
 
         if validated_firstcodelist[0] != result_firstcodelist[0]:
             self.__ErrorCount__ += 1
         else:
-            print(u'Validated Equal To Result')
+            logging.info(u'Validated Equal To Result')
             return
 
-        print(u'Validated Not Equal To Result')
-        print(result_firstcodelist[0] + u' Fixed To ')
+        logging.info(u'Validated Not Equal To Result')
+        logging.info(result_firstcodelist[0] + u' Fixed To ')
         
+        self.__NumberCount__ = self.__GuessCodeNumberCount__(result_firstcodelist, result_secondcodelist)
         confidencelevel, code = self.__FixedCodeData__(result_firstcodelist, result_secondcodelist)
 
-        print(code)
+        logging.info(code)
 
         if validated_firstcodelist[0] == code:
             self.__FixedCount__ += 1
-            print(u'Fixed Success!')
+            logging.info(u'Fixed Success!')
         else:
-            print(u'Validated ' + validated_firstcodelist[0])
-            print(u'Fixed Falied!')
+            logging.info(u'Validated ' + validated_firstcodelist[0])
+            logging.info(u'Fixed Falied!')
 
 
     def __AfterFixed__(self):
-        print(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
+        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
 
-        print(u'\n<=================End Fixed Code Data')
+        logging.info(u'\n<=================End Fixed Code Data')
 
 
     def __ParseData__(self, jsondata):
@@ -105,11 +108,7 @@ class CodeDataFixed(DataFixed):
         if len(data) == 0 or len(data) != self.__NumberCount__:
             return False
 
-        for ch in data:
-            if ch not in self.__NumberPatterns__:
-                return False
-
-        return True
+        return self.__CheckNumber__(data)
 
 
     def __FixedCodeData__(self, firstdata, seconddata):
@@ -128,4 +127,24 @@ class CodeDataFixed(DataFixed):
             if self.__CheckData__(second):
                 return ConfidenceLevel.Fixed, second
 
-        return ConfidenceLevel.Bad, firstdata[0]
+        if len(firstdata):
+            return ConfidenceLevel.Bad, firstdata[0]
+        else:
+            return ConfidenceLevel.Bad, ''
+
+
+    def __GuessCodeNumberCount__(self, firstcodelist, secondcodelist):
+        numbercountmap = {10 : 0, 12 : 0}
+        for code in firstcodelist:
+            if numbercountmap.has_key(len(code)):
+                numbercountmap[len(code)] += 1;
+
+        for code in secondcodelist:
+            if numbercountmap.has_key(len(code)):
+                numbercountmap[len(code)] += 1;
+
+        if numbercountmap[12] > numbercountmap[10]:
+            return 12;
+        else:
+            return 10;
+

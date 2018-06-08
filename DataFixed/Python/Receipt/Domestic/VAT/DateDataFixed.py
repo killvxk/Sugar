@@ -6,7 +6,7 @@ import re
 import logging
 
 from DataFixed import DataFixed
-from DataFixed import ConfidenceLevel
+from ConfidenceLevel import ConfidenceLevel
 
 class DateDataFixed(DataFixed):
     """description of class"""
@@ -21,13 +21,13 @@ class DateDataFixed(DataFixed):
 
 
     def __BeforeFixed__(self):
-        print(u'Start Fixed Date Data=================>\n')
+        logging.info(u'Start Fixed Date Data=================>\n')
 
     
     def __FixedData__(self, resultJson):
         result_datelist = self.__ParseData__(resultJson)
         if len(result_datelist) == 0:
-            print(u'Data Error')
+            logging.info(u'Date Data Error')
             return ConfidenceLevel.Bad, ''
 
         logging.info(result_datelist[0] + u' Fixed To ')
@@ -50,16 +50,16 @@ class DateDataFixed(DataFixed):
         validated_datelist = self.__ParseData__(validateJson)
 
         if len(validated_datelist) == 0 or len(result_datelist) == 0 or not self.__CheckData__(validated_datelist[0]):
-            print(u'Validated Data Error')
+            logging.info(u'Validated Data Error')
             return
 
         if validated_datelist[0] != result_datelist[0]:
             self.__ErrorCount__ += 1
         else:
-            print(u'Validated Equal To Result')
+            logging.info(u'Validated Equal To Result')
             return
 
-        print(u'Validated Not Equal To Result')
+        logging.info(u'Validated Not Equal To Result')
         logging.info(result_datelist[0] + u' Fixed To ')
 
         date = ''
@@ -73,16 +73,16 @@ class DateDataFixed(DataFixed):
 
         if validated_datelist[0] == date:
             self.__FixedCount__ += 1
-            print(u'Fixed Success!')
+            logging.info(u'Fixed Success!')
         else:
             logging.info(u'Validated ' + validated_datelist[0])
-            print(u'Fixed Falied!')
+            logging.info(u'Fixed Falied!')
 
 
     def __AfterFixed__(self):
-        print(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
+        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
 
-        print(u'\n<=================End Fixed Date Data')
+        logging.info(u'\n<=================End Fixed Date Data')
 
 
     def __ParseData__(self, jsondata):
