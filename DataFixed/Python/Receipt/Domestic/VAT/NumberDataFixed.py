@@ -8,31 +8,27 @@ class NumberDataFixed(CodeDataFixed):
 
     def __init__(self):
         CodeDataFixed.__init__(self)
-        self.__ErrorCount__ = 0
-        self.__FixedCount__ = 0
+        self.__Title__ = 'Number'
         self.__NumberCount__ = 8
-
-    def __BeforeFixed__(self):
-        logging.info(u'Start Fixed Number Data=================>\n')
 
     
     def __FixedData__(self, resultJson):
         result_firstnumberlist, result_firstconfidence, result_secondnumberlist, result_secondconfidence = self.__ParseData__(resultJson)
         if len(result_firstnumberlist) == 0:
             logging.info(u'Number Data Error')
-            return ConfidenceLevel.Bad, ''
+            return ConfidenceLevel.Bad, '', []
 
         logging.info(result_firstnumberlist[0] + u' Fixed To ')
         
         confidencelevel = ConfidenceLevel.Bad
         if (result_firstconfidence >= result_secondconfidence):
-            confidencelevel, number = self.__FixedCodeData__(result_firstnumberlist, result_secondnumberlist)
+            confidencelevel, number, number_order_error = self.__FixedCodeData__(result_firstnumberlist, result_secondnumberlist)
         else:
-            confidencelevel, number = self.__FixedCodeData__(result_secondnumberlist, result_firstnumberlist)
+            confidencelevel, number, number_order_error = self.__FixedCodeData__(result_secondnumberlist, result_firstnumberlist)
 
         logging.info(number)
 
-        return confidencelevel, number
+        return confidencelevel, number, number_order_error
 
 
     def __FixedDataWithValidate__(self, resultJson, validateJson):
@@ -53,9 +49,9 @@ class NumberDataFixed(CodeDataFixed):
         logging.info(result_firstnumberlist[0] + u' Fixed To ')
         
         if (result_firstconfidence > result_secondconfidence):
-            confidencelevel, number = self.__FixedCodeData__(result_firstnumberlist, result_secondnumberlist)
+            confidencelevel, number, number_order_error = self.__FixedCodeData__(result_firstnumberlist, result_secondnumberlist)
         else:
-            confidencelevel, number = self.__FixedCodeData__(result_secondnumberlist, result_firstnumberlist)
+            confidencelevel, number, number_order_error = self.__FixedCodeData__(result_secondnumberlist, result_firstnumberlist)
 
         logging.info(number)
 
@@ -65,12 +61,6 @@ class NumberDataFixed(CodeDataFixed):
         else:
             logging.info(u'Validated ' + validated_firstnumberlist[0])
             logging.info(u'Fixed Falied!')
-
-
-    def __AfterFixed__(self):
-        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
-
-        logging.info(u'\n<=================End Fixed Number Data')
 
 
     def __ParseData__(self, jsondata):
@@ -112,3 +102,37 @@ class NumberDataFixed(CodeDataFixed):
                 secondconfidence = region[u'confidence']
 
         return firstnumberlist, firstconfidence, secondnumberlist, secondconfidence
+
+
+    def __FixedCodeData__(self, firstdata, seconddata):
+        firstdata = sorted(firstdata, key=lambda x: abs(len(x) - self.__NumberCount__))
+        seconddata = sorted(seconddata, key=lambda x: abs(len(x) - self.__NumberCount__))
+        number_order_error = []
+
+        for first in firstdata:
+            if self.__CheckData__(first):
+                for second in seconddata:
+                    if self.__CheckData__(second):
+                        if abs(int(first) - int(second)) < 10 and not second in firstdata:
+                            if not first in number_order_error:
+                                number_order_error.append(first)
+                            if not second in number_order_error:
+                                number_order_error.append(second)
+
+
+        for first in firstdata:
+            if first in seconddata and self.__CheckData__(first):
+                return ConfidenceLevel.Confident, first, number_order_error
+
+        for first in firstdata:
+            if self.__CheckData__(first):
+                return ConfidenceLevel.Fixed, first, number_order_error
+
+        for second in seconddata:
+            if self.__CheckData__(second):
+                return ConfidenceLevel.Fixed, second, number_order_error
+
+        if len(firstdata):
+            return ConfidenceLevel.Bad, firstdata[0], number_order_error
+        else:
+            return ConfidenceLevel.Bad, '', number_order_error

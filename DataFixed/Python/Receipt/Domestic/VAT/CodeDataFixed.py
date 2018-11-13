@@ -7,14 +7,8 @@ class CodeDataFixed(DataFixed):
     """description of class"""
 
     def __init__(self):
-        DataFixed.__init__(self)
-        self.__ErrorCount__ = 0
-        self.__FixedCount__ = 0
+        DataFixed.__init__(self, 'Code')
         self.__NumberCount__ = 10
-
-
-    def __BeforeFixed__(self):
-        logging.info(u'Start Fixed Code Data=================>\n')
 
     
     def __FixedData__(self, resultJson):
@@ -61,12 +55,6 @@ class CodeDataFixed(DataFixed):
         else:
             logging.info(u'Validated ' + validated_firstcodelist[0])
             logging.info(u'Fixed Falied!')
-
-
-    def __AfterFixed__(self):
-        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
-
-        logging.info(u'\n<=================End Fixed Code Data')
 
 
     def __ParseData__(self, jsondata):

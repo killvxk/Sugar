@@ -7,15 +7,9 @@ class NumberDataFixed(DataFixed):
     """description of class"""
 
     def __init__(self):
-        DataFixed.__init__(self)
-        self.__ErrorCount__ = 0
-        self.__FixedCount__ = 0
-        self.__NumberCount__ = 10
+        DataFixed.__init__(self, 'Number')
+        self.__NumberCount__ = 9
         self.__NumberPatterns__ = self.__NumberPatterns__ + self.__LetterPatterns__
-
-
-    def __BeforeFixed__(self):
-        logging.info(u'Start Fixed Number Data=================>\n')
 
     
     def __FixedData__(self, resultJson):
@@ -26,7 +20,7 @@ class NumberDataFixed(DataFixed):
 
         logging.info(result_numberlist[0] + u' Fixed To ')
         
-        confidencelevel, number = self.__FixedNumberData__(result_numberlist)
+        confidencelevel, number = ConfidenceLevel.Bad, result_numberlist[0]
 
         logging.info(number)
 
@@ -60,12 +54,6 @@ class NumberDataFixed(DataFixed):
         else:
             logging.info(u'Validated ' + validated_numberlist[0])
             logging.info(u'Fixed Falied!')
-
-
-    def __AfterFixed__(self):
-        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
-
-        logging.info(u'\n<=================End Fixed Number Data')
 
 
     def __ParseData__(self, jsondata):

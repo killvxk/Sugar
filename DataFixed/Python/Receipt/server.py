@@ -27,7 +27,11 @@ def receipt_ocr():
     if not string_buffer:
         return flask.render_template('index.html', has_result=False)    
     ret, _ = app.server.identify_receipt(string_buffer)
-    return flask.make_response(json.dumps(ret, indent=4, ensure_ascii=False), 200)
+    try:
+        ret = json.dumps(ret, indent=4, ensure_ascii=False)
+    except Exception as exp:
+        logging.error(exp)
+    return flask.make_response(ret, 200)
 
 @app.route('/demo', methods=['GET'])
 def demo():
@@ -126,7 +130,6 @@ def warmup(_app):
     ret, time1 = _app.server.identify_receipt(img_data)
     logging.info(ret.keys())
     logging.info(time1)
-    pass
 
 def setup_app(app):
     app.server = ReceiptServer(default_server_url)

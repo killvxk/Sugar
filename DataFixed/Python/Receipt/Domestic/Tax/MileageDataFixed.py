@@ -8,21 +8,15 @@ class MileageDataFixed(DataFixed):
     """description of class"""
 
     def __init__(self):
-        DataFixed.__init__(self)
-        self.__ErrorCount__ = 0
-        self.__FixedCount__ = 0
-
-
-    def __BeforeFixed__(self):
-        logging.info(u'Start Fixed Mileage Data=================>\n')
+        DataFixed.__init__(self, 'Mileage')
 
     
     def __FixedData__(self, resultJson):
-        mileage = self.__ParseData__(resultJson)
+        result_mileage = self.__ParseData__(resultJson)
 
-        logging.info(mileage + u' Fixed To ')
+        logging.info(result_mileage + u' Fixed To ')
         
-        confidencelevel, mileage = self.__FixedMileageData__(mileage)
+        confidencelevel, mileage = ConfidenceLevel.Bad, result_mileage
 
         logging.info(mileage)
 
@@ -46,7 +40,7 @@ class MileageDataFixed(DataFixed):
         logging.info(u'Validated Not Equal To Result')
         logging.info(result_mileage + u' Fixed To ')
         
-        confidencelevel, result_mileage = self.__FixedMileageData__(result_mileage)
+        confidencelevel, result_mileage = ConfidenceLevel.Bad, result_mileage
 
         logging.info(result_mileage)
 
@@ -56,12 +50,6 @@ class MileageDataFixed(DataFixed):
         else:
             logging.info(u'Validated ' + validated_mileage)
             logging.info(u'Fixed Falied!')
-
-
-    def __AfterFixed__(self):
-        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
-
-        logging.info(u'\n<=================End Fixed Mileage Data')
 
 
     def __ParseData__(self, jsondata):

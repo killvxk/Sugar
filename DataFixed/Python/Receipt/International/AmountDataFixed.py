@@ -5,18 +5,12 @@ import logging
 
 from DataFixed import DataFixed
 from ConfidenceLevel import ConfidenceLevel
-import Utils
+from utils import StrUtil
 
 class AmountDataFixed(DataFixed):
     """description of class"""
     def __init__(self):
-        DataFixed.__init__(self)
-        self.__ErrorCount__ = 0
-        self.__FixedCount__ = 0
-
-
-    def __BeforeFixed__(self):
-        logging.info(u'Start Fixed Amount Data=================>\n')
+        DataFixed.__init__(self, 'Amount')
 
 
     def __FixedData__(self, resultJson):
@@ -66,16 +60,11 @@ class AmountDataFixed(DataFixed):
             logging.info(u'Fixed Falied!')
 
 
-    def __AfterFixed__(self):
-        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
-
-        logging.info(u'\n<=================End Fixed Amount Data')
-
-
     def __ParseData__(self, jsondata):
         subtotal = ''
         tip = ''
         tip_rate = ''
+        confidence = 0.0
         total = ''
 
         if jsondata == None or not isinstance(jsondata, dict) or jsondata[u'regions'] == None:
@@ -94,8 +83,9 @@ class AmountDataFixed(DataFixed):
                 tip = region[u'result'][0]
             elif cls == 6:
                 total = region[u'result'][0]
-            elif cls == 11:
+            elif cls == 11 and float(region['confidence']) > confidence:
                 tip_rate = region[u'result'][0]
+                confidence = float(region['confidence'])
 
         return subtotal, tip, tip_rate, total
 
@@ -146,14 +136,14 @@ class AmountDataFixed(DataFixed):
                 if self.__MissDot__(total):
                     d_temp = d_subtotal + d_tip
                     fixed = str(d_temp)
-                    if Utils.Similarity(fixed, total) == 1 and len(fixed) - len(total) == 1:
+                    if StrUtil.Similarity(fixed, total) == 1 and len(fixed) - len(total) == 1:
                         if (d_temp == (d_subtotal + d_tip)):
                             return ConfidenceLevel.Confident, self.__FormatData__(subtotal), self.__FormatData__(tip), self.__FormatData__(fixed)
 
                 if self.__MissDot__(tip) or self.__MissInteger__(tip):
                     d_temp = d_total - d_subtotal
                     fixed = str(d_temp)
-                    if Utils.Similarity(fixed, tip) == 1 and len(fixed) - len(tip) == 1:
+                    if StrUtil.Similarity(fixed, tip) == 1 and len(fixed) - len(tip) == 1:
                         if (d_total == (d_subtotal + d_temp)):
                             return ConfidenceLevel.Confident, self.__FormatData__(subtotal), self.__FormatData__(fixed), self.__FormatData__(total)
 
@@ -173,7 +163,7 @@ class AmountDataFixed(DataFixed):
             else:
                 d_temp = d_total - d_subtotal
                 fixed = str(d_temp)
-                if Utils.Similarity(fixed, tip) == 1:
+                if StrUtil.Similarity(fixed, tip) == 1:
                     return ConfidenceLevel.Confident, self.__FormatData__(subtotal), self.__FormatData__(fixed), self.__FormatData__(total)
 
         return ConfidenceLevel.Bad, self.__FormatData__(subtotal), self.__FormatData__(tip), self.__FormatData__(total)
@@ -235,7 +225,7 @@ class AmountDataFixed(DataFixed):
             else:
                 d_subtotal = d_tiprate_total - d_tiprate_tip
                 fixed = str(d_subtotal)
-                if not self.__CheckFloat__(subtotal) or Utils.SimilarityRate(fixed, subtotal) > 0.7:
+                if not self.__CheckFloat__(subtotal) or StrUtil.SimilarityRate(fixed, subtotal) > 0.7:
                     return ConfidenceLevel.Fixed, self.__FormatData__(fixed), self.__FormatData__(tiprate_tip), self.__FormatData__(tiprate_total)
 
         return ConfidenceLevel.Bad, u'', u'', u''
@@ -251,7 +241,7 @@ class AmountDataFixed(DataFixed):
             if not tipTooLarge:
                 d_total = d_subtotal + d_tip
                 fixed = str(d_total)
-                if d_total >= d_subtotal and (len(total) == 0 or not self.__CheckFloat__(total) or Utils.SimilarityRate(fixed, total) > 0.5):
+                if d_total >= d_subtotal and (len(total) == 0 or not self.__CheckFloat__(total) or StrUtil.SimilarityRate(fixed, total) > 0.5):
                     if self.__CheckFloat__(total):
                         diff = d_total - Decimal(total)
                         if diff < Decimal('1.0') and diff > Decimal('0.0'):
@@ -262,11 +252,11 @@ class AmountDataFixed(DataFixed):
             d_total = Decimal(total)
             d_tip = d_total - d_subtotal
             fixed = str(d_tip)
-            if d_tip >= Decimal(u'0.00') and (len(tip) == 0 or not self.__CheckFloat__(tip) or tipTooLarge or Utils.SimilarityRate(fixed, tip) > 0.5):
+            if d_tip >= Decimal(u'0.00') and (len(tip) == 0 or not self.__CheckFloat__(tip) or tipTooLarge or StrUtil.SimilarityRate(fixed, tip) > 0.5):
                 return ConfidenceLevel.Fixed, self.__FormatData__(subtotal), self.__FormatData__(fixed), self.__FormatData__(total)
             elif d_tip < Decimal(u'0.00'):
                 fixed = subtotal;
-                if Utils.SimilarityRate(fixed, total) > 0.6:
+                if StrUtil.SimilarityRate(fixed, total) > 0.6:
                     return ConfidenceLevel.Fixed, self.__FormatData__(subtotal), self.__FormatData__(u'0.00'), self.__FormatData__(fixed)
 
         return ConfidenceLevel.Bad, u'', u'', u''
@@ -282,7 +272,7 @@ class AmountDataFixed(DataFixed):
             if not tipTooLarge:
                 d_subtotal = d_total - d_tip
                 fixed = str(d_subtotal)
-                if len(subtotal) == 0 or not self.__CheckFloat__(subtotal) or Utils.SimilarityRate(fixed, subtotal) > 0.5:
+                if len(subtotal) == 0 or not self.__CheckFloat__(subtotal) or StrUtil.SimilarityRate(fixed, subtotal) > 0.5:
                     return ConfidenceLevel.Fixed, self.__FormatData__(fixed), self.__FormatData__(tip), self.__FormatData__(total)
 
         return ConfidenceLevel.Bad, u'', u'', u''

@@ -1,20 +1,17 @@
 import logging
+import re
 
-from Domestic.Train.NumberDataFixed import NumberDataFixed
+import Domestic.Train.TrainNumberList as TrainNumberList
+from DataFixed import DataFixed
 from ConfidenceLevel import ConfidenceLevel
+from utils import StrUtil
 
 
-class TrainNumberDataFixed(NumberDataFixed):
+class TrainNumberDataFixed(DataFixed):
     """description of class"""
 
     def __init__(self):
-        NumberDataFixed.__init__(self)
-        self.__ErrorCount__ = 0
-        self.__FixedCount__ = 0
-
-
-    def __BeforeFixed__(self):
-        logging.info(u'Start Fixed Number Data=================>\n')
+        DataFixed.__init__(self, 'TrainNumber')
 
     
     def __FixedData__(self, resultJson):
@@ -25,7 +22,7 @@ class TrainNumberDataFixed(NumberDataFixed):
 
         logging.info(result_trainnumberlist[0] + u' Fixed To ')
         
-        confidencelevel, trainnumber = ConfidenceLevel.Bad, result_trainnumberlist[0]
+        confidencelevel, trainnumber = self.__FixedTrainNumberData__(result_trainnumberlist)
 
         logging.info(trainnumber)
 
@@ -49,7 +46,7 @@ class TrainNumberDataFixed(NumberDataFixed):
         logging.info(u'Validated Not Equal To Result')
         logging.info(result_trainnumberlist[0] + u' Fixed To ')
         
-        confidencelevel, trainnumber = self.__FixedNumberData__(result_trainnumberlist)
+        confidencelevel, trainnumber = ConfidenceLevel.Bad, result_trainnumberlist[0]
 
         logging.info(trainnumber)
 
@@ -59,12 +56,6 @@ class TrainNumberDataFixed(NumberDataFixed):
         else:
             logging.info(u'Validated ' + validated_trainnumberlist[0])
             logging.info(u'Fixed Falied!')
-
-
-    def __AfterFixed__(self):
-        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
-
-        logging.info(u'\n<=================End Fixed TrainNumber Data')
 
 
     def __ParseData__(self, jsondata):
@@ -97,3 +88,29 @@ class TrainNumberDataFixed(NumberDataFixed):
             return False
 
         return self.__CheckNumber__(data)
+
+
+    def __FixedTrainNumberData__(self, datalist):
+        trainnumber = re.match(u'[a-zA-Z]?\d{1,4}', datalist[0])
+        if trainnumber and trainnumber.group() == datalist[0]:
+            return ConfidenceLevel.Fixed, datalist[0]
+
+        min_similarity = 1000
+        result = datalist[0]
+
+        for data in datalist:
+            if data in TrainNumberList.TrainNumberList:
+                return ConfidenceLevel.Confident, data
+
+            for trainnumber in TrainNumberList.TrainNumberList:
+                similarity = StrUtil.Similarity(trainnumber, data)
+                if similarity < len(data) and min_similarity >= similarity:
+                    min_similarity = similarity
+                    result = trainnumber
+
+            if min_similarity == 1000:
+                return ConfidenceLevel.Bad, data
+            else:
+                return ConfidenceLevel.Fixed, result
+
+        return ConfidenceLevel.Bad, ''

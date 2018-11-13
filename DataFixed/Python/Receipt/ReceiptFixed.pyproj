@@ -30,8 +30,18 @@
   <ItemGroup>
     <Compile Include="ConfidenceLevel.py" />
     <Compile Include="DataFixed.py" />
+    <Compile Include="DateDataFixed.py" />
+    <Compile Include="Domestic\Air\AmountDataFixed.py" />
+    <Compile Include="Domestic\Air\CheckCodeFixed.py" />
+    <Compile Include="Domestic\Air\CodeDataFixed.py" />
+    <Compile Include="Domestic\Air\FlightDateDataFixed.py" />
+    <Compile Include="Domestic\Air\FlightNumberFixed.py" />
+    <Compile Include="Domestic\Air\FormatReceiptData.py" />
+    <Compile Include="Domestic\Air\IdNumberDataFixed.py" />
+    <Compile Include="Domestic\Air\NameDataFixed.py" />
+    <Compile Include="Domestic\Air\NumberDataFixed.py" />
+    <Compile Include="Domestic\Air\__init__.py" />
     <Compile Include="Domestic\Train\AmountDataFixed.py" />
-    <Compile Include="Domestic\Train\DateDataFixed.py" />
     <Compile Include="Domestic\Train\NumberDataFixed.py" />
     <Compile Include="Domestic\Train\SeatDataFixed.py">
       <SubType>Code</SubType>
@@ -39,28 +49,40 @@
     <Compile Include="Domestic\Train\StationDataFixed.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Domestic\Train\StationList.py" />
     <Compile Include="Domestic\Train\TrainNumberDataFixed.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Domestic\Train\TrainNumberList.py" />
     <Compile Include="Domestic\Train\__init__.py" />
+    <Compile Include="Domestic\VATPrinted\AmountDataFixed.py" />
+    <Compile Include="Domestic\VATPrinted\CodeDataFixed.py" />
+    <Compile Include="Domestic\VATPrinted\NumberDataFixed.py" />
+    <Compile Include="Domestic\VATPrinted\TimeDataFixed.py" />
+    <Compile Include="Domestic\VATPrinted\__init__.py" />
+    <Compile Include="Domestic\VATRoll\AmountDataFixed.py" />
+    <Compile Include="Domestic\VATRoll\CheckCodeFixed.py" />
+    <Compile Include="Domestic\VATRoll\CodeDataFixed.py" />
+    <Compile Include="Domestic\VATRoll\NumberDataFixed.py" />
+    <Compile Include="Domestic\VATRoll\SellerNameFixed.py" />
+    <Compile Include="Domestic\VATRoll\__init__.py" />
     <Compile Include="Domestic\VAT\AmountDataFixed.py" />
     <Compile Include="Domestic\VAT\CheckCodeFixed.py" />
     <Compile Include="Domestic\VAT\CodeDataFixed.py" />
-    <Compile Include="Domestic\VAT\DateDataFixed.py" />
     <Compile Include="Domestic\VAT\NumberDataFixed.py" />
     <Compile Include="Domestic\VAT\__init__.py" />
     <Compile Include="Domestic\__init__.py" />
     <Compile Include="exifutil.py" />
     <Compile Include="FixedReceiptData.py" />
-    <Compile Include="fix_test.py" />
+    <Compile Include="FixType.py" />
     <Compile Include="International\AmountDataFixed.py" />
     <Compile Include="International\__init__.py" />
+    <Compile Include="GeneralNumberDataFixed.py" />
     <Compile Include="server.py" />
     <Compile Include="Domestic\Tax\AmountDataFixed.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Domestic\Tax\CodeDataFixed.py" />
-    <Compile Include="Domestic\Tax\DateDataFixed.py" />
     <Compile Include="Domestic\Tax\MileageDataFixed.py">
       <SubType>Code</SubType>
     </Compile>
@@ -73,6 +95,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Domestic\" />
+    <Folder Include="Domestic\Air\" />
+    <Folder Include="Domestic\VATRoll\" />
+    <Folder Include="Domestic\VATPrinted\" />
     <Folder Include="Domestic\Train\" />
     <Folder Include="Domestic\VAT\" />
     <Folder Include="International\" />

@@ -9,13 +9,7 @@ class AmountDataFixed(DataFixed):
     """description of class"""
 
     def __init__(self):
-        DataFixed.__init__(self)
-        self.__ErrorCount__ = 0
-        self.__FixedCount__ = 0
-
-
-    def __BeforeFixed__(self):
-        logging.info(u'Start Fixed Amount Data=================>\n')
+        DataFixed.__init__(self, 'Amount')
 
 
     def __FixedData__(self, resultJson):
@@ -61,12 +55,6 @@ class AmountDataFixed(DataFixed):
         else:
             logging.info(u'Validated ' + validate_amountlist[0])
             logging.info(u'Fixed Falied!')
-
-
-    def __AfterFixed__(self):
-        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
-
-        logging.info(u'\n<=================End Fixed Amount Data')
 
 
     def __ParseData__(self, jsondata):

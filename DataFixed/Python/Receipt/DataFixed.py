@@ -7,15 +7,19 @@ import logging
 
 class DataFixed(object):
     """description of class"""
-    def __init__(self):
+    def __init__(self, title):
         self.__NumberPatterns__ = (u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9' )
         self.__FloatPatterns__ = self.__NumberPatterns__ +  (u'.', )
         self.__LetterPatterns__ = (u'A', u'B', u'C', u'D', u'E', u'F', u'G', u'H', u'I', u'J', u'K', 
                                    u'L', u'M', u'N', u'O', u'P', u'Q', u'R', u'S', u'T', u'U', u'V', u'W', u'X', u'Y', u'Z' )
+        self.__Title__ = title
+        self.__ErrorCount__ = 0
+        self.__FixedCount__ = 0
 
 
     def StartFixedFromJson(self, resultJson):
         return self.__FixedData__(resultJson)
+        #return self.__FixedDataWithValidate__(validateJson,resultJson)
 
 
     # for test
@@ -25,18 +29,17 @@ class DataFixed(object):
 
         self.__BeforeFixed__()
 
-        self.__Handler__('', 'DH00117092684_22.50_6.jpeg.json')
         self.__VisitFolder__(self.__Handler__)
 
         self.__AfterFixed__()
 
 
     def __BeforeFixed__(self):
-        pass
+        logging.info(u'Start Fixed ' + self.__Title__ + ' Data=================>\n')
 
 
     def __FixedData__(self, resultJson):
-        return ''
+        pass
 
 
     def __FixedDataWithValidate__(self, validateJson, resultJson):
@@ -44,7 +47,9 @@ class DataFixed(object):
 
 
     def __AfterFixed__(self):
-        pass
+        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
+
+        logging.info(u'\n<=================End Fixed ' + self.__Title__ + ' Data')
 
 
     def __VisitFolder__(self, visitor, subfolder = ''):
@@ -75,10 +80,10 @@ class DataFixed(object):
 
 
     def __CheckInPatterns__(self, data, patterns):
-        if len(data) or not isinstance(patterns, tuple):
+        if len(data) == 0 or not isinstance(patterns, tuple):
             return False
 
-        for ch in patterns:
+        for ch in data:
             if ch not in patterns:
                 return False
 
@@ -98,3 +103,4 @@ class DataFixed(object):
 
     def __CheckLetter__(self, data):
         return self.__CheckInPatterns__(data, self.__LetterPatterns__)
+

@@ -1,20 +1,19 @@
+#!/usr/bin/env python2
+# -*- coding:utf-8 -*-
+
 import logging
 
 from DataFixed import DataFixed
 from ConfidenceLevel import ConfidenceLevel
+from utils import StrUtil
 
+SeatList = (u'新空调二等座', u'动卧', u'二等座', u'新空调硬座', u'商务座特等座', u'一等座', u'高级软卧', u'软卧', u'硬卧', u'硬座', u'无座', u'新空调软座', u'新空调硬卧', u'新空调一等座', u'新空调硬卧', u'新空调软卧', u'软座', u'商务座', u'新空软卧', u'空调软座', u'特等座', u'硬卧代硬座', u'新空调硬座快速')
 
 class SeatDataFixed(DataFixed):
     """description of class"""
 
     def __init__(self):
-        DataFixed.__init__(self)
-        self.__ErrorCount__ = 0
-        self.__FixedCount__ = 0
-
-
-    def __BeforeFixed__(self):
-        logging.info(u'Start Fixed Seat Data=================>\n')
+        DataFixed.__init__(self, 'Seat')
 
     
     def __FixedData__(self, resultJson):
@@ -25,7 +24,7 @@ class SeatDataFixed(DataFixed):
 
         logging.info(result_seatlist[0] + u' Fixed To ')
         
-        confidencelevel, seat = ConfidenceLevel.Bad, result_seatlist[0]
+        confidencelevel, seat = self.__FixedSeatData__(result_seatlist)
 
         logging.info(seat)
 
@@ -49,7 +48,7 @@ class SeatDataFixed(DataFixed):
         logging.info(u'Validated Not Equal To Result')
         logging.info(result_seatlist[0] + u' Fixed To ')
         
-        confidencelevel, seat = ConfidenceLevel.Bad, result_seatlist[0]
+        confidencelevel, seat = self.__FixedSeatData__(result_seatlist)
 
         logging.info(seat)
 
@@ -61,12 +60,6 @@ class SeatDataFixed(DataFixed):
             logging.info(u'Fixed Falied!')
 
 
-    def __AfterFixed__(self):
-        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
-
-        logging.info(u'\n<=================End Fixed Seat Data')
-
-
     def __ParseData__(self, jsondata):
         seatlist = []
 
@@ -76,7 +69,7 @@ class SeatDataFixed(DataFixed):
         regions = jsondata[u'regions']
 
         for region in regions:
-            if region[u'cls'] == None or region[u'result'] == None or region[u'ref_result'] == None:
+            if region[u'cls'] == None or region[u'result'] == None:
                 continue
 
             cls = region[u'cls']
@@ -91,3 +84,28 @@ class SeatDataFixed(DataFixed):
                             seatlist.append(result)
 
         return seatlist
+
+
+    def __FixedSeatData__(self, datalist):
+        min_similarity = 1000
+        result = ''
+
+        for data in datalist:
+            if data in SeatList:
+                return ConfidenceLevel.Confident, data
+
+            for seat in SeatList:
+                similarity = StrUtil.Similarity(seat, data)
+                if similarity < len(data) and min_similarity >= similarity:
+                    if (min_similarity == similarity and len(result) >= len(seat)):
+                        continue
+                    
+                    min_similarity = similarity
+                    result = seat
+
+            if min_similarity == 1000:
+                return ConfidenceLevel.Bad, data
+            else:
+                return ConfidenceLevel.Fixed, result
+
+        return ConfidenceLevel.Bad, ''

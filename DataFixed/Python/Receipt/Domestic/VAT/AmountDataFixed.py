@@ -4,21 +4,15 @@ import logging
 
 from DataFixed import DataFixed
 from ConfidenceLevel import ConfidenceLevel
-import Utils
+from utils import StrUtil
 
 class AmountDataFixed(DataFixed):
     """description of class"""
 
     def __init__(self):
-        DataFixed.__init__(self)
-        self.__ErrorCount__ = 0
-        self.__FixedCount__ = 0
-        self.__TaxRate__ = (Decimal(u'0.00'), Decimal(u'0.03'), Decimal(u'0.05'), Decimal(u'0.06'), Decimal(u'0.11'), Decimal(u'0.16'), Decimal(u'0.17'))
+        DataFixed.__init__(self, 'Amount')
+        self.__TaxRate__ = (Decimal(u'0.03'), Decimal(u'0.05'), Decimal(u'0.06'), Decimal(u'0.11'), Decimal(u'0.16'), Decimal(u'0.17'))
         self.__Error__ = np.arange(Decimal(u'-0.09'), Decimal(u'0.1'), Decimal(u'0.01'), Decimal)
-
-
-    def __BeforeFixed__(self):
-        logging.info(u'Start Fixed Amount Data=================>\n')
 
 
     def __FixedData__(self, resultJson):
@@ -62,12 +56,6 @@ class AmountDataFixed(DataFixed):
             logging.info(u'Fixed Falied!')
 
 
-    def __AfterFixed__(self):
-        logging.info(u'Error Count ' + str(self.__ErrorCount__) + u', Fixed Count ' + str(self.__FixedCount__))
-
-        logging.info(u'\n<=================End Fixed Amount Data')
-
-
     def __ParseData__(self, jsondata):
         before_tax = ''
         tax = ''
@@ -105,12 +93,15 @@ class AmountDataFixed(DataFixed):
 
 
     def __FixedAmountData__(self, before_tax, tax, after_tax):
-        if self.__CheckFloat__(before_tax) and self.__CheckFloat__(tax) and self.__CheckFloat__(after_tax):
+        if self.__CheckFloat__(before_tax) and self.__CheckFloat__(after_tax):
             d_before_tax = Decimal(before_tax)
-            d_tax = Decimal(tax)
             d_after_tax = Decimal(after_tax)
-            if (d_after_tax == (d_before_tax + d_tax)):
-                return ConfidenceLevel.Confident, self.__FormatData__(before_tax), self.__FormatData__(tax), self.__FormatData__(after_tax)
+            if len(tax) == 0 and d_after_tax == d_before_tax:
+                return ConfidenceLevel.Confident, self.__FormatData__(before_tax), '', self.__FormatData__(after_tax)
+            elif self.__CheckFloat__(tax):
+                d_tax = Decimal(tax)
+                if d_after_tax == (d_before_tax + d_tax):
+                    return ConfidenceLevel.Confident, self.__FormatData__(before_tax), self.__FormatData__(tax), self.__FormatData__(after_tax)
 
         if self.__CheckData__(after_tax):
             flag, before_tax, tax, after_tax = self.__FixedDataByAfterTax__(before_tax, tax, after_tax)
@@ -142,7 +133,7 @@ class AmountDataFixed(DataFixed):
                 temp_tax = self.__Round__(temp_before_tax * rate)
                 if ((int(temp_before_tax * 100) % 100 + int(temp_tax * 100) % 100) % 100) == (int(d_after_tax * 100) % 100):
                     fixed = self.__DoubleToString__(temp_before_tax)
-                    fixed_similarity = Utils.SimilarityRate(fixed, before_tax)
+                    fixed_similarity = StrUtil.SimilarityRate(fixed, before_tax)
                     if not (fixed_similarity < similarity):
                         fixed_before_tax = fixed
                         fixed_tax = self.__DoubleToString__(temp_tax)
@@ -171,7 +162,7 @@ class AmountDataFixed(DataFixed):
             if valiedTax:
                 fixed_after_tax = d_before_tax + d_tax
                 fixed = self.__DoubleToString__(fixed_after_tax)
-                if Utils.SimilarityRate(fixed, after_tax) > 0.7:
+                if StrUtil.SimilarityRate(fixed, after_tax) > 0.7:
                     return True, self.__FormatData__(before_tax), self.__FormatData__(tax), self.__FormatData__(fixed)
 
         similarity = Decimal(0.0)
@@ -181,7 +172,7 @@ class AmountDataFixed(DataFixed):
             for error in self.__Error__:
                 temp_before_tax = (d_tax / rate) + error
                 fixed = self.__DoubleToString__(temp_before_tax)
-                fixed_similarity = Utils.SimilarityRate(fixed, before_tax)
+                fixed_similarity = StrUtil.SimilarityRate(fixed, before_tax)
                 if fixed_similarity > similarity:
                     fixed_before_tax = fixed
                     fixed_after_tax = self.__DoubleToString__(temp_before_tax + d_tax)
@@ -201,7 +192,7 @@ class AmountDataFixed(DataFixed):
         for rate in self.__TaxRate__:
             temp_tax = self.__Round__(d_before_tax * rate)
             fixed = self.__DoubleToString__(d_before_tax + temp_tax)
-            fixed_similarity = Utils.SimilarityRate(fixed, after_tax)
+            fixed_similarity = StrUtil.SimilarityRate(fixed, after_tax)
             if fixed_similarity > similarity:
                 fixed_tax = temp_tax
                 similarity = fixed_similarity
@@ -229,7 +220,7 @@ class AmountDataFixed(DataFixed):
                 if similarity < 0.6 and max(length, len(before_tax) * similarity) > 3.0:
                     return False
 
-            return len(before_tax) == len(fixed_before_tax) or Utils.Similarity(before_tax, fixed_before_tax) == 1
+            return len(before_tax) == len(fixed_before_tax) or StrUtil.Similarity(before_tax, fixed_before_tax) == 1
 
         return False
 
